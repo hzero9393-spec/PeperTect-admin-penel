@@ -13,8 +13,12 @@ async function checkAdminAuth() {
     return null
   }
 
-  const { getAdminFromToken } = await import('@/lib/admin-auth')
-  return await getAdminFromToken(token)
+  try {
+    const { getAdminFromToken } = await import('@/lib/admin-auth')
+    return await getAdminFromToken(token)
+  } catch (error) {
+    return null
+  }
 }
 
 export default async function AdminLayout({
@@ -22,21 +26,5 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const admin = await checkAdminAuth()
-
-  if (!admin) {
-    redirect('/admin/login')
-  }
-
-  return (
-    <div className="min-h-screen bg-[#0F1117]">
-      <AdminSidebar />
-      <div className="lg:pl-64">
-        <AdminHeader admin={admin} />
-        <main className="p-6">
-          {children}
-        </main>
-      </div>
-    </div>
-  )
+  return <>{children}</>
 }
