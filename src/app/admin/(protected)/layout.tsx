@@ -1,4 +1,3 @@
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { AdminHeader } from '@/components/admin/admin-header'
@@ -6,6 +5,7 @@ import { AdminHeader } from '@/components/admin/admin-header'
 export const dynamic = 'force-dynamic'
 
 async function checkAdminAuth() {
+  const { cookies } = await import('next/headers')
   const cookieStore = cookies()
   const token = cookieStore.get('admin-token')?.value
 
