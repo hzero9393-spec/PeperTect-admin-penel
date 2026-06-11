@@ -5,15 +5,15 @@ import { AdminHeader } from '@/components/admin/admin-header'
 export const dynamic = 'force-dynamic'
 
 async function checkAdminAuth() {
-  const { cookies } = await import('next/headers')
-  const cookieStore = cookies()
-  const token = cookieStore.get('admin-token')?.value
-
-  if (!token) {
-    return null
-  }
-
   try {
+    const { cookies } = await import('next/headers')
+    const cookieStore = cookies()
+    const token = cookieStore.get('admin-token')?.value
+
+    if (!token) {
+      return null
+    }
+
     const { getAdminFromToken } = await import('@/lib/admin-auth')
     return await getAdminFromToken(token)
   } catch (error) {
