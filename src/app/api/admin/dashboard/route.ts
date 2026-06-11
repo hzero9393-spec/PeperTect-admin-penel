@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 import { getAdminFromToken } from '@/lib/admin-auth'
 import { db } from '@/lib/db'
 
+export const runtime = 'nodejs'
+
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = cookies()
-    const token = cookieStore.get('admin-token')?.value
+    const token = req.cookies.get('admin-token')?.value
 
     if (!token) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Dashboard API error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }

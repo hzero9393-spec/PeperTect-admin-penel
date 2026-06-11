@@ -13,12 +13,17 @@ export interface AdminTokenPayload {
 }
 
 export async function createAdminToken(payload: Omit<AdminTokenPayload, 'iat' | 'exp'>): Promise<string> {
-  const token = await new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('24h')
-    .sign(JWT_SECRET)
-  return token
+  try {
+    const token = await new SignJWT(payload)
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('24h')
+      .sign(JWT_SECRET)
+    return token
+  } catch (error) {
+    console.error('Token creation error:', error)
+    throw error
+  }
 }
 
 export async function verifyAdminToken(token: string): Promise<AdminTokenPayload | null> {
@@ -26,22 +31,28 @@ export async function verifyAdminToken(token: string): Promise<AdminTokenPayload
     const { payload } = await jwtVerify(token, JWT_SECRET)
     return payload as AdminTokenPayload
   } catch (error) {
+    console.error('Token verification error:', error)
     return null
   }
 }
 
 export async function getAdminFromToken(token: string) {
-  const payload = await verifyAdminToken(token)
-  if (!payload) return null
+  try {
+    const payload = await verifyAdminToken(token)
+    if (!payload) return null
 
-  const { db } = await import('@/lib/db')
-  const admin = await db.$queryRaw`
-    SELECT id, username, name, email, role, isActive, lastLoginAt, createdAt, updatedAt
-    FROM admins
-    WHERE id = ${payload.adminId} AND isActive = true
-  ` as any[]
+    const { db } = await import('@/lib/db')
+    const admin = await db.$queryRaw`
+      SELECT id, username, name, email, role, isActive, lastLoginAt, createdAt, updatedAt
+      FROM admins
+      WHERE id = ${payload.adminId} AND isActive = true
+    ` as any[]
 
-  if (!admin || admin.length === 0) return null
+    if (!admin || admin.length === 0) return null
 
-  return admin[0]
+    return admin[0]
+  } catch (error) {
+    console.error('getAdminFromToken error:', error)
+    return null
+  }
 }

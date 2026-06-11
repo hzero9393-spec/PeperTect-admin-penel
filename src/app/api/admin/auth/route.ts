@@ -84,8 +84,7 @@ export async function POST(req: NextRequest) {
 // GET /api/admin/auth/me - Get current admin
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = cookies()
-    const token = cookieStore.get('admin-token')?.value
+    const token = req.cookies.get('admin-token')?.value
 
     if (!token) {
       return NextResponse.json(
