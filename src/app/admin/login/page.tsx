@@ -2,12 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { toast } from 'sonner'
-import { Loader2, TrendingUp } from 'lucide-react'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -31,77 +25,69 @@ export default function AdminLoginPage() {
       const data = await response.json()
 
       if (data.success) {
-        toast.success('Login successful!')
+        alert('Login successful!')
         router.push('/admin/dashboard')
       } else {
-        toast.error(data.error || 'Login failed')
+        alert(data.error || 'Login failed')
       }
     } catch (error) {
-      toast.error('An error occurred. Please try again.')
+      alert('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0F1117] p-4">
-      <Card className="w-full max-w-md border-[#2A2D3A] bg-[#1A1D29]">
-        <CardHeader className="space-y-2 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="h-16 w-16 rounded-full bg-[#00D09C]/20 flex items-center justify-center">
-              <TrendingUp className="h-8 w-8 text-[#00D09C]" />
-            </div>
-          </div>
-          <CardTitle className="text-2xl text-white">Admin Login</CardTitle>
-          <CardDescription className="text-gray-400">
-            Pepertect Trading Platform
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username" className="text-gray-300">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="Enter your username"
-                value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                disabled={isLoading}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white placeholder:text-gray-500 focus:border-[#00D09C]"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-300">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                disabled={isLoading}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white placeholder:text-gray-500 focus:border-[#00D09C]"
-                required
-              />
-            </div>
-            <Button
-              type="submit"
-              className="w-full bg-[#00D09C] hover:bg-[#00C08F] text-white"
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0F1117', padding: '1rem' }}>
+      <div style={{ width: '100%', maxWidth: '400px', backgroundColor: '#1A1D29', padding: '2rem', borderRadius: '8px', border: '1px solid #2A2D3A' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h1 style={{ color: 'white', fontSize: '24px', marginBottom: '0.5rem' }}>Admin Login</h1>
+          <p style={{ color: '#9CA3AF', fontSize: '14px' }}>Pepertect Trading Platform</p>
+        </div>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <label style={{ color: '#D1D5DB', display: 'block', marginBottom: '0.5rem', fontSize: '14px' }}>Username</label>
+            <input
+              type="text"
+              placeholder="Enter your username"
+              value={formData.username}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Logging in...
-                </>
-              ) : (
-                'Login'
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0F1117', border: '1px solid #2A2D3A', color: 'white', borderRadius: '4px' }}
+              required
+            />
+          </div>
+          <div>
+            <label style={{ color: '#D1D5DB', display: 'block', marginBottom: '0.5rem', fontSize: '14px' }}>Password</label>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              disabled={isLoading}
+              style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0F1117', border: '1px solid #2A2D3A', color: 'white', borderRadius: '4px' }}
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              backgroundColor: '#00D09C',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              fontSize: '16px',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              opacity: isLoading ? 0.5 : 1
+            }}
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }
