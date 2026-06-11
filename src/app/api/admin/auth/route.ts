@@ -4,6 +4,8 @@ import { createAdminToken, getAdminFromToken } from '@/lib/admin-auth'
 import { db } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 
+export const runtime = 'nodejs'
+
 // POST /api/admin/auth/login - Login admin
 export async function POST(req: NextRequest) {
   try {
@@ -19,7 +21,8 @@ export async function POST(req: NextRequest) {
 
     // Get admin from database
     const admins = await db.$queryRaw`
-      SELECT * FROM admins
+      SELECT id, username, name, email, passwordHash, role, isActive
+      FROM admins
       WHERE username = ${username} AND isActive = true
     ` as any[]
 
@@ -33,20 +36,13 @@ export async function POST(req: NextRequest) {
     const admin = admins[0]
 
     // Verify password
-    const isPasswordValid = await bcrypt.verify(password, admin.passwordHash)
+    const isPasswordValid = await bcrypt.compare(password, admin.passwordHash)
     if (!isPasswordValid) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
       )
     }
-
-    // Update last login
-    await db.$queryRaw`
-      UPDATE admins
-      SET lastLoginAt = datetime('now')
-      WHERE id = ${admin.id}
-    `
 
     // Create JWT token
     const token = await createAdminToken({
@@ -77,7 +73,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Admin login error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
@@ -117,7 +113,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Get admin error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
@@ -131,7 +127,7 @@ export async function DELETE(req: NextRequest) {
   } catch (error) {
     console.error('Admin logout error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
