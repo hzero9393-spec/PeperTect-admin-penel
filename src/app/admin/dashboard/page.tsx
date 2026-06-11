@@ -1,0 +1,364 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { RefreshCw, Users, Activity, DollarSign, CreditCard, TrendingUp, Clock } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import { Line, LineChart, Area, AreaChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts'
+import { toast } from 'sonner'
+
+interface DashboardData {
+  stats: {
+    totalUsers: number
+    activeUsers: number
+    premiumUsers: number
+    totalRevenue: number
+    activePositions: number
+    openOrders: number
+  }
+  recentUsers: any[]
+  recentTrades: any[]
+}
+
+export default function DashboardPage() {
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState<DashboardData | null>(null)
+
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/admin/dashboard')
+      const result = await response.json()
+      if (result.success) {
+        setData(result.data)
+      } else {
+        toast.error('Failed to load dashboard data')
+      }
+    } catch (error) {
+      toast.error('An error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(value)
+  }
+
+  const formatRelativeTime = (date: string) => {
+    const now = new Date()
+    const past = new Date(date)
+    const diff = Math.floor((now.getTime() - past.getTime()) / 1000)
+
+    if (diff < 60) return 'Just now'
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+    if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`
+    return past.toLocaleDateString()
+  }
+
+  const statsCards = [
+    {
+      title: 'Total Users',
+      value: data?.stats.totalUsers || 0,
+      icon: Users,
+      color: 'text-blue-400',
+      bgColor: 'bg-blue-400/20',
+    },
+    {
+      title: 'Active Users',
+      value: data?.stats.activeUsers || 0,
+      icon: Activity,
+      color: 'text-[#00D09C]',
+      bgColor: 'bg-[#00D09C]/20',
+    },
+    {
+      title: 'Premium Users',
+      value: data?.stats.premiumUsers || 0,
+      icon: CreditCard,
+      color: 'text-purple-400',
+      bgColor: 'bg-purple-400/20',
+    },
+    {
+      title: 'Total Revenue',
+      value: formatCurrency(data?.stats.totalRevenue || 0),
+      icon: DollarSign,
+      color: 'text-green-400',
+      bgColor: 'bg-green-400/20',
+    },
+    {
+      title: 'Active Positions',
+      value: data?.stats.activePositions || 0,
+      icon: TrendingUp,
+      color: 'text-orange-400',
+      bgColor: 'bg-orange-400/20',
+    },
+    {
+      title: 'Open Orders',
+      value: data?.stats.openOrders || 0,
+      icon: Clock,
+      color: 'text-pink-400',
+      bgColor: 'bg-pink-400/20',
+    },
+  ]
+
+  // Sample chart data (replace with real data)
+  const revenueData = [
+    { month: 'Jan', revenue: 45000 },
+    { month: 'Feb', revenue: 62000 },
+    { month: 'Mar', revenue: 58000 },
+    { month: 'Apr', revenue: 75000 },
+    { month: 'May', revenue: 82000 },
+    { month: 'Jun', revenue: 95000 },
+  ]
+
+  const userGrowthData = [
+    { month: 'Jan', users: 120 },
+    { month: 'Feb', users: 250 },
+    { month: 'Mar', users: 380 },
+    { month: 'Apr', users: 520 },
+    { month: 'May', users: 680 },
+    { month: 'Jun', users: 850 },
+  ]
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="border-[#2A2D3A] bg-[#1A1D29]">
+              <CardContent className="p-6">
+                <div className="h-24 animate-pulse bg-[#2A2D3A] rounded" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+          <p className="text-gray-400 mt-1">Welcome back! Here's what's happening.</p>
+        </div>
+        <Button
+          onClick={fetchData}
+          variant="outline"
+          className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+        >
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {statsCards.map((card) => {
+          const Icon = card.icon
+          return (
+            <Card key={card.title} className="border-[#2A2D3A] bg-[#1A1D29]">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">{card.title}</p>
+                    <h3 className="text-2xl font-bold text-white">{card.value}</h3>
+                  </div>
+                  <div className={`p-3 rounded-full ${card.bgColor}`}>
+                    <Icon className={`h-6 w-6 ${card.color}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Revenue Chart */}
+        <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <CardHeader>
+            <CardTitle className="text-white">Monthly Revenue</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer
+              config={{
+                revenue: { color: '#00D09C' },
+              }}
+              className="h-[300px]"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={revenueData}>
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00D09C" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#00D09C" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
+                  <XAxis dataKey="month" stroke="#9CA3AF" />
+                  <YAxis stroke="#9CA3AF" tickFormatter={(value) => `₹${(value / 1000)}k`} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#00D09C"
+                    fillOpacity={1}
+                    fill="url(#colorRevenue)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        {/* User Growth Chart */}
+        <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <CardHeader>
+            <CardTitle className="text-white">User Growth</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer
+              config={{
+                users: { color: '#3B82F6' },
+              }}
+              className="h-[300px]"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={userGrowthData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
+                  <XAxis dataKey="month" stroke="#9CA3AF" />
+                  <YAxis stroke="#9CA3AF" />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Line
+                    type="monotone"
+                    dataKey="users"
+                    stroke="#3B82F6"
+                    strokeWidth={2}
+                    dot={{ fill: '#3B82F6' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Tables */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Users */}
+        <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <CardHeader>
+            <CardTitle className="text-white">Recent Registrations</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-gray-400">Name</TableHead>
+                  <TableHead className="text-gray-400">Subscription</TableHead>
+                  <TableHead className="text-gray-400">Joined</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data?.recentUsers?.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="text-white">
+                      <div className="flex flex-col">
+                        <span className="font-medium">{user.name || 'N/A'}</span>
+                        <span className="text-xs text-gray-400">{user.email}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={user.subscription === 'PREMIUM' ? 'default' : 'secondary'}
+                        className={
+                          user.subscription === 'PREMIUM'
+                            ? 'bg-[#00D09C] text-black'
+                            : 'bg-[#2A2D3A] text-gray-300'
+                        }
+                      >
+                        {user.subscription}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-gray-400">
+                      {formatRelativeTime(user.createdAt)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Recent Trades */}
+        <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <CardHeader>
+            <CardTitle className="text-white">Recent Trades</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-gray-400">User</TableHead>
+                  <TableHead className="text-gray-400">Symbol</TableHead>
+                  <TableHead className="text-gray-400">Type</TableHead>
+                  <TableHead className="text-gray-400">P&L</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data?.recentTrades?.map((trade) => (
+                  <TableRow key={trade.id}>
+                    <TableCell className="text-white text-sm">
+                      {trade.userName || 'N/A'}
+                    </TableCell>
+                    <TableCell className="text-white font-medium">
+                      {trade.symbol}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={
+                          trade.tradeDirection === 'BUY'
+                            ? 'border-green-500 text-green-500'
+                            : 'border-red-500 text-red-500'
+                        }
+                      >
+                        {trade.tradeDirection}
+                      </Badge>
+                    </TableCell>
+                    <TableCell
+                      className={
+                        trade.pnl > 0
+                          ? 'text-green-400'
+                          : trade.pnl < 0
+                          ? 'text-red-400'
+                          : 'text-gray-400'
+                      }
+                    >
+                      {trade.pnl ? formatCurrency(trade.pnl) : '-'}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
