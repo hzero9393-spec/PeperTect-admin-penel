@@ -32,13 +32,44 @@ export default function DashboardPage() {
     try {
       const response = await fetch('/api/admin/dashboard')
       const result = await response.json()
-      if (result.success) {
-        setData(result.data)
+
+      if (!response.ok) {
+        // Show error details from server if available
+        const errorMsg = result.details || result.error || 'Failed to load dashboard data'
+        console.error('Dashboard error:', errorMsg)
+        toast.error(errorMsg)
+        // Still show the dashboard with empty data
+        setData({
+          stats: {
+            totalUsers: 0,
+            activeUsers: 0,
+            premiumUsers: 0,
+            totalRevenue: 0,
+            activePositions: 0,
+            openOrders: 0,
+          },
+          recentUsers: [],
+          recentTrades: [],
+        })
       } else {
-        toast.error('Failed to load dashboard data')
+        setData(result.data)
       }
     } catch (error) {
-      toast.error('An error occurred')
+      console.error('Dashboard fetch error:', error)
+      toast.error('An error occurred loading dashboard')
+      // Show empty data
+      setData({
+        stats: {
+          totalUsers: 0,
+          activeUsers: 0,
+          premiumUsers: 0,
+          totalRevenue: 0,
+          activePositions: 0,
+          openOrders: 0,
+        },
+        recentUsers: [],
+        recentTrades: [],
+      })
     } finally {
       setLoading(false)
     }

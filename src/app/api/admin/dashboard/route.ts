@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
       db.$queryRaw`SELECT COUNT(*) as count FROM users` as any[],
       db.$queryRaw`SELECT COUNT(*) as count FROM users WHERE isActive = true` as any[],
       db.$queryRaw`SELECT COUNT(*) as count FROM users WHERE subscription = 'PREMIUM'` as any[],
-      db.$queryRaw`SELECT SUM(amount) as total FROM subscriptionTransactions WHERE status = 'SUCCESS'` as any[],
+      db.$queryRaw`SELECT SUM(amount) as total FROM subscription_transactions WHERE status = 'SUCCESS'` as any[],
       db.$queryRaw`SELECT COUNT(*) as count FROM positions WHERE quantity > 0` as any[],
       db.$queryRaw`SELECT COUNT(*) as count FROM orders WHERE status = 'PENDING'` as any[],
     ])
