@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 import { createAdminToken, getAdminFromToken } from '@/lib/admin-auth'
 import { db } from '@/lib/db'
 import bcrypt from 'bcryptjs'
@@ -51,16 +50,8 @@ export async function POST(req: NextRequest) {
       role: admin.role,
     })
 
-    // Set httpOnly cookie
-    cookies().set('admin-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24, // 24 hours
-      path: '/',
-    })
-
-    return NextResponse.json({
+    // Create response with cookie
+    const response = NextResponse.json({
       success: true,
       admin: {
         id: admin.id,
@@ -70,6 +61,17 @@ export async function POST(req: NextRequest) {
         role: admin.role,
       },
     })
+
+    // Set httpOnly cookie
+    response.cookies.set('admin-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24, // 24 hours
+      path: '/',
+    })
+
+    return response
   } catch (error) {
     console.error('Admin login error:', error)
     return NextResponse.json(
@@ -122,8 +124,9 @@ export async function GET(req: NextRequest) {
 // DELETE /api/admin/auth/logout - Logout admin
 export async function DELETE(req: NextRequest) {
   try {
-    cookies().delete('admin-token')
-    return NextResponse.json({ success: true })
+    const response = NextResponse.json({ success: true })
+    response.cookies.delete('admin-token')
+    return response
   } catch (error) {
     console.error('Admin logout error:', error)
     return NextResponse.json(
