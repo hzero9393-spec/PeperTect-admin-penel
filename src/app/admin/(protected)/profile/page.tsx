@@ -125,61 +125,61 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-white">Profile</h1>
-        <p className="text-gray-400 mt-1">Manage your admin account</p>
+        <h1 className="text-3xl font-bold text-[#1a1a1a]">Profile</h1>
+        <p className="text-[#6b7280] mt-1">Manage your admin account</p>
       </div>
 
       {/* Profile Information */}
-      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+      <Card className="border-[#e5e7eb] bg-white">
         <CardHeader>
-          <CardTitle className="text-white flex items-center">
+          <CardTitle className="text-[#1a1a1a] flex items-center">
             <User className="h-5 w-5 mr-2 text-[#00D09C]" />
             Profile Information
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription className="text-[#6b7280]">
             Update your personal details
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-gray-300">Username</Label>
+              <Label className="text-[#6b7280]">Username</Label>
               <Input
                 value={admin?.username}
                 disabled
-                className="bg-[#0F1117] border-[#2A2D3A] text-gray-400"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#6b7280]"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Role</Label>
+              <Label className="text-[#6b7280]">Role</Label>
               <Input
                 value={admin?.role}
                 disabled
-                className="bg-[#0F1117] border-[#2A2D3A] text-gray-400"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#6b7280]"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Name</Label>
+              <Label className="text-[#6b7280]">Name</Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Email</Label>
+              <Label className="text-[#6b7280]">Email</Label>
               <Input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
               />
             </div>
           </div>
           <Button
             onClick={handleUpdateProfile}
             disabled={saving}
-            className="bg-[#00D09C] hover:bg-[#00C08F] text-white"
+            className="bg-[#00D09C] hover:bg-[#00C08F] text-[#1a1a1a]"
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </Button>
@@ -187,43 +187,43 @@ export default function ProfilePage() {
       </Card>
 
       {/* Change Password */}
-      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+      <Card className="border-[#e5e7eb] bg-white">
         <CardHeader>
-          <CardTitle className="text-white flex items-center">
+          <CardTitle className="text-[#1a1a1a] flex items-center">
             <Shield className="h-5 w-5 mr-2 text-[#00D09C]" />
             Change Password
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription className="text-[#6b7280]">
             Update your password
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-4">
             <div>
-              <Label className="text-gray-300">Current Password</Label>
+              <Label className="text-[#6b7280]">Current Password</Label>
               <Input
                 type="password"
                 value={passwordData.currentPassword}
                 onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
               />
             </div>
             <div>
-              <Label className="text-gray-300">New Password</Label>
+              <Label className="text-[#6b7280]">New Password</Label>
               <Input
                 type="password"
                 value={passwordData.newPassword}
                 onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Confirm New Password</Label>
+              <Label className="text-[#6b7280]">Confirm New Password</Label>
               <Input
                 type="password"
                 value={passwordData.confirmPassword}
                 onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
               />
             </div>
           </div>
@@ -231,7 +231,7 @@ export default function ProfilePage() {
             onClick={handleChangePassword}
             disabled={saving}
             variant="outline"
-            className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+            className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
           >
             {saving ? 'Changing...' : 'Change Password'}
           </Button>
@@ -239,10 +239,10 @@ export default function ProfilePage() {
       </Card>
 
       {/* Danger Zone */}
-      <Card className="border-red-900/50 bg-[#1A1D29]">
+      <Card className="border-red-900/50 bg-white">
         <CardHeader>
-          <CardTitle className="text-white">Danger Zone</CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardTitle className="text-[#1a1a1a]">Danger Zone</CardTitle>
+          <CardDescription className="text-[#6b7280]">
             Irreversible actions
           </CardDescription>
         </CardHeader>
@@ -250,7 +250,7 @@ export default function ProfilePage() {
           <Button
             onClick={handleLogout}
             variant="outline"
-            className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+            className="border-[#d44a2d] text-[#d44a2d] hover:bg-[#d44a2d] hover:text-[#1a1a1a]"
           >
             <LogOut className="h-4 w-4 mr-2" />
             Logout

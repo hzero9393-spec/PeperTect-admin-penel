@@ -40,10 +40,10 @@ interface AnalyticsData {
 
 const COLORS = {
   primary: '#00D09C',
-  secondary: '#3B82F6',
-  purple: '#8B5CF6',
-  orange: '#F97316',
-  pink: '#EC4899',
+  secondary: '#00D09C',
+  purple: '#00b887',
+  orange: '#00b887',
+  pink: '#00D09C',
   yellow: '#EAB308'
 }
 
@@ -95,7 +95,7 @@ export default function AnalyticsPage() {
       value: data.revenueAnalytics.conversionFunnel.signups,
       icon: Users,
       color: COLORS.secondary,
-      bgColor: 'bg-blue-500/20',
+      bgColor: 'bg-[#00D09C]/20',
       description: 'Total user registrations'
     },
     {
@@ -111,7 +111,7 @@ export default function AnalyticsPage() {
       value: data.revenueAnalytics.conversionFunnel.active,
       icon: TrendingUp,
       color: COLORS.purple,
-      bgColor: 'bg-purple-500/20',
+      bgColor: 'bg-[#00b887]/20',
       description: 'Users with trades'
     },
     {
@@ -119,7 +119,7 @@ export default function AnalyticsPage() {
       value: data.revenueAnalytics.conversionFunnel.powerUsers,
       icon: BarChart3,
       color: COLORS.orange,
-      bgColor: 'bg-orange-500/20',
+      bgColor: 'bg-[#00b887]/20',
       description: '10+ trades per user'
     }
   ] : []
@@ -131,11 +131,11 @@ export default function AnalyticsPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-white">Analytics</h1>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Analytics</h1>
         </div>
         <div className="space-y-6">
           {[...Array(12)].map((_, i) => (
-            <div key={i} className="h-64 bg-[#1A1D29] border border-[#2A2D3A] rounded-xl animate-pulse" />
+            <div key={i} className="h-64 bg-white border border-[#e5e7eb] rounded-xl animate-pulse" />
           ))}
         </div>
       </div>
@@ -147,15 +147,15 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Analytics</h1>
-          <p className="text-gray-400 mt-1">Comprehensive insights into your platform performance</p>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Analytics</h1>
+          <p className="text-[#6b7280] mt-1">Comprehensive insights into your platform performance</p>
         </div>
         <div className="flex items-center gap-3">
           <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="border-[#2A2D3A] bg-[#1A1D29] text-white">
+            <SelectTrigger className="border-[#e5e7eb] bg-white text-[#1a1a1a]">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+            <SelectContent className="bg-white border-[#e5e7eb]">
               <SelectItem value="7d">Last 7 Days</SelectItem>
               <SelectItem value="30d">Last 30 Days</SelectItem>
               <SelectItem value="90d">Last 90 Days</SelectItem>
@@ -165,7 +165,7 @@ export default function AnalyticsPage() {
           <Button
             onClick={fetchData}
             variant="outline"
-            className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+            className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -179,14 +179,14 @@ export default function AnalyticsPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <Users className="h-5 w-5 text-[#00D09C]" />
-          <h2 className="text-xl font-semibold text-white">User Analytics</h2>
+          <h2 className="text-xl font-semibold text-[#1a1a1a]">User Analytics</h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* User Registration Chart */}
-          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <Card className="border-[#e5e7eb] bg-white">
             <CardHeader>
-              <CardTitle className="text-white">User Registration Trend</CardTitle>
+              <CardTitle className="text-[#1a1a1a]">User Registration Trend</CardTitle>
             </CardHeader>
             <CardContent>
               <ChartContainer
@@ -197,7 +197,7 @@ export default function AnalyticsPage() {
               >
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data?.userAnalytics?.registrationsOverTime || []}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="month" stroke="#9CA3AF" />
                     <YAxis stroke="#9CA3AF" />
                     <ChartTooltip content={<ChartTooltipContent />} />
@@ -215,29 +215,29 @@ export default function AnalyticsPage() {
           </Card>
 
           {/* Active Users (DAU/MAU) */}
-          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <Card className="border-[#e5e7eb] bg-white">
             <CardHeader>
-              <CardTitle className="text-white">Active Users</CardTitle>
+              <CardTitle className="text-[#1a1a1a]">Active Users</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col items-center justify-center h-[200px]">
                 <div className="grid grid-cols-2 gap-8 w-full">
                   <div className="text-center">
-                    <p className="text-sm text-gray-400 mb-2">Daily Active Users</p>
+                    <p className="text-sm text-[#6b7280] mb-2">Daily Active Users</p>
                     <p className="text-4xl font-bold text-[#00D09C]">
                       {data?.userAnalytics?.activeUsers?.dau || 0}
                     </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-sm text-gray-400 mb-2">Monthly Active Users</p>
-                    <p className="text-4xl font-bold text-blue-400">
+                    <p className="text-sm text-[#6b7280] mb-2">Monthly Active Users</p>
+                    <p className="text-4xl font-bold text-[#00D09C]">
                       {data?.userAnalytics?.activeUsers?.mau || 0}
                     </p>
                   </div>
                 </div>
                 <div className="mt-6 text-center">
-                  <p className="text-sm text-gray-400">DAU/MAU Ratio</p>
-                  <p className="text-2xl font-bold text-purple-400 mt-1">
+                  <p className="text-sm text-[#6b7280]">DAU/MAU Ratio</p>
+                  <p className="text-2xl font-bold text-[#00b887] mt-1">
                     {data?.userAnalytics?.activeUsers?.ratio || 0}%
                   </p>
                   <p className="text-xs text-gray-500 mt-1">Engagement metric</p>
@@ -248,9 +248,9 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Subscription Distribution Pie Chart */}
-        <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+        <Card className="border-[#e5e7eb] bg-white">
           <CardHeader>
-            <CardTitle className="text-white">User Distribution by Subscription</CardTitle>
+            <CardTitle className="text-[#1a1a1a]">User Distribution by Subscription</CardTitle>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -288,14 +288,14 @@ export default function AnalyticsPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-[#00D09C]" />
-          <h2 className="text-xl font-semibold text-white">Trading Analytics</h2>
+          <h2 className="text-xl font-semibold text-[#1a1a1a]">Trading Analytics</h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Trade Volume Chart */}
-          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <Card className="border-[#e5e7eb] bg-white">
             <CardHeader>
-              <CardTitle className="text-white">Daily Trade Volume</CardTitle>
+              <CardTitle className="text-[#1a1a1a]">Daily Trade Volume</CardTitle>
             </CardHeader>
             <CardContent>
               <ChartContainer
@@ -306,7 +306,7 @@ export default function AnalyticsPage() {
               >
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data?.tradingAnalytics?.volumeTrends || []}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="date" stroke="#9CA3AF" tickFormatter={(value) => value.slice(5)} />
                     <YAxis stroke="#9CA3AF" tickFormatter={(value) => formatCompactCurrency(value)} />
                     <ChartTooltip
@@ -321,9 +321,9 @@ export default function AnalyticsPage() {
           </Card>
 
           {/* Average Trade Size by Segment */}
-          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <Card className="border-[#e5e7eb] bg-white">
             <CardHeader>
-              <CardTitle className="text-white">Average Trade Size by Segment</CardTitle>
+              <CardTitle className="text-[#1a1a1a]">Average Trade Size by Segment</CardTitle>
             </CardHeader>
             <CardContent>
               <ChartContainer
@@ -334,7 +334,7 @@ export default function AnalyticsPage() {
               >
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data?.tradingAnalytics?.avgTradeSizeBySegment || []}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="segment" stroke="#9CA3AF" tick={{ fontSize: 10 }} />
                     <YAxis stroke="#9CA3AF" tickFormatter={(value) => formatCompactCurrency(value)} />
                     <ChartTooltip
@@ -350,35 +350,35 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Popular Stocks Table */}
-        <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+        <Card className="border-[#e5e7eb] bg-white">
           <CardHeader>
-            <CardTitle className="text-white">Top 10 Popular Stocks by Volume</CardTitle>
+            <CardTitle className="text-[#1a1a1a]">Top 10 Popular Stocks by Volume</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-gray-400">Rank</TableHead>
-                  <TableHead className="text-gray-400">Symbol</TableHead>
-                  <TableHead className="text-gray-400">Name</TableHead>
-                  <TableHead className="text-gray-400">Trades</TableHead>
-                  <TableHead className="text-gray-400">Total Volume</TableHead>
-                  <TableHead className="text-gray-400">Avg Quantity</TableHead>
+                  <TableHead className="text-[#6b7280]">Rank</TableHead>
+                  <TableHead className="text-[#6b7280]">Symbol</TableHead>
+                  <TableHead className="text-[#6b7280]">Name</TableHead>
+                  <TableHead className="text-[#6b7280]">Trades</TableHead>
+                  <TableHead className="text-[#6b7280]">Total Volume</TableHead>
+                  <TableHead className="text-[#6b7280]">Avg Quantity</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data?.tradingAnalytics?.popularStocks?.map((stock, index) => (
                   <TableRow key={stock.symbol}>
-                    <TableCell className="text-white">
-                      <Badge className="bg-[#2A2D3A] text-white">#{index + 1}</Badge>
+                    <TableCell className="text-[#1a1a1a]">
+                      <Badge className="bg-[#f0f2f5] text-[#1a1a1a]">#{index + 1}</Badge>
                     </TableCell>
-                    <TableCell className="text-white font-bold">{stock.symbol}</TableCell>
-                    <TableCell className="text-gray-300">{stock.name || 'N/A'}</TableCell>
-                    <TableCell className="text-white">{stock.tradeCount}</TableCell>
+                    <TableCell className="text-[#1a1a1a] font-bold">{stock.symbol}</TableCell>
+                    <TableCell className="text-[#6b7280]">{stock.name || 'N/A'}</TableCell>
+                    <TableCell className="text-[#1a1a1a]">{stock.tradeCount}</TableCell>
                     <TableCell className="text-[#00D09C] font-medium">
                       {formatCurrency(stock.totalVolume)}
                     </TableCell>
-                    <TableCell className="text-gray-300">
+                    <TableCell className="text-[#6b7280]">
                       {Math.round(stock.avgQuantity).toLocaleString()}
                     </TableCell>
                   </TableRow>
@@ -395,7 +395,7 @@ export default function AnalyticsPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <DollarSign className="h-5 w-5 text-[#00D09C]" />
-          <h2 className="text-xl font-semibold text-white">Revenue Analytics</h2>
+          <h2 className="text-xl font-semibold text-[#1a1a1a]">Revenue Analytics</h2>
         </div>
 
         {/* Conversion Funnel */}
@@ -403,12 +403,12 @@ export default function AnalyticsPage() {
           {funnelCards.map((card) => {
             const Icon = card.icon
             return (
-              <Card key={card.title} className="border-[#2A2D3A] bg-[#1A1D29]">
+              <Card key={card.title} className="border-[#e5e7eb] bg-white">
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="text-sm text-gray-400 mb-2">{card.title}</p>
-                      <h3 className="text-3xl font-bold text-white">{card.value}</h3>
+                      <p className="text-sm text-[#6b7280] mb-2">{card.title}</p>
+                      <h3 className="text-3xl font-bold text-[#1a1a1a]">{card.value}</h3>
                       <p className="text-xs text-gray-500 mt-1">{card.description}</p>
                     </div>
                     <div className={`p-3 rounded-full ${card.bgColor}`}>
@@ -423,9 +423,9 @@ export default function AnalyticsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Revenue Trend Chart */}
-          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <Card className="border-[#e5e7eb] bg-white">
             <CardHeader>
-              <CardTitle className="text-white">Revenue Trend</CardTitle>
+              <CardTitle className="text-[#1a1a1a]">Revenue Trend</CardTitle>
             </CardHeader>
             <CardContent>
               <ChartContainer
@@ -442,7 +442,7 @@ export default function AnalyticsPage() {
                         <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="month" stroke="#9CA3AF" />
                     <YAxis stroke="#9CA3AF" tickFormatter={(value) => formatCompactCurrency(value)} />
                     <ChartTooltip
@@ -463,24 +463,24 @@ export default function AnalyticsPage() {
           </Card>
 
           {/* Monthly Revenue Breakdown Table */}
-          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <Card className="border-[#e5e7eb] bg-white">
             <CardHeader>
-              <CardTitle className="text-white">Monthly Revenue Breakdown</CardTitle>
+              <CardTitle className="text-[#1a1a1a]">Monthly Revenue Breakdown</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-gray-400">Month</TableHead>
-                    <TableHead className="text-gray-400">Plan</TableHead>
-                    <TableHead className="text-gray-400">Revenue</TableHead>
-                    <TableHead className="text-gray-400">Subs</TableHead>
+                    <TableHead className="text-[#6b7280]">Month</TableHead>
+                    <TableHead className="text-[#6b7280]">Plan</TableHead>
+                    <TableHead className="text-[#6b7280]">Revenue</TableHead>
+                    <TableHead className="text-[#6b7280]">Subs</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data?.revenueAnalytics?.monthlyBreakdown?.map((item, index) => (
                     <TableRow key={`${item.month}-${item.planType}-${index}`}>
-                      <TableCell className="text-white">{item.month}</TableCell>
+                      <TableCell className="text-[#1a1a1a]">{item.month}</TableCell>
                       <TableCell>
                         <Badge
                           variant={item.planType === 'PRO' ? 'default' : 'secondary'}
@@ -488,8 +488,8 @@ export default function AnalyticsPage() {
                             item.planType === 'PRO'
                               ? 'bg-[#00D09C] text-black'
                               : item.planType === 'PREMIUM'
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-[#2A2D3A] text-gray-300'
+                              ? 'bg-[#00b887] text-[#1a1a1a]'
+                              : 'bg-[#f0f2f5] text-[#6b7280]'
                           }
                         >
                           {item.planType}
@@ -498,7 +498,7 @@ export default function AnalyticsPage() {
                       <TableCell className="text-[#00D09C] font-medium">
                         {formatCurrency(item.totalRevenue)}
                       </TableCell>
-                      <TableCell className="text-white">{item.subscriptionCount}</TableCell>
+                      <TableCell className="text-[#1a1a1a]">{item.subscriptionCount}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

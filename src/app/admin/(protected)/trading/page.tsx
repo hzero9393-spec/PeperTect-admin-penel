@@ -196,72 +196,72 @@ export default function TradingPage() {
 
   const renderPositions = () => (
     <div className="space-y-4">
-      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+      <Card className="border-[#e5e7eb] bg-white">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-[#2A2D3A] hover:bg-transparent">
-                  <TableHead className="text-gray-400">User</TableHead>
-                  <TableHead className="text-gray-400">Symbol</TableHead>
-                  <TableHead className="text-gray-400">Segment</TableHead>
-                  <TableHead className="text-gray-400 text-right">Quantity</TableHead>
-                  <TableHead className="text-gray-400 text-right">Avg Price</TableHead>
-                  <TableHead className="text-gray-400 text-right">Current Price</TableHead>
-                  <TableHead className="text-gray-400 text-right">Unrealized P&L</TableHead>
-                  <TableHead className="text-gray-400 text-right">P&L %</TableHead>
-                  <TableHead className="text-gray-400 text-right">Day Change</TableHead>
-                  <TableHead className="text-gray-400 text-center">Actions</TableHead>
+                <TableRow className="border-[#e5e7eb] hover:bg-transparent">
+                  <TableHead className="text-[#6b7280]">User</TableHead>
+                  <TableHead className="text-[#6b7280]">Symbol</TableHead>
+                  <TableHead className="text-[#6b7280]">Segment</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Quantity</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Avg Price</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Current Price</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Unrealized P&L</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">P&L %</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Day Change</TableHead>
+                  <TableHead className="text-[#6b7280] text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="border-[#2A2D3A]">
+                    <TableRow key={i} className="border-[#e5e7eb]">
                       {[...Array(10)].map((_, j) => (
                         <TableCell key={j}>
-                          <div className="h-4 bg-[#2A2D3A] animate-pulse rounded" />
+                          <div className="h-4 bg-[#f0f2f5] animate-pulse rounded" />
                         </TableCell>
                       ))}
                     </TableRow>
                   ))
                 ) : positions.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center text-gray-400 py-8">
+                    <TableCell colSpan={10} className="text-center text-[#6b7280] py-8">
                       No positions found
                     </TableCell>
                   </TableRow>
                 ) : (
                   positions.map((position) => (
-                    <TableRow key={position.id} className="border-[#2A2D3A] hover:bg-[#2A2D3A]/30">
+                    <TableRow key={position.id} className="border-[#e5e7eb] hover:bg-[#f0f2f5]/30">
                       <TableCell>
-                        <div className="text-white font-medium">{position.userName || 'N/A'}</div>
-                        <div className="text-xs text-gray-400">{position.userEmail || ''}</div>
+                        <div className="text-[#1a1a1a] font-medium">{position.userName || 'N/A'}</div>
+                        <div className="text-xs text-[#6b7280]">{position.userEmail || ''}</div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-white font-medium">{position.stockSymbol}</div>
-                        <div className="text-xs text-gray-400">{position.stockName || ''}</div>
+                        <div className="text-[#1a1a1a] font-medium">{position.stockSymbol}</div>
+                        <div className="text-xs text-[#6b7280]">{position.stockName || ''}</div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="border-[#2A2D3A] text-gray-300">
+                        <Badge variant="outline" className="border-[#e5e7eb] text-[#6b7280]">
                           {position.stockType}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-white text-right">{position.quantity}</TableCell>
-                      <TableCell className="text-white text-right">{formatCurrency(position.avgPrice)}</TableCell>
-                      <TableCell className="text-white text-right">{formatCurrency(position.currentPrice)}</TableCell>
+                      <TableCell className="text-[#1a1a1a] text-right">{position.quantity}</TableCell>
+                      <TableCell className="text-[#1a1a1a] text-right">{formatCurrency(position.avgPrice)}</TableCell>
+                      <TableCell className="text-[#1a1a1a] text-right">{formatCurrency(position.currentPrice)}</TableCell>
                       <TableCell className={`text-right font-medium ${
-                        position.unrealizedPnl > 0 ? 'text-green-400' : position.unrealizedPnl < 0 ? 'text-red-400' : 'text-gray-400'
+                        position.unrealizedPnl > 0 ? 'text-green-400' : position.unrealizedPnl < 0 ? 'text-red-400' : 'text-[#6b7280]'
                       }`}>
                         {formatCurrency(position.unrealizedPnl)}
                       </TableCell>
                       <TableCell className={`text-right ${
-                        position.unrealizedPnlPercent > 0 ? 'text-green-400' : position.unrealizedPnlPercent < 0 ? 'text-red-400' : 'text-gray-400'
+                        position.unrealizedPnlPercent > 0 ? 'text-green-400' : position.unrealizedPnlPercent < 0 ? 'text-red-400' : 'text-[#6b7280]'
                       }`}>
                         {position.unrealizedPnlPercent?.toFixed(2)}%
                       </TableCell>
                       <TableCell className={`text-right ${
-                        position.dayChange > 0 ? 'text-green-400' : position.dayChange < 0 ? 'text-red-400' : 'text-gray-400'
+                        position.dayChange > 0 ? 'text-green-400' : position.dayChange < 0 ? 'text-red-400' : 'text-[#6b7280]'
                       }`}>
                         {position.dayChange > 0 ? '+' : ''}{position.dayChange?.toFixed(2)}
                       </TableCell>
@@ -291,50 +291,50 @@ export default function TradingPage() {
 
   const renderOrders = () => (
     <div className="space-y-4">
-      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+      <Card className="border-[#e5e7eb] bg-white">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-[#2A2D3A] hover:bg-transparent">
-                  <TableHead className="text-gray-400">User</TableHead>
-                  <TableHead className="text-gray-400">Symbol</TableHead>
-                  <TableHead className="text-gray-400">Type</TableHead>
-                  <TableHead className="text-gray-400 text-right">Quantity</TableHead>
-                  <TableHead className="text-gray-400 text-right">Price</TableHead>
-                  <TableHead className="text-gray-400 text-right">Filled</TableHead>
-                  <TableHead className="text-gray-400">Status</TableHead>
-                  <TableHead className="text-gray-400">Created At</TableHead>
-                  <TableHead className="text-gray-400 text-center">Actions</TableHead>
+                <TableRow className="border-[#e5e7eb] hover:bg-transparent">
+                  <TableHead className="text-[#6b7280]">User</TableHead>
+                  <TableHead className="text-[#6b7280]">Symbol</TableHead>
+                  <TableHead className="text-[#6b7280]">Type</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Quantity</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Price</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Filled</TableHead>
+                  <TableHead className="text-[#6b7280]">Status</TableHead>
+                  <TableHead className="text-[#6b7280]">Created At</TableHead>
+                  <TableHead className="text-[#6b7280] text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="border-[#2A2D3A]">
+                    <TableRow key={i} className="border-[#e5e7eb]">
                       {[...Array(9)].map((_, j) => (
                         <TableCell key={j}>
-                          <div className="h-4 bg-[#2A2D3A] animate-pulse rounded" />
+                          <div className="h-4 bg-[#f0f2f5] animate-pulse rounded" />
                         </TableCell>
                       ))}
                     </TableRow>
                   ))
                 ) : orders.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center text-gray-400 py-8">
+                    <TableCell colSpan={9} className="text-center text-[#6b7280] py-8">
                       No orders found
                     </TableCell>
                   </TableRow>
                 ) : (
                   orders.map((order) => (
-                    <TableRow key={order.id} className="border-[#2A2D3A] hover:bg-[#2A2D3A]/30">
+                    <TableRow key={order.id} className="border-[#e5e7eb] hover:bg-[#f0f2f5]/30">
                       <TableCell>
-                        <div className="text-white font-medium">{order.userName || 'N/A'}</div>
-                        <div className="text-xs text-gray-400">{order.userEmail || ''}</div>
+                        <div className="text-[#1a1a1a] font-medium">{order.userName || 'N/A'}</div>
+                        <div className="text-xs text-[#6b7280]">{order.userEmail || ''}</div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-white font-medium">{order.stockSymbol}</div>
-                        <div className="text-xs text-gray-400">{order.stockName || ''}</div>
+                        <div className="text-[#1a1a1a] font-medium">{order.stockSymbol}</div>
+                        <div className="text-xs text-[#6b7280]">{order.stockName || ''}</div>
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
@@ -348,16 +348,16 @@ export default function TradingPage() {
                           >
                             {order.tradeType}
                           </Badge>
-                          <Badge variant="outline" className="border-[#2A2D3A] text-gray-300">
+                          <Badge variant="outline" className="border-[#e5e7eb] text-[#6b7280]">
                             {order.orderType}
                           </Badge>
                         </div>
                       </TableCell>
-                      <TableCell className="text-white text-right">{order.quantity}</TableCell>
-                      <TableCell className="text-white text-right">
+                      <TableCell className="text-[#1a1a1a] text-right">{order.quantity}</TableCell>
+                      <TableCell className="text-[#1a1a1a] text-right">
                         {order.price ? formatCurrency(order.price) : 'Market'}
                       </TableCell>
-                      <TableCell className="text-white text-right">
+                      <TableCell className="text-[#1a1a1a] text-right">
                         {order.filledQuantity || 0}
                       </TableCell>
                       <TableCell>
@@ -370,13 +370,13 @@ export default function TradingPage() {
                               ? 'border-yellow-500 text-yellow-500'
                               : order.status === 'CANCELLED'
                               ? 'border-red-500 text-red-500'
-                              : 'border-gray-500 text-gray-400'
+                              : 'border-gray-500 text-[#6b7280]'
                           }
                         >
                           {order.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-gray-400">{formatDate(order.createdAt)}</TableCell>
+                      <TableCell className="text-[#6b7280]">{formatDate(order.createdAt)}</TableCell>
                       <TableCell className="text-center">
                         {order.status === 'PENDING' && (
                           <Button
@@ -405,50 +405,50 @@ export default function TradingPage() {
 
   const renderTrades = () => (
     <div className="space-y-4">
-      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+      <Card className="border-[#e5e7eb] bg-white">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-[#2A2D3A] hover:bg-transparent">
-                  <TableHead className="text-gray-400">User</TableHead>
-                  <TableHead className="text-gray-400">Symbol</TableHead>
-                  <TableHead className="text-gray-400">Type</TableHead>
-                  <TableHead className="text-gray-400 text-right">Quantity</TableHead>
-                  <TableHead className="text-gray-400 text-right">Fill Price</TableHead>
-                  <TableHead className="text-gray-400 text-right">Total Value</TableHead>
-                  <TableHead className="text-gray-400 text-right">P&L</TableHead>
-                  <TableHead className="text-gray-400 text-right">Brokerage</TableHead>
-                  <TableHead className="text-gray-400">Executed At</TableHead>
+                <TableRow className="border-[#e5e7eb] hover:bg-transparent">
+                  <TableHead className="text-[#6b7280]">User</TableHead>
+                  <TableHead className="text-[#6b7280]">Symbol</TableHead>
+                  <TableHead className="text-[#6b7280]">Type</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Quantity</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Fill Price</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Total Value</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">P&L</TableHead>
+                  <TableHead className="text-[#6b7280] text-right">Brokerage</TableHead>
+                  <TableHead className="text-[#6b7280]">Executed At</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="border-[#2A2D3A]">
+                    <TableRow key={i} className="border-[#e5e7eb]">
                       {[...Array(9)].map((_, j) => (
                         <TableCell key={j}>
-                          <div className="h-4 bg-[#2A2D3A] animate-pulse rounded" />
+                          <div className="h-4 bg-[#f0f2f5] animate-pulse rounded" />
                         </TableCell>
                       ))}
                     </TableRow>
                   ))
                 ) : trades.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center text-gray-400 py-8">
+                    <TableCell colSpan={9} className="text-center text-[#6b7280] py-8">
                       No trades found
                     </TableCell>
                   </TableRow>
                 ) : (
                   trades.map((trade) => (
-                    <TableRow key={trade.id} className="border-[#2A2D3A] hover:bg-[#2A2D3A]/30">
+                    <TableRow key={trade.id} className="border-[#e5e7eb] hover:bg-[#f0f2f5]/30">
                       <TableCell>
-                        <div className="text-white font-medium">{trade.userName || 'N/A'}</div>
-                        <div className="text-xs text-gray-400">{trade.userEmail || ''}</div>
+                        <div className="text-[#1a1a1a] font-medium">{trade.userName || 'N/A'}</div>
+                        <div className="text-xs text-[#6b7280]">{trade.userEmail || ''}</div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-white font-medium">{trade.stockSymbol}</div>
-                        <div className="text-xs text-gray-400">{trade.stockName || ''}</div>
+                        <div className="text-[#1a1a1a] font-medium">{trade.stockSymbol}</div>
+                        <div className="text-xs text-[#6b7280]">{trade.stockName || ''}</div>
                       </TableCell>
                       <TableCell>
                         <Badge
@@ -462,16 +462,16 @@ export default function TradingPage() {
                           {trade.tradeType}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-white text-right">{trade.quantity}</TableCell>
-                      <TableCell className="text-white text-right">{formatCurrency(trade.fillPrice)}</TableCell>
-                      <TableCell className="text-white text-right">{formatCurrency(trade.totalValue)}</TableCell>
+                      <TableCell className="text-[#1a1a1a] text-right">{trade.quantity}</TableCell>
+                      <TableCell className="text-[#1a1a1a] text-right">{formatCurrency(trade.fillPrice)}</TableCell>
+                      <TableCell className="text-[#1a1a1a] text-right">{formatCurrency(trade.totalValue)}</TableCell>
                       <TableCell className={`text-right font-medium ${
-                        trade.pnl > 0 ? 'text-green-400' : trade.pnl < 0 ? 'text-red-400' : 'text-gray-400'
+                        trade.pnl > 0 ? 'text-green-400' : trade.pnl < 0 ? 'text-red-400' : 'text-[#6b7280]'
                       }`}>
                         {trade.pnl ? formatCurrency(trade.pnl) : '-'}
                       </TableCell>
-                      <TableCell className="text-gray-400 text-right">{formatCurrency(trade.brokerage)}</TableCell>
-                      <TableCell className="text-gray-400">{formatDate(trade.createdAt)}</TableCell>
+                      <TableCell className="text-[#6b7280] text-right">{formatCurrency(trade.brokerage)}</TableCell>
+                      <TableCell className="text-[#6b7280]">{formatDate(trade.createdAt)}</TableCell>
                     </TableRow>
                   ))
                 )}
@@ -488,13 +488,13 @@ export default function TradingPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Trading Management</h1>
-          <p className="text-gray-400 mt-1">Monitor and manage positions, orders, and trades</p>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Trading Management</h1>
+          <p className="text-[#6b7280] mt-1">Monitor and manage positions, orders, and trades</p>
         </div>
         <Button
           onClick={fetchData}
           variant="outline"
-          className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+          className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
         >
           <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           Refresh
@@ -502,38 +502,38 @@ export default function TradingPage() {
       </div>
 
       {/* Filters */}
-      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+      <Card className="border-[#e5e7eb] bg-white">
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-4">
             <Filter className="h-4 w-4 text-[#00D09C]" />
-            <span className="text-sm font-medium text-white">Filters</span>
+            <span className="text-sm font-medium text-[#1a1a1a]">Filters</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
             <div className="space-y-1">
-              <label className="text-xs text-gray-400">User ID/Name</label>
+              <label className="text-xs text-[#6b7280]">User ID/Name</label>
               <Input
                 placeholder="Search user..."
                 value={userSearch}
                 onChange={(e) => setUserSearch(e.target.value)}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white placeholder:text-gray-500"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a] placeholder:text-gray-500"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-xs text-gray-400">Symbol</label>
+              <label className="text-xs text-[#6b7280]">Symbol</label>
               <Input
                 placeholder="Search symbol..."
                 value={symbolSearch}
                 onChange={(e) => setSymbolSearch(e.target.value)}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white placeholder:text-gray-500"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a] placeholder:text-gray-500"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-xs text-gray-400">Segment</label>
+              <label className="text-xs text-[#6b7280]">Segment</label>
               <Select value={segment} onValueChange={setSegment}>
-                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                <SelectContent className="bg-white border-[#e5e7eb]">
                   <SelectItem value="all">All Segments</SelectItem>
                   <SelectItem value="EQUITY">Equity</SelectItem>
                   <SelectItem value="FUTURES">Futures</SelectItem>
@@ -544,12 +544,12 @@ export default function TradingPage() {
               </Select>
             </div>
             <div className="space-y-1">
-              <label className="text-xs text-gray-400">Order Status</label>
+              <label className="text-xs text-[#6b7280]">Order Status</label>
               <Select value={status} onValueChange={setStatus}>
-                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                <SelectContent className="bg-white border-[#e5e7eb]">
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="PENDING">Pending</SelectItem>
                   <SelectItem value="FILLED">Filled</SelectItem>
@@ -560,21 +560,21 @@ export default function TradingPage() {
               </Select>
             </div>
             <div className="space-y-1">
-              <label className="text-xs text-gray-400">Start Date</label>
+              <label className="text-xs text-[#6b7280]">Start Date</label>
               <Input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-xs text-gray-400">End Date</label>
+              <label className="text-xs text-[#6b7280]">End Date</label>
               <Input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
               />
             </div>
           </div>
@@ -589,7 +589,7 @@ export default function TradingPage() {
             <Button
               onClick={clearFilters}
               variant="outline"
-              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+              className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
             >
               <X className="h-4 w-4 mr-2" />
               Clear
@@ -600,36 +600,36 @@ export default function TradingPage() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-[#1A1D29] border-[#2A2D3A] p-1">
+        <TabsList className="bg-white border-[#e5e7eb] p-1">
           <TabsTrigger
             value="positions"
-            className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black text-gray-400"
+            className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black text-[#6b7280]"
           >
             Positions
             {positions.length > 0 && (
-              <span className="ml-2 bg-[#2A2D3A] text-white text-xs px-2 py-0.5 rounded-full">
+              <span className="ml-2 bg-[#f0f2f5] text-[#1a1a1a] text-xs px-2 py-0.5 rounded-full">
                 {positions.length}
               </span>
             )}
           </TabsTrigger>
           <TabsTrigger
             value="orders"
-            className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black text-gray-400"
+            className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black text-[#6b7280]"
           >
             Orders
             {orders.length > 0 && (
-              <span className="ml-2 bg-[#2A2D3A] text-white text-xs px-2 py-0.5 rounded-full">
+              <span className="ml-2 bg-[#f0f2f5] text-[#1a1a1a] text-xs px-2 py-0.5 rounded-full">
                 {orders.length}
               </span>
             )}
           </TabsTrigger>
           <TabsTrigger
             value="trades"
-            className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black text-gray-400"
+            className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black text-[#6b7280]"
           >
             Trades
             {trades.length > 0 && (
-              <span className="ml-2 bg-[#2A2D3A] text-white text-xs px-2 py-0.5 rounded-full">
+              <span className="ml-2 bg-[#f0f2f5] text-[#1a1a1a] text-xs px-2 py-0.5 rounded-full">
                 {trades.length}
               </span>
             )}
@@ -643,36 +643,36 @@ export default function TradingPage() {
 
       {/* Force Square-off Dialog */}
       <Dialog open={squareOffDialog} onOpenChange={setSquareOffDialog}>
-        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white">
+        <DialogContent className="bg-white border-[#e5e7eb] text-[#1a1a1a]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-red-500" />
               Force Square-off Position
             </DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#6b7280]">
               Are you sure you want to force square-off this position? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           {selectedPosition && (
-            <div className="bg-[#0F1117] p-4 rounded-lg space-y-2 border border-[#2A2D3A]">
+            <div className="bg-[#f5f7fa] p-4 rounded-lg space-y-2 border border-[#e5e7eb]">
               <div className="flex justify-between">
-                <span className="text-gray-400">Symbol:</span>
-                <span className="text-white font-medium">{selectedPosition.stockSymbol}</span>
+                <span className="text-[#6b7280]">Symbol:</span>
+                <span className="text-[#1a1a1a] font-medium">{selectedPosition.stockSymbol}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">User:</span>
-                <span className="text-white">{selectedPosition.userName || 'N/A'}</span>
+                <span className="text-[#6b7280]">User:</span>
+                <span className="text-[#1a1a1a]">{selectedPosition.userName || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Quantity:</span>
-                <span className="text-white">{selectedPosition.quantity}</span>
+                <span className="text-[#6b7280]">Quantity:</span>
+                <span className="text-[#1a1a1a]">{selectedPosition.quantity}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Avg Price:</span>
-                <span className="text-white">{formatCurrency(selectedPosition.avgPrice)}</span>
+                <span className="text-[#6b7280]">Avg Price:</span>
+                <span className="text-[#1a1a1a]">{formatCurrency(selectedPosition.avgPrice)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Unrealized P&L:</span>
+                <span className="text-[#6b7280]">Unrealized P&L:</span>
                 <span className={selectedPosition.unrealizedPnl > 0 ? 'text-green-400' : 'text-red-400'}>
                   {formatCurrency(selectedPosition.unrealizedPnl)}
                 </span>
@@ -683,14 +683,14 @@ export default function TradingPage() {
             <Button
               variant="outline"
               onClick={() => setSquareOffDialog(false)}
-              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+              className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
               disabled={actionLoading}
             >
               Cancel
             </Button>
             <Button
               onClick={handleForceSquareOff}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 hover:bg-red-600 text-[#1a1a1a]"
               disabled={actionLoading}
             >
               {actionLoading ? 'Processing...' : 'Force Square-off'}
@@ -701,37 +701,37 @@ export default function TradingPage() {
 
       {/* Cancel Order Dialog */}
       <Dialog open={cancelOrderDialog} onOpenChange={setCancelOrderDialog}>
-        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white">
+        <DialogContent className="bg-white border-[#e5e7eb] text-[#1a1a1a]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-yellow-500" />
               Cancel Order
             </DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#6b7280]">
               Are you sure you want to cancel this order? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           {selectedOrder && (
-            <div className="bg-[#0F1117] p-4 rounded-lg space-y-2 border border-[#2A2D3A]">
+            <div className="bg-[#f5f7fa] p-4 rounded-lg space-y-2 border border-[#e5e7eb]">
               <div className="flex justify-between">
-                <span className="text-gray-400">Symbol:</span>
-                <span className="text-white font-medium">{selectedOrder.stockSymbol}</span>
+                <span className="text-[#6b7280]">Symbol:</span>
+                <span className="text-[#1a1a1a] font-medium">{selectedOrder.stockSymbol}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">User:</span>
-                <span className="text-white">{selectedOrder.userName || 'N/A'}</span>
+                <span className="text-[#6b7280]">User:</span>
+                <span className="text-[#1a1a1a]">{selectedOrder.userName || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Type:</span>
-                <span className="text-white">{selectedOrder.tradeType} {selectedOrder.orderType}</span>
+                <span className="text-[#6b7280]">Type:</span>
+                <span className="text-[#1a1a1a]">{selectedOrder.tradeType} {selectedOrder.orderType}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Quantity:</span>
-                <span className="text-white">{selectedOrder.quantity}</span>
+                <span className="text-[#6b7280]">Quantity:</span>
+                <span className="text-[#1a1a1a]">{selectedOrder.quantity}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Price:</span>
-                <span className="text-white">{selectedOrder.price ? formatCurrency(selectedOrder.price) : 'Market'}</span>
+                <span className="text-[#6b7280]">Price:</span>
+                <span className="text-[#1a1a1a]">{selectedOrder.price ? formatCurrency(selectedOrder.price) : 'Market'}</span>
               </div>
             </div>
           )}
@@ -739,7 +739,7 @@ export default function TradingPage() {
             <Button
               variant="outline"
               onClick={() => setCancelOrderDialog(false)}
-              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+              className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
               disabled={actionLoading}
             >
               Cancel

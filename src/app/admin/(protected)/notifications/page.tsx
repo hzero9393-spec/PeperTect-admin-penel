@@ -49,10 +49,10 @@ interface Notification {
 }
 
 const NOTIFICATION_TYPES = [
-  { value: 'INFO', label: 'Info', icon: Info, color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-  { value: 'WARNING', label: 'Warning', icon: AlertTriangle, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
-  { value: 'SUCCESS', label: 'Success', icon: CheckCircle, color: 'bg-green-500/20 text-green-400 border-green-500/30' },
-  { value: 'ERROR', label: 'Error', icon: XCircle, color: 'bg-red-500/20 text-red-400 border-red-500/30' },
+  { value: 'INFO', label: 'Info', icon: Info, color: 'bg-[#00D09C]/20 text-[#00D09C] border-[#00D09C]/30' },
+  { value: 'WARNING', label: 'Warning', icon: AlertTriangle, color: 'bg-[#f59e0b]/20 text-[#f59e0b] border-[#f59e0b]/30' },
+  { value: 'SUCCESS', label: 'Success', icon: CheckCircle, color: 'bg-[#00D09C]/20 text-[#00B386] border-[#00D09C]/30' },
+  { value: 'ERROR', label: 'Error', icon: XCircle, color: 'bg-[#d44a2d]/20 text-[#d44a2d] border-[#d44a2d]/30' },
 ]
 
 const TARGET_TYPES = [
@@ -188,13 +188,13 @@ export default function NotificationsPage() {
     const targetConfig = TARGET_TYPES.find(t => t.value === target)
     if (!targetConfig) return null
 
-    let color = 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+    let color = 'bg-[#f5f7fa]/20 text-[#6b7280] border-[#e5e7eb]/30'
     if (target === 'PREMIUM_USERS') {
-      color = 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+      color = 'bg-[#00b887]/20 text-[#00b887] border-[#00b887]/30'
     } else if (target === 'FREE_USERS') {
-      color = 'bg-slate-500/20 text-slate-400 border-slate-500/30'
+      color = 'bg-[#f0f2f5]/20 text-[#6b7280] border-[#e5e7eb]/30'
     } else if (target === 'SPECIFIC_USER') {
-      color = 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+      color = 'bg-[#00D09C]/20 text-[#00D09C] border-[#00D09C]/30'
     }
 
     return (
@@ -235,14 +235,14 @@ export default function NotificationsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Notifications Management</h1>
-          <p className="text-gray-400 mt-1">Send and manage user notifications</p>
+          <h1 className="text-3xl font-bold tracking-tight text-[#1a1a1a]">Notifications Management</h1>
+          <p className="text-[#6b7280] mt-1">Send and manage user notifications</p>
         </div>
         <Button
           onClick={() => fetchNotifications(true)}
           disabled={refreshing}
           variant="outline"
-          className="border-[#2A2D3A] bg-[#1A1D29] text-white hover:bg-[#2A2D3A] hover:text-white"
+          className="border-[#e5e7eb] bg-white text-[#1a1a1a] hover:bg-[#f0f2f5] hover:text-[#1a1a1a]"
         >
           <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
           Refresh
@@ -251,13 +251,13 @@ export default function NotificationsPage() {
 
       <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
         {/* Send Notification Panel */}
-        <Card className="bg-[#1A1D29] border-[#2A2D3A]">
+        <Card className="bg-white border-[#e5e7eb]">
           <CardHeader>
             <div className="flex items-center gap-2">
               <Bell className="h-5 w-5 text-[#00D09C]" />
-              <CardTitle className="text-white">Send Notification</CardTitle>
+              <CardTitle className="text-[#1a1a1a]">Send Notification</CardTitle>
             </div>
-            <CardDescription className="text-gray-400">
+            <CardDescription className="text-[#6b7280]">
               Create and send notifications to users
             </CardDescription>
           </CardHeader>
@@ -265,20 +265,20 @@ export default function NotificationsPage() {
             <form onSubmit={handleSendNotification} className="space-y-4">
               {/* Title */}
               <div className="space-y-2">
-                <Label htmlFor="title" className="text-gray-300">Title *</Label>
+                <Label htmlFor="title" className="text-[#6b7280]">Title *</Label>
                 <Input
                   id="title"
                   placeholder="Enter notification title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   disabled={sending}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white placeholder:text-gray-500"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a] placeholder:text-gray-500"
                 />
               </div>
 
               {/* Body */}
               <div className="space-y-2">
-                <Label htmlFor="body" className="text-gray-300">Message *</Label>
+                <Label htmlFor="body" className="text-[#6b7280]">Message *</Label>
                 <Textarea
                   id="body"
                   placeholder="Enter notification message..."
@@ -286,26 +286,26 @@ export default function NotificationsPage() {
                   onChange={(e) => setBody(e.target.value)}
                   disabled={sending}
                   rows={6}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white placeholder:text-gray-500 resize-none"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a] placeholder:text-gray-500 resize-none"
                 />
               </div>
 
               {/* Type */}
               <div className="space-y-2">
-                <Label htmlFor="type" className="text-gray-300">Type *</Label>
+                <Label htmlFor="type" className="text-[#6b7280]">Type *</Label>
                 <Select value={type} onValueChange={setType} disabled={sending}>
-                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                  <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                  <SelectContent className="bg-white border-[#e5e7eb]">
                     {NOTIFICATION_TYPES.map((typeOption) => (
                       <SelectItem
                         key={typeOption.value}
                         value={typeOption.value}
-                        className="text-white"
+                        className="text-[#1a1a1a]"
                       >
                         <div className="flex items-center gap-2">
-                          <typeOption.icon className={`h-4 w-4 ${typeOption.color.includes('blue') ? 'text-blue-400' : typeOption.color.includes('yellow') ? 'text-yellow-400' : typeOption.color.includes('green') ? 'text-green-400' : 'text-red-400'}`} />
+                          <typeOption.icon className={`h-4 w-4 ${typeOption.color.includes('yellow') ? 'text-[#f59e0b]' : typeOption.color.includes('#00B386') ? 'text-[#00B386]' : typeOption.color.includes('#d44a2d') ? 'text-[#d44a2d]' : 'text-[#00D09C]'}`} />
                           {typeOption.label}
                         </div>
                       </SelectItem>
@@ -316,17 +316,17 @@ export default function NotificationsPage() {
 
               {/* Target */}
               <div className="space-y-2">
-                <Label htmlFor="target" className="text-gray-300">Target *</Label>
+                <Label htmlFor="target" className="text-[#6b7280]">Target *</Label>
                 <Select value={target} onValueChange={setTarget} disabled={sending}>
-                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                  <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                  <SelectContent className="bg-white border-[#e5e7eb]">
                     {TARGET_TYPES.map((targetOption) => (
                       <SelectItem
                         key={targetOption.value}
                         value={targetOption.value}
-                        className="text-white"
+                        className="text-[#1a1a1a]"
                       >
                         <div className="flex items-center gap-2">
                           <targetOption.icon className="h-4 w-4 text-[#00D09C]" />
@@ -341,7 +341,7 @@ export default function NotificationsPage() {
               {/* Specific User Email */}
               {target === 'SPECIFIC_USER' && (
                 <div className="space-y-2">
-                  <Label htmlFor="specificEmail" className="text-gray-300">User Email *</Label>
+                  <Label htmlFor="specificEmail" className="text-[#6b7280]">User Email *</Label>
                   <Input
                     id="specificEmail"
                     type="email"
@@ -349,7 +349,7 @@ export default function NotificationsPage() {
                     value={specificEmail}
                     onChange={(e) => setSpecificEmail(e.target.value)}
                     disabled={sending}
-                    className="bg-[#0F1117] border-[#2A2D3A] text-white placeholder:text-gray-500"
+                    className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a] placeholder:text-gray-500"
                   />
                 </div>
               )}
@@ -377,12 +377,12 @@ export default function NotificationsPage() {
         </Card>
 
         {/* Notification History */}
-        <Card className="bg-[#1A1D29] border-[#2A2D3A]">
+        <Card className="bg-white border-[#e5e7eb]">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-white">Notification History</CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardTitle className="text-[#1a1a1a]">Notification History</CardTitle>
+                <CardDescription className="text-[#6b7280]">
                   View all sent notifications
                 </CardDescription>
               </div>
@@ -394,16 +394,16 @@ export default function NotificationsPage() {
                     setPage(1)
                   }}
                 >
-                  <SelectTrigger className="w-[140px] bg-[#0F1117] border-[#2A2D3A] text-white">
+                  <SelectTrigger className="w-[140px] bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                     <SelectValue placeholder="Filter by type" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
-                    <SelectItem value="" className="text-white">All Types</SelectItem>
+                  <SelectContent className="bg-white border-[#e5e7eb]">
+                    <SelectItem value="" className="text-[#1a1a1a]">All Types</SelectItem>
                     {NOTIFICATION_TYPES.map((typeOption) => (
                       <SelectItem
                         key={typeOption.value}
                         value={typeOption.value}
-                        className="text-white"
+                        className="text-[#1a1a1a]"
                       >
                         {typeOption.label}
                       </SelectItem>
@@ -417,47 +417,47 @@ export default function NotificationsPage() {
             {loading ? (
               <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-16 w-full bg-[#0F1117]" />
+                  <Skeleton key={i} className="h-16 w-full bg-[#f5f7fa]" />
                 ))}
               </div>
             ) : notifications.length === 0 ? (
               <div className="text-center py-12">
                 <Bell className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-white font-semibold text-lg">No notifications found</h3>
-                <p className="text-gray-400 mt-1">Send your first notification to get started</p>
+                <h3 className="text-[#1a1a1a] font-semibold text-lg">No notifications found</h3>
+                <p className="text-[#6b7280] mt-1">Send your first notification to get started</p>
               </div>
             ) : (
               <>
-                <div className="rounded-lg border border-[#2A2D3A] overflow-hidden">
+                <div className="rounded-lg border border-[#e5e7eb] overflow-hidden">
                   <Table>
-                    <TableHeader className="bg-[#0F1117]">
-                      <TableRow className="border-[#2A2D3A] hover:bg-[#0F1117]/50">
-                        <TableHead className="text-gray-400 font-medium">Title</TableHead>
-                        <TableHead className="text-gray-400 font-medium">Type</TableHead>
-                        <TableHead className="text-gray-400 font-medium">Target</TableHead>
-                        <TableHead className="text-gray-400 font-medium text-center">Sent</TableHead>
-                        <TableHead className="text-gray-400 font-medium text-center">Read</TableHead>
-                        <TableHead className="text-gray-400 font-medium text-right">Sent At</TableHead>
+                    <TableHeader className="bg-[#f5f7fa]">
+                      <TableRow className="border-[#e5e7eb] hover:bg-[#f5f7fa]/50">
+                        <TableHead className="text-[#6b7280] font-medium">Title</TableHead>
+                        <TableHead className="text-[#6b7280] font-medium">Type</TableHead>
+                        <TableHead className="text-[#6b7280] font-medium">Target</TableHead>
+                        <TableHead className="text-[#6b7280] font-medium text-center">Sent</TableHead>
+                        <TableHead className="text-[#6b7280] font-medium text-center">Read</TableHead>
+                        <TableHead className="text-[#6b7280] font-medium text-right">Sent At</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {notifications.map((notification) => (
-                        <TableRow key={notification.id} className="border-[#2A2D3A] hover:bg-[#0F1117]/50">
-                          <TableCell className="text-white font-medium">{notification.title}</TableCell>
+                        <TableRow key={notification.id} className="border-[#e5e7eb] hover:bg-[#f5f7fa]/50">
+                          <TableCell className="text-[#1a1a1a] font-medium">{notification.title}</TableCell>
                           <TableCell>{getTypeBadge(notification.type)}</TableCell>
                           <TableCell>{getTargetBadge(notification.target)}</TableCell>
                           <TableCell className="text-center">
-                            <span className="text-white">{notification.sentCount}</span>
+                            <span className="text-[#1a1a1a]">{notification.sentCount}</span>
                           </TableCell>
                           <TableCell className="text-center">
                             <div className="flex flex-col items-center gap-1">
-                              <span className="text-white">{notification.readCount}</span>
+                              <span className="text-[#1a1a1a]">{notification.readCount}</span>
                               <span className="text-xs text-gray-500">
                                 {getReadPercentage(notification.sentCount, notification.readCount)}%
                               </span>
                             </div>
                           </TableCell>
-                          <TableCell className="text-right text-gray-400 whitespace-nowrap">
+                          <TableCell className="text-right text-[#6b7280] whitespace-nowrap">
                             {formatRelativeTime(notification.sentAt)}
                           </TableCell>
                         </TableRow>
@@ -469,7 +469,7 @@ export default function NotificationsPage() {
                 {/* Pagination */}
                 {totalPages > 1 && (
                   <div className="flex items-center justify-between mt-4">
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-[#6b7280]">
                       Showing {Math.min((page - 1) * 20 + 1, total)} to {Math.min(page * 20, total)} of {total} notifications
                     </div>
                     <div className="flex items-center gap-2">
@@ -478,11 +478,11 @@ export default function NotificationsPage() {
                         disabled={page === 1}
                         variant="outline"
                         size="sm"
-                        className="border-[#2A2D3A] bg-[#1A1D29] text-white hover:bg-[#2A2D3A] hover:text-white"
+                        className="border-[#e5e7eb] bg-white text-[#1a1a1a] hover:bg-[#f0f2f5] hover:text-[#1a1a1a]"
                       >
                         Previous
                       </Button>
-                      <div className="text-sm text-white">
+                      <div className="text-sm text-[#1a1a1a]">
                         Page {page} of {totalPages}
                       </div>
                       <Button
@@ -490,7 +490,7 @@ export default function NotificationsPage() {
                         disabled={page === totalPages}
                         variant="outline"
                         size="sm"
-                        className="border-[#2A2D3A] bg-[#1A1D29] text-white hover:bg-[#2A2D3A] hover:text-white"
+                        className="border-[#e5e7eb] bg-white text-[#1a1a1a] hover:bg-[#f0f2f5] hover:text-[#1a1a1a]"
                       >
                         Next
                       </Button>

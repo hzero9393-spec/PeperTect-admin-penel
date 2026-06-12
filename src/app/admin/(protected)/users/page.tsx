@@ -355,13 +355,13 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Users Management</h1>
-          <p className="text-gray-400 mt-1">Manage and monitor all users</p>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Users Management</h1>
+          <p className="text-[#6b7280] mt-1">Manage and monitor all users</p>
         </div>
         <Button
           onClick={fetchUsers}
           variant="outline"
-          className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+          className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
         >
           <RefreshCw className="h-4 w-4 mr-2" />
           Refresh
@@ -369,27 +369,27 @@ export default function UsersPage() {
       </div>
 
       {/* Filters */}
-      <div className="border border-[#2A2D3A] rounded-lg bg-[#1A1D29] p-4">
+      <div className="border border-[#e5e7eb] rounded-lg bg-white p-4">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search */}
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#6b7280]" />
               <Input
                 placeholder="Search by name, email, or phone..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 bg-[#0F1117] border-[#2A2D3A] text-white placeholder:text-gray-500"
+                className="pl-10 bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a] placeholder:text-gray-500"
               />
             </div>
           </div>
 
           {/* Role Filter */}
           <Select value={role} onValueChange={setRole}>
-            <SelectTrigger className="w-full lg:w-[180px] bg-[#0F1117] border-[#2A2D3A] text-white">
+            <SelectTrigger className="w-full lg:w-[180px] bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
               <SelectValue placeholder="Role" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+            <SelectContent className="bg-white border-[#e5e7eb]">
               <SelectItem value="">All Roles</SelectItem>
               <SelectItem value="USER">USER</SelectItem>
               <SelectItem value="ADMIN">ADMIN</SelectItem>
@@ -399,10 +399,10 @@ export default function UsersPage() {
 
           {/* Subscription Filter */}
           <Select value={subscription} onValueChange={setSubscription}>
-            <SelectTrigger className="w-full lg:w-[180px] bg-[#0F1117] border-[#2A2D3A] text-white">
+            <SelectTrigger className="w-full lg:w-[180px] bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
               <SelectValue placeholder="Subscription" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+            <SelectContent className="bg-white border-[#e5e7eb]">
               <SelectItem value="">All</SelectItem>
               <SelectItem value="FREE">FREE</SelectItem>
               <SelectItem value="PREMIUM">PREMIUM</SelectItem>
@@ -411,10 +411,10 @@ export default function UsersPage() {
 
           {/* Status Filter */}
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full lg:w-[180px] bg-[#0F1117] border-[#2A2D3A] text-white">
+            <SelectTrigger className="w-full lg:w-[180px] bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+            <SelectContent className="bg-white border-[#e5e7eb]">
               <SelectItem value="">All Status</SelectItem>
               <SelectItem value="ACTIVE">ACTIVE</SelectItem>
               <SelectItem value="INACTIVE">INACTIVE</SelectItem>
@@ -424,10 +424,10 @@ export default function UsersPage() {
           {/* Sort */}
           <div className="flex gap-2">
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full lg:w-[180px] bg-[#0F1117] border-[#2A2D3A] text-white">
+              <SelectTrigger className="w-full lg:w-[180px] bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+              <SelectContent className="bg-white border-[#e5e7eb]">
                 <SelectItem value="createdAt">Created Date</SelectItem>
                 <SelectItem value="name">Name</SelectItem>
                 <SelectItem value="email">Email</SelectItem>
@@ -437,10 +437,10 @@ export default function UsersPage() {
             </Select>
 
             <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as 'ASC' | 'DESC')}>
-              <SelectTrigger className="w-[100px] bg-[#0F1117] border-[#2A2D3A] text-white">
+              <SelectTrigger className="w-[100px] bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+              <SelectContent className="bg-white border-[#e5e7eb]">
                 <SelectItem value="ASC">Asc</SelectItem>
                 <SelectItem value="DESC">Desc</SelectItem>
               </SelectContent>
@@ -451,7 +451,7 @@ export default function UsersPage() {
           <Button
             onClick={handleExportCSV}
             variant="outline"
-            className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+            className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
           >
             <Download className="h-4 w-4 mr-2" />
             Export CSV
@@ -460,26 +460,26 @@ export default function UsersPage() {
       </div>
 
       {/* Table */}
-      <div className="border border-[#2A2D3A] rounded-lg bg-[#1A1D29] overflow-hidden">
+      <div className="border border-[#e5e7eb] rounded-lg bg-white overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="border-[#2A2D3A] hover:bg-[#2A2D3A]/50">
-                <TableHead className="text-gray-400 font-medium">Name</TableHead>
-                <TableHead className="text-gray-400 font-medium">Email</TableHead>
-                <TableHead className="text-gray-400 font-medium">Phone</TableHead>
-                <TableHead className="text-gray-400 font-medium">Role</TableHead>
-                <TableHead className="text-gray-400 font-medium">Subscription</TableHead>
-                <TableHead className="text-gray-400 font-medium">Balance</TableHead>
-                <TableHead className="text-gray-400 font-medium">P&L</TableHead>
-                <TableHead className="text-gray-400 font-medium">Status</TableHead>
-                <TableHead className="text-gray-400 font-medium text-right">Actions</TableHead>
+              <TableRow className="border-[#e5e7eb] hover:bg-[#f0f2f5]/50">
+                <TableHead className="text-[#6b7280] font-medium">Name</TableHead>
+                <TableHead className="text-[#6b7280] font-medium">Email</TableHead>
+                <TableHead className="text-[#6b7280] font-medium">Phone</TableHead>
+                <TableHead className="text-[#6b7280] font-medium">Role</TableHead>
+                <TableHead className="text-[#6b7280] font-medium">Subscription</TableHead>
+                <TableHead className="text-[#6b7280] font-medium">Balance</TableHead>
+                <TableHead className="text-[#6b7280] font-medium">P&L</TableHead>
+                <TableHead className="text-[#6b7280] font-medium">Status</TableHead>
+                <TableHead className="text-[#6b7280] font-medium text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 [...Array(5)].map((_, i) => (
-                  <TableRow key={i} className="border-[#2A2D3A]">
+                  <TableRow key={i} className="border-[#e5e7eb]">
                     <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-40" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-28" /></TableCell>
@@ -493,18 +493,18 @@ export default function UsersPage() {
                 ))
               ) : users.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-gray-400">
+                  <TableCell colSpan={9} className="text-center py-8 text-[#6b7280]">
                     No users found
                   </TableCell>
                 </TableRow>
               ) : (
                 users.map((user) => (
-                  <TableRow key={user.id} className="border-[#2A2D3A] hover:bg-[#2A2D3A]/30">
-                    <TableCell className="text-white font-medium">
+                  <TableRow key={user.id} className="border-[#e5e7eb] hover:bg-[#f0f2f5]/30">
+                    <TableCell className="text-[#1a1a1a] font-medium">
                       {user.name || 'N/A'}
                     </TableCell>
-                    <TableCell className="text-gray-300">{user.email}</TableCell>
-                    <TableCell className="text-gray-300">{user.phone || 'N/A'}</TableCell>
+                    <TableCell className="text-[#6b7280]">{user.email}</TableCell>
+                    <TableCell className="text-[#6b7280]">{user.phone || 'N/A'}</TableCell>
                     <TableCell>
                       <Badge
                         variant="outline"
@@ -512,8 +512,8 @@ export default function UsersPage() {
                           user.role === 'SUPER_ADMIN'
                             ? 'border-yellow-500 text-yellow-500'
                             : user.role === 'ADMIN'
-                            ? 'border-blue-500 text-blue-500'
-                            : 'border-gray-500 text-gray-400'
+                            ? 'border-[#00D09C] text-[#00D09C]'
+                            : 'border-gray-500 text-[#6b7280]'
                         }
                       >
                         {user.role}
@@ -525,13 +525,13 @@ export default function UsersPage() {
                         className={
                           user.subscription === 'PREMIUM'
                             ? 'bg-[#00D09C] text-black'
-                            : 'bg-[#2A2D3A] text-gray-300'
+                            : 'bg-[#f0f2f5] text-[#6b7280]'
                         }
                       >
                         {user.subscription}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-white">
+                    <TableCell className="text-[#1a1a1a]">
                       {formatCurrency(user.cashBalance)}
                     </TableCell>
                     <TableCell
@@ -540,7 +540,7 @@ export default function UsersPage() {
                           ? 'text-green-400'
                           : user.totalPnL < 0
                           ? 'text-red-400'
-                          : 'text-gray-400'
+                          : 'text-[#6b7280]'
                       }
                     >
                       {formatCurrency(user.totalPnL)}
@@ -563,24 +563,24 @@ export default function UsersPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-gray-400 hover:text-white hover:bg-[#2A2D3A]"
+                            className="text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f0f2f5]"
                           >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-[#1A1D29] border-[#2A2D3A]">
-                          <DropdownMenuLabel className="text-gray-300">Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator className="bg-[#2A2D3A]" />
+                        <DropdownMenuContent align="end" className="bg-white border-[#e5e7eb]">
+                          <DropdownMenuLabel className="text-[#6b7280]">Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator className="bg-[#f0f2f5]" />
                           <DropdownMenuItem
                             onClick={() => handleView(user)}
-                            className="text-gray-300 focus:text-white focus:bg-[#2A2D3A] cursor-pointer"
+                            className="text-[#6b7280] focus:text-[#1a1a1a] focus:bg-[#f0f2f5] cursor-pointer"
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             View Profile
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleEdit(user)}
-                            className="text-gray-300 focus:text-white focus:bg-[#2A2D3A] cursor-pointer"
+                            className="text-[#6b7280] focus:text-[#1a1a1a] focus:bg-[#f0f2f5] cursor-pointer"
                           >
                             <Edit className="h-4 w-4 mr-2" />
                             Edit
@@ -589,20 +589,20 @@ export default function UsersPage() {
                             onClick={() => handleToggleActive(user)}
                             className={`${
                               user.isActive ? 'text-red-400' : 'text-green-400'
-                            } focus:bg-[#2A2D3A] cursor-pointer`}
+                            } focus:bg-[#f0f2f5] cursor-pointer`}
                           >
                             <Ban className="h-4 w-4 mr-2" />
                             {user.isActive ? 'Block User' : 'Unblock User'}
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-[#2A2D3A]" />
+                          <DropdownMenuSeparator className="bg-[#f0f2f5]" />
                           <DropdownMenuItem
                             onClick={() => handleResetBalance(user)}
-                            className="text-yellow-400 focus:text-yellow-300 focus:bg-[#2A2D3A] cursor-pointer"
+                            className="text-yellow-400 focus:text-yellow-300 focus:bg-[#f0f2f5] cursor-pointer"
                           >
                             <RefreshCw className="h-4 w-4 mr-2" />
                             Reset Balance
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-[#2A2D3A]" />
+                          <DropdownMenuSeparator className="bg-[#f0f2f5]" />
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <DropdownMenuItem
@@ -612,23 +612,23 @@ export default function UsersPage() {
                                 Delete User
                               </DropdownMenuItem>
                             </AlertDialogTrigger>
-                            <AlertDialogContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                            <AlertDialogContent className="bg-white border-[#e5e7eb]">
                               <AlertDialogHeader>
-                                <AlertDialogTitle className="text-white">
+                                <AlertDialogTitle className="text-[#1a1a1a]">
                                   Delete User
                                 </AlertDialogTitle>
-                                <AlertDialogDescription className="text-gray-400">
+                                <AlertDialogDescription className="text-[#6b7280]">
                                   Are you sure you want to delete this user? This action cannot be undone.
                                   Type <span className="text-[#00D09C] font-mono">DELETE</span> to confirm.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel className="bg-[#2A2D3A] text-white hover:bg-[#3A3D4A]">
+                                <AlertDialogCancel className="bg-[#f0f2f5] text-[#1a1a1a] hover:bg-[#3A3D4A]">
                                   Cancel
                                 </AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() => handleDeleteUser(user.id)}
-                                  className="bg-red-500 hover:bg-red-600 text-white"
+                                  className="bg-red-500 hover:bg-red-600 text-[#1a1a1a]"
                                 >
                                   Delete
                                 </AlertDialogAction>
@@ -659,7 +659,7 @@ export default function UsersPage() {
                   className={
                     pagination.page === 1
                       ? 'pointer-events-none opacity-50'
-                      : 'cursor-pointer text-gray-300 hover:text-white hover:bg-[#2A2D3A]'
+                      : 'cursor-pointer text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f0f2f5]'
                   }
                 />
               </PaginationItem>
@@ -669,7 +669,7 @@ export default function UsersPage() {
                   <PaginationItem>
                     <PaginationLink
                       onClick={() => setPagination((prev) => ({ ...prev, page: 1 }))}
-                      className="cursor-pointer text-gray-300 hover:text-white hover:bg-[#2A2D3A]"
+                      className="cursor-pointer text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f0f2f5]"
                     >
                       1
                     </PaginationLink>
@@ -702,7 +702,7 @@ export default function UsersPage() {
                       className={
                         pagination.page === pageNum
                           ? 'bg-[#00D09C] text-black cursor-pointer'
-                          : 'cursor-pointer text-gray-300 hover:text-white hover:bg-[#2A2D3A]'
+                          : 'cursor-pointer text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f0f2f5]'
                       }
                     >
                       {pageNum}
@@ -723,7 +723,7 @@ export default function UsersPage() {
                       onClick={() =>
                         setPagination((prev) => ({ ...prev, page: pagination.totalPages }))
                       }
-                      className="cursor-pointer text-gray-300 hover:text-white hover:bg-[#2A2D3A]"
+                      className="cursor-pointer text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f0f2f5]"
                     >
                       {pagination.totalPages}
                     </PaginationLink>
@@ -742,7 +742,7 @@ export default function UsersPage() {
                   className={
                     pagination.page === pagination.totalPages
                       ? 'pointer-events-none opacity-50'
-                      : 'cursor-pointer text-gray-300 hover:text-white hover:bg-[#2A2D3A]'
+                      : 'cursor-pointer text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f0f2f5]'
                   }
                 />
               </PaginationItem>
@@ -753,10 +753,10 @@ export default function UsersPage() {
 
       {/* View Profile Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-white border-[#e5e7eb] text-[#1a1a1a] max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl">User Profile</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#6b7280]">
               Complete user details and information
             </DialogDescription>
           </DialogHeader>
@@ -764,47 +764,47 @@ export default function UsersPage() {
             <div className="space-y-6 mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-400">Full Name</label>
-                  <p className="text-white font-medium">{selectedUser.name || 'N/A'}</p>
+                  <label className="text-sm text-[#6b7280]">Full Name</label>
+                  <p className="text-[#1a1a1a] font-medium">{selectedUser.name || 'N/A'}</p>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-400">Email</label>
-                  <p className="text-white">{selectedUser.email}</p>
+                  <label className="text-sm text-[#6b7280]">Email</label>
+                  <p className="text-[#1a1a1a]">{selectedUser.email}</p>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-400">Phone</label>
-                  <p className="text-white">{selectedUser.phone || 'N/A'}</p>
+                  <label className="text-sm text-[#6b7280]">Phone</label>
+                  <p className="text-[#1a1a1a]">{selectedUser.phone || 'N/A'}</p>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-400">Role</label>
+                  <label className="text-sm text-[#6b7280]">Role</label>
                   <Badge
                     variant="outline"
                     className={
                       selectedUser.role === 'SUPER_ADMIN'
                         ? 'border-yellow-500 text-yellow-500'
                         : selectedUser.role === 'ADMIN'
-                        ? 'border-blue-500 text-blue-500'
-                        : 'border-gray-500 text-gray-400'
+                        ? 'border-[#00D09C] text-[#00D09C]'
+                        : 'border-gray-500 text-[#6b7280]'
                     }
                   >
                     {selectedUser.role}
                   </Badge>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-400">Subscription</label>
+                  <label className="text-sm text-[#6b7280]">Subscription</label>
                   <Badge
                     variant={selectedUser.subscription === 'PREMIUM' ? 'default' : 'secondary'}
                     className={
                       selectedUser.subscription === 'PREMIUM'
                         ? 'bg-[#00D09C] text-black'
-                        : 'bg-[#2A2D3A] text-gray-300'
+                        : 'bg-[#f0f2f5] text-[#6b7280]'
                     }
                   >
                     {selectedUser.subscription}
                   </Badge>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-400">Status</label>
+                  <label className="text-sm text-[#6b7280]">Status</label>
                   <Badge
                     variant={selectedUser.isActive ? 'default' : 'secondary'}
                     className={
@@ -817,25 +817,25 @@ export default function UsersPage() {
                   </Badge>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-400">Cash Balance</label>
-                  <p className="text-white text-xl font-bold">{formatCurrency(selectedUser.cashBalance)}</p>
+                  <label className="text-sm text-[#6b7280]">Cash Balance</label>
+                  <p className="text-[#1a1a1a] text-xl font-bold">{formatCurrency(selectedUser.cashBalance)}</p>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-400">Total P&L</label>
+                  <label className="text-sm text-[#6b7280]">Total P&L</label>
                   <p
                     className={`text-xl font-bold ${
                       selectedUser.totalPnL > 0
                         ? 'text-green-400'
                         : selectedUser.totalPnL < 0
                         ? 'text-red-400'
-                        : 'text-gray-400'
+                        : 'text-[#6b7280]'
                     }`}
                   >
                     {formatCurrency(selectedUser.totalPnL)}
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-400">Email Verified</label>
+                  <label className="text-sm text-[#6b7280]">Email Verified</label>
                   <Badge
                     variant={selectedUser.isEmailVerified ? 'default' : 'secondary'}
                     className={
@@ -848,30 +848,30 @@ export default function UsersPage() {
                   </Badge>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-400">Status (DB)</label>
-                  <p className="text-white">{selectedUser.status || 'N/A'}</p>
+                  <label className="text-sm text-[#6b7280]">Status (DB)</label>
+                  <p className="text-[#1a1a1a]">{selectedUser.status || 'N/A'}</p>
                 </div>
               </div>
 
-              <div className="border-t border-[#2A2D3A] pt-4 space-y-4">
+              <div className="border-t border-[#e5e7eb] pt-4 space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-400">User ID</label>
-                  <p className="text-white text-sm font-mono bg-[#0F1117] p-2 rounded">
+                  <label className="text-sm text-[#6b7280]">User ID</label>
+                  <p className="text-[#1a1a1a] text-sm font-mono bg-[#f5f7fa] p-2 rounded">
                     {selectedUser.id}
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm text-gray-400">Created At</label>
-                    <p className="text-white text-sm">{formatDateTime(selectedUser.createdAt)}</p>
+                    <label className="text-sm text-[#6b7280]">Created At</label>
+                    <p className="text-[#1a1a1a] text-sm">{formatDateTime(selectedUser.createdAt)}</p>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm text-gray-400">Updated At</label>
-                    <p className="text-white text-sm">{formatDateTime(selectedUser.updatedAt)}</p>
+                    <label className="text-sm text-[#6b7280]">Updated At</label>
+                    <p className="text-[#1a1a1a] text-sm">{formatDateTime(selectedUser.updatedAt)}</p>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm text-gray-400">Last Login</label>
-                    <p className="text-white text-sm">{formatDateTime(selectedUser.lastLoginAt)}</p>
+                    <label className="text-sm text-[#6b7280]">Last Login</label>
+                    <p className="text-[#1a1a1a] text-sm">{formatDateTime(selectedUser.lastLoginAt)}</p>
                   </div>
                 </div>
               </div>
@@ -882,52 +882,52 @@ export default function UsersPage() {
 
       {/* Edit User Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white max-w-lg">
+        <DialogContent className="bg-white border-[#e5e7eb] text-[#1a1a1a] max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit User</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#6b7280]">
               Update user information and settings
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div className="space-y-2">
-              <label className="text-sm text-gray-400">Full Name</label>
+              <label className="text-sm text-[#6b7280]">Full Name</label>
               <Input
                 value={editForm.name}
                 onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                 placeholder="Enter full name"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-gray-400">Email</label>
+              <label className="text-sm text-[#6b7280]">Email</label>
               <Input
                 value={editForm.email}
                 onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                 placeholder="Enter email"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-gray-400">Phone</label>
+              <label className="text-sm text-[#6b7280]">Phone</label>
               <Input
                 value={editForm.phone}
                 onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                 placeholder="Enter phone number"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm text-gray-400">Role</label>
+                <label className="text-sm text-[#6b7280]">Role</label>
                 <Select
                   value={editForm.role}
                   onValueChange={(v) => setEditForm({ ...editForm, role: v })}
                 >
-                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                  <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                  <SelectContent className="bg-white border-[#e5e7eb]">
                     <SelectItem value="USER">USER</SelectItem>
                     <SelectItem value="ADMIN">ADMIN</SelectItem>
                     <SelectItem value="SUPER_ADMIN">SUPER_ADMIN</SelectItem>
@@ -935,15 +935,15 @@ export default function UsersPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-gray-400">Subscription</label>
+                <label className="text-sm text-[#6b7280]">Subscription</label>
                 <Select
                   value={editForm.subscription}
                   onValueChange={(v) => setEditForm({ ...editForm, subscription: v })}
                 >
-                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                  <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                  <SelectContent className="bg-white border-[#e5e7eb]">
                     <SelectItem value="FREE">FREE</SelectItem>
                     <SelectItem value="PREMIUM">PREMIUM</SelectItem>
                   </SelectContent>
@@ -956,9 +956,9 @@ export default function UsersPage() {
                 id="isActive"
                 checked={editForm.isActive}
                 onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })}
-                className="w-4 h-4 rounded border-[#2A2D3A] bg-[#0F1117] text-[#00D09C] focus:ring-[#00D09C]"
+                className="w-4 h-4 rounded border-[#e5e7eb] bg-[#f5f7fa] text-[#00D09C] focus:ring-[#00D09C]"
               />
-              <label htmlFor="isActive" className="text-sm text-gray-400">
+              <label htmlFor="isActive" className="text-sm text-[#6b7280]">
                 Active Account
               </label>
             </div>
@@ -967,7 +967,7 @@ export default function UsersPage() {
             <Button
               onClick={() => setEditDialogOpen(false)}
               variant="outline"
-              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+              className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
             >
               Cancel
             </Button>

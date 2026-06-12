@@ -290,15 +290,15 @@ export default function ChallengesPage() {
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
       case 'UPCOMING':
-        return 'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20'
+        return 'bg-[#00b887]/10 text-[#00b887] hover:bg-[#00b887]/20'
       case 'ONGOING':
         return 'bg-[#00D09C]/10 text-[#00D09C] hover:bg-[#00D09C]/20'
       case 'COMPLETED':
-        return 'bg-gray-500/10 text-gray-400 hover:bg-gray-500/20'
+        return 'bg-[#f5f7fa]/10 text-[#6b7280] hover:bg-[#f5f7fa]/20'
       case 'CANCELLED':
         return 'bg-red-500/10 text-red-500 hover:bg-red-500/20'
       default:
-        return 'bg-gray-500/10 text-gray-400 hover:bg-gray-500/20'
+        return 'bg-gray-500/10 text-[#6b7280] hover:bg-gray-500/20'
     }
   }
 
@@ -315,15 +315,15 @@ export default function ChallengesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Challenges Management</h1>
-          <p className="text-gray-400 mt-1">Manage trading challenges and competitions</p>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Challenges Management</h1>
+          <p className="text-[#6b7280] mt-1">Manage trading challenges and competitions</p>
         </div>
         <div className="flex gap-3">
           <Button
             variant="outline"
             onClick={fetchChallenges}
             disabled={loading}
-            className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+            className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
           >
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
@@ -342,28 +342,28 @@ export default function ChallengesPage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Card key={i} className="bg-[#1A1D29] border-[#2A2D3A]">
+            <Card key={i} className="bg-white border-[#e5e7eb]">
               <CardHeader>
-                <Skeleton className="h-6 w-3/4 bg-[#2A2D3A]" />
-                <Skeleton className="h-4 w-1/2 bg-[#2A2D3A]" />
+                <Skeleton className="h-6 w-3/4 bg-[#f0f2f5]" />
+                <Skeleton className="h-4 w-1/2 bg-[#f0f2f5]" />
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <Skeleton className="h-4 w-full bg-[#2A2D3A]" />
-                  <Skeleton className="h-4 w-full bg-[#2A2D3A]" />
-                  <Skeleton className="h-4 w-2/3 bg-[#2A2D3A]" />
+                  <Skeleton className="h-4 w-full bg-[#f0f2f5]" />
+                  <Skeleton className="h-4 w-full bg-[#f0f2f5]" />
+                  <Skeleton className="h-4 w-2/3 bg-[#f0f2f5]" />
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
       ) : challenges.length === 0 ? (
-        <Card className="bg-[#1A1D29] border-[#2A2D3A]">
+        <Card className="bg-white border-[#e5e7eb]">
           <CardContent className="py-12">
             <div className="text-center">
               <Trophy className="w-16 h-16 mx-auto text-gray-600 mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">No challenges yet</h3>
-              <p className="text-gray-400 mb-6">Create your first challenge to get started</p>
+              <h3 className="text-xl font-semibold text-[#1a1a1a] mb-2">No challenges yet</h3>
+              <p className="text-[#6b7280] mb-6">Create your first challenge to get started</p>
               <Button
                 onClick={() => setCreateDialogOpen(true)}
                 className="bg-[#00D09C] hover:bg-[#00D09C]/90 text-black font-semibold"
@@ -377,32 +377,32 @@ export default function ChallengesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {challenges.map((challenge) => (
-            <Card key={challenge.id} className="bg-[#1A1D29] border-[#2A2D3A] hover:border-[#00D09C]/50 transition-colors">
+            <Card key={challenge.id} className="bg-white border-[#e5e7eb] hover:border-[#00D09C]/50 transition-colors">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-white text-lg mb-2">{challenge.title}</CardTitle>
-                    <CardDescription className="text-gray-400 line-clamp-2">
+                    <CardTitle className="text-[#1a1a1a] text-lg mb-2">{challenge.title}</CardTitle>
+                    <CardDescription className="text-[#6b7280] line-clamp-2">
                       {challenge.description}
                     </CardDescription>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <MoreVertical className="h-4 w-4 text-gray-400" />
+                        <MoreVertical className="h-4 w-4 text-[#6b7280]" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-[#1A1D29] border-[#2A2D3A]">
+                    <DropdownMenuContent align="end" className="bg-white border-[#e5e7eb]">
                       <DropdownMenuItem
                         onClick={() => openEditDialog(challenge)}
-                        className="text-white hover:bg-[#2A2D3A] cursor-pointer"
+                        className="text-[#1a1a1a] hover:bg-[#f0f2f5] cursor-pointer"
                       >
                         <Edit className="w-4 h-4 mr-2" />
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => openParticipationsDialog(challenge)}
-                        className="text-white hover:bg-[#2A2D3A] cursor-pointer"
+                        className="text-[#1a1a1a] hover:bg-[#f0f2f5] cursor-pointer"
                       >
                         <Users className="w-4 h-4 mr-2" />
                         View Participations
@@ -416,54 +416,54 @@ export default function ChallengesPage() {
                   <Badge className={getStatusBadgeColor(challenge.status)}>
                     {challenge.status}
                   </Badge>
-                  <Badge variant="outline" className="border-[#2A2D3A] text-gray-400">
+                  <Badge variant="outline" className="border-[#e5e7eb] text-[#6b7280]">
                     {challenge.tier}
                   </Badge>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div className="space-y-1">
-                    <div className="flex items-center text-gray-400">
+                    <div className="flex items-center text-[#6b7280]">
                       <Target className="w-3 h-3 mr-1" />
                       Type
                     </div>
-                    <div className="text-white font-medium">{challenge.challengeType}</div>
+                    <div className="text-[#1a1a1a] font-medium">{challenge.challengeType}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="flex items-center text-gray-400">
+                    <div className="flex items-center text-[#6b7280]">
                       <Target className="w-3 h-3 mr-1" />
                       Target
                     </div>
-                    <div className="text-white font-medium">{challenge.targetMetric}</div>
+                    <div className="text-[#1a1a1a] font-medium">{challenge.targetMetric}</div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div className="space-y-1">
-                    <div className="flex items-center text-gray-400">
+                    <div className="flex items-center text-[#6b7280]">
                       <Trophy className="w-3 h-3 mr-1" />
                       Prize
                     </div>
-                    <div className="text-white font-medium">
+                    <div className="text-[#1a1a1a] font-medium">
                       {challenge.prize || challenge.prizeValue
                         ? `${challenge.prize || ''}${challenge.prizeValue ? ` ₹${challenge.prizeValue}` : ''}`
                         : 'None'}
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <div className="flex items-center text-gray-400">
+                    <div className="flex items-center text-[#6b7280]">
                       <Users className="w-3 h-3 mr-1" />
                       Participants
                     </div>
-                    <div className="text-white font-medium">
+                    <div className="text-[#1a1a1a] font-medium">
                       {challenge.participationsCount}
                       {challenge.maxParticipants && ` / ${challenge.maxParticipants}`}
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-[#2A2D3A]">
-                  <div className="flex items-center text-gray-400 text-sm mb-3">
+                <div className="pt-3 border-t border-[#e5e7eb]">
+                  <div className="flex items-center text-[#6b7280] text-sm mb-3">
                     <Calendar className="w-3 h-3 mr-1" />
                     {formatDate(challenge.startDate)} - {formatDate(challenge.endDate)}
                   </div>
@@ -489,7 +489,7 @@ export default function ChallengesPage() {
                           variant="outline"
                           onClick={() => handleStatusAction(challenge.id, 'pause')}
                           disabled={actionLoading === challenge.id}
-                          className="flex-1 border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+                          className="flex-1 border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
                         >
                           <Pause className="w-3 h-3 mr-1" />
                           Pause
@@ -528,10 +528,10 @@ export default function ChallengesPage() {
 
       {/* Create Challenge Dialog */}
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-white border-[#e5e7eb] text-[#1a1a1a] max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create New Challenge</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#6b7280]">
               Create a new trading challenge for users to participate in
             </DialogDescription>
           </DialogHeader>
@@ -543,7 +543,7 @@ export default function ChallengesPage() {
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                   required
                 />
               </div>
@@ -553,10 +553,10 @@ export default function ChallengesPage() {
                   value={formData.challengeType}
                   onValueChange={(value) => setFormData({ ...formData, challengeType: value })}
                 >
-                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                  <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                  <SelectContent className="bg-white border-[#e5e7eb]">
                     <SelectItem value="TRADING">Trading</SelectItem>
                     <SelectItem value="LEARNING">Learning</SelectItem>
                     <SelectItem value="PORTFOLIO">Portfolio</SelectItem>
@@ -572,7 +572,7 @@ export default function ChallengesPage() {
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white min-h-[100px]"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a] min-h-[100px]"
                 required
               />
             </div>
@@ -584,10 +584,10 @@ export default function ChallengesPage() {
                   value={formData.targetMetric}
                   onValueChange={(value) => setFormData({ ...formData, targetMetric: value })}
                 >
-                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                  <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                  <SelectContent className="bg-white border-[#e5e7eb]">
                     <SelectItem value="PROFIT_PERCENT">Profit Percentage</SelectItem>
                     <SelectItem value="PROFIT_AMOUNT">Profit Amount</SelectItem>
                     <SelectItem value="TRADES_COUNT">Number of Trades</SelectItem>
@@ -604,7 +604,7 @@ export default function ChallengesPage() {
                   step="0.01"
                   value={formData.targetValue}
                   onChange={(e) => setFormData({ ...formData, targetValue: e.target.value })}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                   required
                 />
               </div>
@@ -617,7 +617,7 @@ export default function ChallengesPage() {
                   id="prize"
                   value={formData.prize}
                   onChange={(e) => setFormData({ ...formData, prize: e.target.value })}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                   placeholder="e.g., Premium Subscription"
                 />
               </div>
@@ -629,7 +629,7 @@ export default function ChallengesPage() {
                   step="0.01"
                   value={formData.prizeValue}
                   onChange={(e) => setFormData({ ...formData, prizeValue: e.target.value })}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                   placeholder="e.g., 999"
                 />
               </div>
@@ -643,7 +643,7 @@ export default function ChallengesPage() {
                   type="date"
                   value={formData.startDate}
                   onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                   required
                 />
               </div>
@@ -654,7 +654,7 @@ export default function ChallengesPage() {
                   type="date"
                   value={formData.endDate}
                   onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                   required
                 />
               </div>
@@ -668,7 +668,7 @@ export default function ChallengesPage() {
                   type="number"
                   value={formData.maxParticipants}
                   onChange={(e) => setFormData({ ...formData, maxParticipants: e.target.value })}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                   placeholder="Leave empty for unlimited"
                 />
               </div>
@@ -678,10 +678,10 @@ export default function ChallengesPage() {
                   value={formData.tier}
                   onValueChange={(value) => setFormData({ ...formData, tier: value })}
                 >
-                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                  <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                  <SelectContent className="bg-white border-[#e5e7eb]">
                     <SelectItem value="FREE">FREE</SelectItem>
                     <SelectItem value="PREMIUM">PREMIUM</SelectItem>
                     <SelectItem value="PRO">PRO</SelectItem>
@@ -695,7 +695,7 @@ export default function ChallengesPage() {
                 type="button"
                 variant="outline"
                 onClick={() => setCreateDialogOpen(false)}
-                className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+                className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
               >
                 Cancel
               </Button>
@@ -712,10 +712,10 @@ export default function ChallengesPage() {
 
       {/* Edit Challenge Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white max-w-lg">
+        <DialogContent className="bg-white border-[#e5e7eb] text-[#1a1a1a] max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Challenge</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#6b7280]">
               Update challenge details
             </DialogDescription>
           </DialogHeader>
@@ -726,7 +726,7 @@ export default function ChallengesPage() {
                 id="editTitle"
                 value={editFormData.title}
                 onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
               />
             </div>
 
@@ -736,7 +736,7 @@ export default function ChallengesPage() {
                 id="editDescription"
                 value={editFormData.description}
                 onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white min-h-[80px]"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a] min-h-[80px]"
               />
             </div>
 
@@ -748,7 +748,7 @@ export default function ChallengesPage() {
                   type="date"
                   value={editFormData.startDate}
                   onChange={(e) => setEditFormData({ ...editFormData, startDate: e.target.value })}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                 />
               </div>
               <div className="space-y-2">
@@ -758,7 +758,7 @@ export default function ChallengesPage() {
                   type="date"
                   value={editFormData.endDate}
                   onChange={(e) => setEditFormData({ ...editFormData, endDate: e.target.value })}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                 />
               </div>
             </div>
@@ -769,10 +769,10 @@ export default function ChallengesPage() {
                 value={editFormData.status}
                 onValueChange={(value: any) => setEditFormData({ ...editFormData, status: value })}
               >
-                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                <SelectContent className="bg-white border-[#e5e7eb]">
                   <SelectItem value="UPCOMING">UPCOMING</SelectItem>
                   <SelectItem value="ONGOING">ONGOING</SelectItem>
                   <SelectItem value="COMPLETED">COMPLETED</SelectItem>
@@ -786,7 +786,7 @@ export default function ChallengesPage() {
                 type="button"
                 variant="outline"
                 onClick={() => setEditDialogOpen(false)}
-                className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+                className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
               >
                 Cancel
               </Button>
@@ -803,10 +803,10 @@ export default function ChallengesPage() {
 
       {/* Participations Dialog */}
       <Dialog open={participationsDialogOpen} onOpenChange={setParticipationsDialogOpen}>
-        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white max-w-4xl max-h-[80vh]">
+        <DialogContent className="bg-white border-[#e5e7eb] text-[#1a1a1a] max-w-4xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle>Challenge Participations</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#6b7280]">
               {selectedChallenge?.title} - {selectedChallenge?.participationsCount} participants
             </DialogDescription>
           </DialogHeader>
@@ -814,36 +814,36 @@ export default function ChallengesPage() {
           {participationsLoading ? (
             <div className="space-y-3">
               {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="h-12 w-full bg-[#2A2D3A]" />
+                <Skeleton key={i} className="h-12 w-full bg-[#f0f2f5]" />
               ))}
             </div>
           ) : participations.length === 0 ? (
             <div className="text-center py-12">
               <Users className="w-12 h-12 mx-auto text-gray-600 mb-3" />
-              <p className="text-gray-400">No participants yet</p>
+              <p className="text-[#6b7280]">No participants yet</p>
             </div>
           ) : (
             <div className="overflow-auto max-h-[400px]">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-[#2A2D3A] hover:bg-transparent">
-                    <TableHead className="text-gray-400">User</TableHead>
-                    <TableHead className="text-gray-400">Email</TableHead>
-                    <TableHead className="text-gray-400">Progress</TableHead>
-                    <TableHead className="text-gray-400">Result</TableHead>
-                    <TableHead className="text-gray-400">Joined At</TableHead>
+                  <TableRow className="border-[#e5e7eb] hover:bg-transparent">
+                    <TableHead className="text-[#6b7280]">User</TableHead>
+                    <TableHead className="text-[#6b7280]">Email</TableHead>
+                    <TableHead className="text-[#6b7280]">Progress</TableHead>
+                    <TableHead className="text-[#6b7280]">Result</TableHead>
+                    <TableHead className="text-[#6b7280]">Joined At</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {participations.map((participation) => (
-                    <TableRow key={participation.id} className="border-[#2A2D3A] hover:bg-[#2A2D3A]/50">
-                      <TableCell className="text-white font-medium">
+                    <TableRow key={participation.id} className="border-[#e5e7eb] hover:bg-[#f0f2f5]/50">
+                      <TableCell className="text-[#1a1a1a] font-medium">
                         {participation.userName || 'Unknown'}
                       </TableCell>
-                      <TableCell className="text-gray-400">
+                      <TableCell className="text-[#6b7280]">
                         {participation.userEmail || '-'}
                       </TableCell>
-                      <TableCell className="text-white">
+                      <TableCell className="text-[#1a1a1a]">
                         {participation.progress.toFixed(1)}%
                       </TableCell>
                       <TableCell>
@@ -861,7 +861,7 @@ export default function ChallengesPage() {
                           <span className="text-gray-500">-</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-gray-400">
+                      <TableCell className="text-[#6b7280]">
                         {formatDate(participation.joinedAt)}
                       </TableCell>
                     </TableRow>

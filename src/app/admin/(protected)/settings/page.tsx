@@ -108,11 +108,11 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-white">Settings</h1>
+        <h1 className="text-3xl font-bold text-[#1a1a1a]">Settings</h1>
         {[...Array(4)].map((_, i) => (
-          <Card key={i} className="border-[#2A2D3A] bg-[#1A1D29]">
+          <Card key={i} className="border-[#e5e7eb] bg-white">
             <CardContent className="p-6">
-              <div className="h-32 animate-pulse bg-[#2A2D3A] rounded" />
+              <div className="h-32 animate-pulse bg-[#f0f2f5] rounded" />
             </CardContent>
           </Card>
         ))}
@@ -125,13 +125,13 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Settings</h1>
-          <p className="text-gray-400 mt-1">Platform configuration and administration</p>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Settings</h1>
+          <p className="text-[#6b7280] mt-1">Platform configuration and administration</p>
         </div>
         <Button
           onClick={fetchData}
           variant="outline"
-          className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+          className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
         >
           <RefreshCw className="h-4 w-4 mr-2" />
           Refresh
@@ -139,37 +139,37 @@ export default function SettingsPage() {
       </div>
 
       {/* Platform Settings */}
-      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+      <Card className="border-[#e5e7eb] bg-white">
         <CardHeader>
-          <CardTitle className="text-white flex items-center">
+          <CardTitle className="text-[#1a1a1a] flex items-center">
             <Zap className="h-5 w-5 mr-2 text-[#00D09C]" />
             Platform Settings
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription className="text-[#6b7280]">
             Configure platform-wide settings and features
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Trading Settings */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Trading</h3>
+            <h3 className="text-lg font-semibold text-[#1a1a1a]">Trading</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label className="text-gray-300">Default Virtual Cash (₹)</Label>
+                <Label className="text-[#6b7280]">Default Virtual Cash (₹)</Label>
                 <Input
                   type="number"
                   value={getSettingValue('DEFAULT_VIRTUAL_CASH') || '100000'}
                   onChange={(e) => handleUpdateSetting('DEFAULT_VIRTUAL_CASH', e.target.value)}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                 />
               </div>
               <div>
-                <Label className="text-gray-300">Max Daily Trades</Label>
+                <Label className="text-[#6b7280]">Max Daily Trades</Label>
                 <Input
                   type="number"
                   value={getSettingValue('MAX_DAILY_TRADES') || '0'}
                   onChange={(e) => handleUpdateSetting('MAX_DAILY_TRADES', e.target.value)}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                 />
               </div>
             </div>
@@ -177,42 +177,42 @@ export default function SettingsPage() {
 
           {/* Feature Flags */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Feature Flags</h3>
+            <h3 className="text-lg font-semibold text-[#1a1a1a]">Feature Flags</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center justify-between p-3 bg-[#0F1117] rounded-lg border border-[#2A2D3A]">
+              <div className="flex items-center justify-between p-3 bg-[#f5f7fa] rounded-lg border border-[#e5e7eb]">
                 <div>
-                  <p className="text-white font-medium">Equity Trading</p>
-                  <p className="text-sm text-gray-400">Enable stock trading</p>
+                  <p className="text-[#1a1a1a] font-medium">Equity Trading</p>
+                  <p className="text-sm text-[#6b7280]">Enable stock trading</p>
                 </div>
                 <Switch
                   checked={getSettingValue('EQUITY_TRADING') === 'true'}
                   onCheckedChange={(checked) => handleUpdateSetting('EQUITY_TRADING', checked)}
                 />
               </div>
-              <div className="flex items-center justify-between p-3 bg-[#0F1117] rounded-lg border border-[#2A2D3A]">
+              <div className="flex items-center justify-between p-3 bg-[#f5f7fa] rounded-lg border border-[#e5e7eb]">
                 <div>
-                  <p className="text-white font-medium">F&O Trading</p>
-                  <p className="text-sm text-gray-400">Enable futures and options</p>
+                  <p className="text-[#1a1a1a] font-medium">F&O Trading</p>
+                  <p className="text-sm text-[#6b7280]">Enable futures and options</p>
                 </div>
                 <Switch
                   checked={getSettingValue('FNO_TRADING') === 'true'}
                   onCheckedChange={(checked) => handleUpdateSetting('FNO_TRADING', checked)}
                 />
               </div>
-              <div className="flex items-center justify-between p-3 bg-[#0F1117] rounded-lg border border-[#2A2D3A]">
+              <div className="flex items-center justify-between p-3 bg-[#f5f7fa] rounded-lg border border-[#e5e7eb]">
                 <div>
-                  <p className="text-white font-medium">Options Trading</p>
-                  <p className="text-sm text-gray-400">Enable options</p>
+                  <p className="text-[#1a1a1a] font-medium">Options Trading</p>
+                  <p className="text-sm text-[#6b7280]">Enable options</p>
                 </div>
                 <Switch
                   checked={getSettingValue('OPTIONS_TRADING') === 'true'}
                   onCheckedChange={(checked) => handleUpdateSetting('OPTIONS_TRADING', checked)}
                 />
               </div>
-              <div className="flex items-center justify-between p-3 bg-[#0F1117] rounded-lg border border-[#2A2D3A]">
+              <div className="flex items-center justify-between p-3 bg-[#f5f7fa] rounded-lg border border-[#e5e7eb]">
                 <div>
-                  <p className="text-white font-medium">Short Selling</p>
-                  <p className="text-sm text-gray-400">Allow short selling</p>
+                  <p className="text-[#1a1a1a] font-medium">Short Selling</p>
+                  <p className="text-sm text-[#6b7280]">Allow short selling</p>
                 </div>
                 <Switch
                   checked={getSettingValue('SHORT_SELLING') === 'true'}
@@ -224,33 +224,33 @@ export default function SettingsPage() {
 
           {/* Rate Limits */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Rate Limits</h3>
+            <h3 className="text-lg font-semibold text-[#1a1a1a]">Rate Limits</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label className="text-gray-300">API Calls / Min</Label>
+                <Label className="text-[#6b7280]">API Calls / Min</Label>
                 <Input
                   type="number"
                   value={getSettingValue('API_CALLS_PER_MINUTE') || '60'}
                   onChange={(e) => handleUpdateSetting('API_CALLS_PER_MINUTE', e.target.value)}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                 />
               </div>
               <div>
-                <Label className="text-gray-300">WS Messages / Sec</Label>
+                <Label className="text-[#6b7280]">WS Messages / Sec</Label>
                 <Input
                   type="number"
                   value={getSettingValue('WS_MESSAGES_PER_SECOND') || '10'}
                   onChange={(e) => handleUpdateSetting('WS_MESSAGES_PER_SECOND', e.target.value)}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                 />
               </div>
               <div>
-                <Label className="text-gray-300">Login Attempts / Hour</Label>
+                <Label className="text-[#6b7280]">Login Attempts / Hour</Label>
                 <Input
                   type="number"
                   value={getSettingValue('LOGIN_ATTEMPTS_PER_HOUR') || '5'}
                   onChange={(e) => handleUpdateSetting('LOGIN_ATTEMPTS_PER_HOUR', e.target.value)}
-                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                  className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
                 />
               </div>
             </div>
@@ -259,13 +259,13 @@ export default function SettingsPage() {
       </Card>
 
       {/* Admin Accounts */}
-      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+      <Card className="border-[#e5e7eb] bg-white">
         <CardHeader>
-          <CardTitle className="text-white flex items-center">
+          <CardTitle className="text-[#1a1a1a] flex items-center">
             <Shield className="h-5 w-5 mr-2 text-[#00D09C]" />
             Admin Accounts
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription className="text-[#6b7280]">
             Manage admin users and their roles
           </CardDescription>
         </CardHeader>
@@ -273,26 +273,26 @@ export default function SettingsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-gray-400">Name</TableHead>
-                <TableHead className="text-gray-400">Username</TableHead>
-                <TableHead className="text-gray-400">Email</TableHead>
-                <TableHead className="text-gray-400">Role</TableHead>
-                <TableHead className="text-gray-400">Status</TableHead>
-                <TableHead className="text-gray-400">Last Login</TableHead>
+                <TableHead className="text-[#6b7280]">Name</TableHead>
+                <TableHead className="text-[#6b7280]">Username</TableHead>
+                <TableHead className="text-[#6b7280]">Email</TableHead>
+                <TableHead className="text-[#6b7280]">Role</TableHead>
+                <TableHead className="text-[#6b7280]">Status</TableHead>
+                <TableHead className="text-[#6b7280]">Last Login</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {admins.map((admin) => (
                 <TableRow key={admin.id}>
-                  <TableCell className="text-white">{admin.name}</TableCell>
-                  <TableCell className="text-white">{admin.username}</TableCell>
-                  <TableCell className="text-white">{admin.email}</TableCell>
+                  <TableCell className="text-[#1a1a1a]">{admin.name}</TableCell>
+                  <TableCell className="text-[#1a1a1a]">{admin.username}</TableCell>
+                  <TableCell className="text-[#1a1a1a]">{admin.email}</TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
                       className={
                         admin.role === 'SUPER_ADMIN'
-                          ? 'border-purple-500 text-purple-500'
+                          ? 'border-[#00b887] text-[#00b887]'
                           : 'border-[#00D09C] text-[#00D09C]'
                       }
                     >
@@ -301,12 +301,12 @@ export default function SettingsPage() {
                   </TableCell>
                   <TableCell>
                     <Badge
-                      className={admin.isActive ? 'bg-[#00D09C] text-black' : 'bg-red-500'}
+                      className={admin.isActive ? 'bg-[#00D09C] text-black' : 'bg-[#d44a2d]'}
                     >
                       {admin.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-gray-400">
+                  <TableCell className="text-[#6b7280]">
                     {admin.lastLoginAt ? formatRelativeTime(admin.lastLoginAt) : 'Never'}
                   </TableCell>
                 </TableRow>
@@ -317,13 +317,13 @@ export default function SettingsPage() {
       </Card>
 
       {/* Activity Logs */}
-      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+      <Card className="border-[#e5e7eb] bg-white">
         <CardHeader>
-          <CardTitle className="text-white flex items-center">
+          <CardTitle className="text-[#1a1a1a] flex items-center">
             <Clock className="h-5 w-5 mr-2 text-[#00D09C]" />
             Activity Logs
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription className="text-[#6b7280]">
             Recent admin activities (last 50)
           </CardDescription>
         </CardHeader>
@@ -331,27 +331,27 @@ export default function SettingsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-gray-400">Admin</TableHead>
-                <TableHead className="text-gray-400">Action</TableHead>
-                <TableHead className="text-gray-400">Target</TableHead>
-                <TableHead className="text-gray-400">Details</TableHead>
-                <TableHead className="text-gray-400">Time</TableHead>
+                <TableHead className="text-[#6b7280]">Admin</TableHead>
+                <TableHead className="text-[#6b7280]">Action</TableHead>
+                <TableHead className="text-[#6b7280]">Target</TableHead>
+                <TableHead className="text-[#6b7280]">Details</TableHead>
+                <TableHead className="text-[#6b7280]">Time</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {activityLogs.slice(0, 50).map((log) => (
                 <TableRow key={log.id}>
-                  <TableCell className="text-white">{log.adminName}</TableCell>
+                  <TableCell className="text-[#1a1a1a]">{log.adminName}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="border-[#2A2D3A] text-gray-300">
+                    <Badge variant="outline" className="border-[#e5e7eb] text-[#6b7280]">
                       {log.action}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-gray-400">{log.targetId || '-'}</TableCell>
-                  <TableCell className="text-gray-400 text-sm max-w-xs truncate">
+                  <TableCell className="text-[#6b7280]">{log.targetId || '-'}</TableCell>
+                  <TableCell className="text-[#6b7280] text-sm max-w-xs truncate">
                     {log.details}
                   </TableCell>
-                  <TableCell className="text-gray-400">
+                  <TableCell className="text-[#6b7280]">
                     {formatRelativeTime(log.createdAt)}
                   </TableCell>
                 </TableRow>

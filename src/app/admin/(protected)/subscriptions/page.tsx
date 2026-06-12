@@ -123,29 +123,29 @@ export default function SubscriptionsPage() {
       title: 'Expiring Soon',
       value: data?.stats.expiringSoon || 0,
       icon: AlertCircle,
-      color: 'text-orange-400',
-      bgColor: 'bg-orange-400/20',
+      color: 'text-[#00b887]',
+      bgColor: 'bg-[#00b887]/20',
     },
     {
       title: 'MRR',
       value: formatCurrency(data?.stats.mrr || 0),
       icon: CreditCard,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-400/20',
+      color: 'text-[#00D09C]',
+      bgColor: 'bg-[#00D09C]/20',
     },
     {
       title: 'Total Revenue',
       value: formatCurrency(data?.stats.totalRevenue || 0),
       icon: DollarSign,
-      color: 'text-green-400',
-      bgColor: 'bg-green-400/20',
+      color: 'text-[#00B386]',
+      bgColor: 'bg-[#00B386]/20',
     },
     {
       title: 'Churn Rate',
       value: `${(data?.stats.churnRate || 0).toFixed(1)}%`,
       icon: TrendingUp,
-      color: 'text-pink-400',
-      bgColor: 'bg-pink-400/20',
+      color: 'text-[#00D09C]',
+      bgColor: 'bg-[#00D09C]/20',
     },
   ]
 
@@ -153,13 +153,13 @@ export default function SubscriptionsPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-white">Subscriptions</h1>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Subscriptions</h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(5)].map((_, i) => (
-            <Card key={i} className="border-[#2A2D3A] bg-[#1A1D29]">
+            <Card key={i} className="border-[#e5e7eb] bg-white">
               <CardContent className="p-6">
-                <div className="h-24 animate-pulse bg-[#2A2D3A] rounded" />
+                <div className="h-24 animate-pulse bg-[#f0f2f5] rounded" />
               </CardContent>
             </Card>
           ))}
@@ -173,8 +173,8 @@ export default function SubscriptionsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Subscriptions</h1>
-          <p className="text-gray-400 mt-1">Manage user subscriptions and revenue</p>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Subscriptions</h1>
+          <p className="text-[#6b7280] mt-1">Manage user subscriptions and revenue</p>
         </div>
         <div className="flex gap-3">
           <Dialog open={grantDialogOpen} onOpenChange={setGrantDialogOpen}>
@@ -184,10 +184,10 @@ export default function SubscriptionsPage() {
                 Grant Subscription
               </Button>
             </DialogTrigger>
-            <DialogContent className="border-[#2A2D3A] bg-[#1A1D29] text-white">
+            <DialogContent className="border-[#e5e7eb] bg-white text-[#1a1a1a]">
               <DialogHeader>
                 <DialogTitle>Grant Subscription</DialogTitle>
-                <DialogDescription className="text-gray-400">
+                <DialogDescription className="text-[#6b7280]">
                   Manually grant a subscription to a user
                 </DialogDescription>
               </DialogHeader>
@@ -200,16 +200,16 @@ export default function SubscriptionsPage() {
                     placeholder="user@example.com"
                     value={grantEmail}
                     onChange={(e) => setGrantEmail(e.target.value)}
-                    className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                    className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="plan">Plan Type</Label>
                   <Select value={grantPlan} onValueChange={setGrantPlan}>
-                    <SelectTrigger className="border-[#2A2D3A] bg-[#0F1117] text-white">
+                    <SelectTrigger className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]">
                       <SelectValue placeholder="Select a plan" />
                     </SelectTrigger>
-                    <SelectContent className="border-[#2A2D3A] bg-[#1A1D29]">
+                    <SelectContent className="border-[#e5e7eb] bg-white">
                       <SelectItem value="PREMIUM">Premium (₹999/month)</SelectItem>
                       <SelectItem value="PRO">Pro (₹1999/month)</SelectItem>
                     </SelectContent>
@@ -220,7 +220,7 @@ export default function SubscriptionsPage() {
                 <Button
                   variant="outline"
                   onClick={() => setGrantDialogOpen(false)}
-                  className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+                  className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
                 >
                   Cancel
                 </Button>
@@ -237,7 +237,7 @@ export default function SubscriptionsPage() {
           <Button
             onClick={fetchData}
             variant="outline"
-            className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+            className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -250,12 +250,12 @@ export default function SubscriptionsPage() {
         {statsCards.map((card) => {
           const Icon = card.icon
           return (
-            <Card key={card.title} className="border-[#2A2D3A] bg-[#1A1D29]">
+            <Card key={card.title} className="border-[#e5e7eb] bg-white">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">{card.title}</p>
-                    <h3 className="text-2xl font-bold text-white">{card.value}</h3>
+                    <p className="text-sm text-[#6b7280] mb-1">{card.title}</p>
+                    <h3 className="text-2xl font-bold text-[#1a1a1a]">{card.value}</h3>
                   </div>
                   <div className={`p-3 rounded-full ${card.bgColor}`}>
                     <Icon className={`h-6 w-6 ${card.color}`} />
@@ -270,9 +270,9 @@ export default function SubscriptionsPage() {
       {/* Charts and Expiring Soon */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Revenue Chart */}
-        <Card className="lg:col-span-2 border-[#2A2D3A] bg-[#1A1D29]">
+        <Card className="lg:col-span-2 border-[#e5e7eb] bg-white">
           <CardHeader>
-            <CardTitle className="text-white">Revenue Trend (Last 6 Months)</CardTitle>
+            <CardTitle className="text-[#1a1a1a]">Revenue Trend (Last 6 Months)</CardTitle>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -289,7 +289,7 @@ export default function SubscriptionsPage() {
                       <stop offset="95%" stopColor="#00D09C" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="month" stroke="#9CA3AF" />
                   <YAxis stroke="#9CA3AF" tickFormatter={(value) => `₹${(value / 1000)}k`} />
                   <ChartTooltip content={<ChartTooltipContent />} />
@@ -307,10 +307,10 @@ export default function SubscriptionsPage() {
         </Card>
 
         {/* Expiring Soon */}
-        <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+        <Card className="border-[#e5e7eb] bg-white">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-orange-400" />
+            <CardTitle className="text-[#1a1a1a] flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-[#00b887]" />
               Expiring Soon
             </CardTitle>
           </CardHeader>
@@ -318,29 +318,29 @@ export default function SubscriptionsPage() {
             {data?.expiringSoon && data.expiringSoon.length > 0 ? (
               <div className="space-y-3">
                 {data.expiringSoon.slice(0, 5).map((sub) => (
-                  <div key={sub.id} className="p-3 rounded-lg bg-[#0F1117] border border-[#2A2D3A]">
+                  <div key={sub.id} className="p-3 rounded-lg bg-[#f5f7fa] border border-[#e5e7eb]">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium text-white">{sub.userName || sub.userEmail}</span>
+                      <span className="font-medium text-[#1a1a1a]">{sub.userName || sub.userEmail}</span>
                       <Badge
                         className={
                           sub.planType === 'PRO'
-                            ? 'bg-purple-500/20 text-purple-400'
+                            ? 'bg-[#00b887]/20 text-[#00b887]'
                             : sub.planType === 'PREMIUM'
                             ? 'bg-[#00D09C]/20 text-[#00D09C]'
-                            : 'bg-gray-500/20 text-gray-400'
+                            : 'bg-gray-500/20 text-[#6b7280]'
                         }
                       >
                         {sub.planType}
                       </Badge>
                     </div>
-                    <p className="text-sm text-gray-400">
-                      Expires in <span className="text-orange-400 font-medium">{getDaysUntilExpiry(sub.expiresAt)} days</span>
+                    <p className="text-sm text-[#6b7280]">
+                      Expires in <span className="text-[#00b887] font-medium">{getDaysUntilExpiry(sub.expiresAt)} days</span>
                     </p>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8 text-[#6b7280]">
                 <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p>No subscriptions expiring soon</p>
               </div>
@@ -350,57 +350,57 @@ export default function SubscriptionsPage() {
       </div>
 
       {/* Active Subscriptions Table */}
-      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+      <Card className="border-[#e5e7eb] bg-white">
         <CardHeader>
-          <CardTitle className="text-white">Active Subscriptions</CardTitle>
+          <CardTitle className="text-[#1a1a1a]">Active Subscriptions</CardTitle>
         </CardHeader>
         <CardContent>
           {data?.activeSubscriptions && data.activeSubscriptions.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-gray-400">User</TableHead>
-                  <TableHead className="text-gray-400">Plan</TableHead>
-                  <TableHead className="text-gray-400">Amount</TableHead>
-                  <TableHead className="text-gray-400">Started At</TableHead>
-                  <TableHead className="text-gray-400">Expires At</TableHead>
-                  <TableHead className="text-gray-400">Status</TableHead>
-                  <TableHead className="text-gray-400">Actions</TableHead>
+                  <TableHead className="text-[#6b7280]">User</TableHead>
+                  <TableHead className="text-[#6b7280]">Plan</TableHead>
+                  <TableHead className="text-[#6b7280]">Amount</TableHead>
+                  <TableHead className="text-[#6b7280]">Started At</TableHead>
+                  <TableHead className="text-[#6b7280]">Expires At</TableHead>
+                  <TableHead className="text-[#6b7280]">Status</TableHead>
+                  <TableHead className="text-[#6b7280]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data.activeSubscriptions.map((sub) => (
                   <TableRow key={sub.id}>
-                    <TableCell className="text-white">
+                    <TableCell className="text-[#1a1a1a]">
                       <div className="flex flex-col">
                         <span className="font-medium">{sub.userName || 'N/A'}</span>
-                        <span className="text-xs text-gray-400">{sub.userEmail}</span>
+                        <span className="text-xs text-[#6b7280]">{sub.userEmail}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge
                         className={
                           sub.planType === 'PRO'
-                            ? 'bg-purple-500/20 text-purple-400'
+                            ? 'bg-[#00b887]/20 text-[#00b887]'
                             : sub.planType === 'PREMIUM'
                             ? 'bg-[#00D09C]/20 text-[#00D09C]'
-                            : 'bg-gray-500/20 text-gray-400'
+                            : 'bg-gray-500/20 text-[#6b7280]'
                         }
                       >
                         {sub.planType}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-white font-medium">{formatCurrency(sub.amount)}</TableCell>
-                    <TableCell className="text-gray-400">{formatDate(sub.startedAt)}</TableCell>
-                    <TableCell className="text-gray-400">{formatDate(sub.expiresAt)}</TableCell>
+                    <TableCell className="text-[#1a1a1a] font-medium">{formatCurrency(sub.amount)}</TableCell>
+                    <TableCell className="text-[#6b7280]">{formatDate(sub.startedAt)}</TableCell>
+                    <TableCell className="text-[#6b7280]">{formatDate(sub.expiresAt)}</TableCell>
                     <TableCell>
-                      <Badge className="bg-green-500/20 text-green-400">Active</Badge>
+                      <Badge className="bg-[#00D09C]/20 text-[#00B386]">Active</Badge>
                     </TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-gray-400 hover:text-white"
+                        className="text-[#6b7280] hover:text-[#1a1a1a]"
                         onClick={() => {
                           toast.info('Action details would go here')
                         }}
@@ -413,7 +413,7 @@ export default function SubscriptionsPage() {
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center py-12 text-gray-400">
+            <div className="text-center py-12 text-[#6b7280]">
               <CreditCard className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No active subscriptions found</p>
             </div>

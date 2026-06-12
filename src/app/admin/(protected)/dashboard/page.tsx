@@ -100,8 +100,8 @@ export default function DashboardPage() {
       title: 'Total Users',
       value: data?.stats.totalUsers || 0,
       icon: Users,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-400/20',
+      color: 'text-[#00D09C]',
+      bgColor: 'bg-[#00D09C]/20',
     },
     {
       title: 'Active Users',
@@ -114,29 +114,29 @@ export default function DashboardPage() {
       title: 'Premium Users',
       value: data?.stats.premiumUsers || 0,
       icon: CreditCard,
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-400/20',
+      color: 'text-[#00b887]',
+      bgColor: 'bg-[#00b887]/20',
     },
     {
       title: 'Total Revenue',
       value: formatCurrency(data?.stats.totalRevenue || 0),
       icon: DollarSign,
-      color: 'text-green-400',
-      bgColor: 'bg-green-400/20',
+      color: 'text-[#00B386]',
+      bgColor: 'bg-[#00B386]/20',
     },
     {
       title: 'Active Positions',
       value: data?.stats.activePositions || 0,
       icon: TrendingUp,
-      color: 'text-orange-400',
-      bgColor: 'bg-orange-400/20',
+      color: 'text-[#00b887]',
+      bgColor: 'bg-[#00b887]/20',
     },
     {
       title: 'Open Orders',
       value: data?.stats.openOrders || 0,
       icon: Clock,
-      color: 'text-pink-400',
-      bgColor: 'bg-pink-400/20',
+      color: 'text-[#00D09C]',
+      bgColor: 'bg-[#00D09C]/20',
     },
   ]
 
@@ -163,13 +163,13 @@ export default function DashboardPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Dashboard</h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <Card key={i} className="border-[#2A2D3A] bg-[#1A1D29]">
+            <Card key={i} className="border-[#e5e7eb] bg-white">
               <CardContent className="p-6">
-                <div className="h-24 animate-pulse bg-[#2A2D3A] rounded" />
+                <div className="h-24 animate-pulse bg-[#f5f7fa] rounded" />
               </CardContent>
             </Card>
           ))}
@@ -183,13 +183,13 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-          <p className="text-gray-400 mt-1">Welcome back! Here's what's happening.</p>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Dashboard</h1>
+          <p className="text-[#6b7280] mt-1">Welcome back! Here's what's happening.</p>
         </div>
         <Button
           onClick={fetchData}
           variant="outline"
-          className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+          className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f5f7fa]"
         >
           <RefreshCw className="h-4 w-4 mr-2" />
           Refresh
@@ -201,12 +201,12 @@ export default function DashboardPage() {
         {statsCards.map((card) => {
           const Icon = card.icon
           return (
-            <Card key={card.title} className="border-[#2A2D3A] bg-[#1A1D29]">
+            <Card key={card.title} className="border-[#e5e7eb] bg-white">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">{card.title}</p>
-                    <h3 className="text-2xl font-bold text-white">{card.value}</h3>
+                    <p className="text-sm text-[#6b7280] mb-1">{card.title}</p>
+                    <h3 className="text-2xl font-bold text-[#1a1a1a]">{card.value}</h3>
                   </div>
                   <div className={`p-3 rounded-full ${card.bgColor}`}>
                     <Icon className={`h-6 w-6 ${card.color}`} />
@@ -221,9 +221,9 @@ export default function DashboardPage() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue Chart */}
-        <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+        <Card className="border-[#e5e7eb] bg-white">
           <CardHeader>
-            <CardTitle className="text-white">Monthly Revenue</CardTitle>
+            <CardTitle className="text-[#1a1a1a]">Monthly Revenue</CardTitle>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                       <stop offset="95%" stopColor="#00D09C" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="month" stroke="#9CA3AF" />
                   <YAxis stroke="#9CA3AF" tickFormatter={(value) => `₹${(value / 1000)}k`} />
                   <ChartTooltip content={<ChartTooltipContent />} />
@@ -258,29 +258,29 @@ export default function DashboardPage() {
         </Card>
 
         {/* User Growth Chart */}
-        <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+        <Card className="border-[#e5e7eb] bg-white">
           <CardHeader>
-            <CardTitle className="text-white">User Growth</CardTitle>
+            <CardTitle className="text-[#1a1a1a]">User Growth</CardTitle>
           </CardHeader>
           <CardContent>
             <ChartContainer
               config={{
-                users: { color: '#3B82F6' },
+                users: { color: '#00D09C' },
               }}
               className="h-[300px]"
             >
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={userGrowthData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="month" stroke="#9CA3AF" />
                   <YAxis stroke="#9CA3AF" />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Line
                     type="monotone"
                     dataKey="users"
-                    stroke="#3B82F6"
+                    stroke="#00D09C"
                     strokeWidth={2}
-                    dot={{ fill: '#3B82F6' }}
+                    dot={{ fill: '#00D09C' }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -292,26 +292,26 @@ export default function DashboardPage() {
       {/* Tables */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Users */}
-        <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+        <Card className="border-[#e5e7eb] bg-white">
           <CardHeader>
-            <CardTitle className="text-white">Recent Registrations</CardTitle>
+            <CardTitle className="text-[#1a1a1a]">Recent Registrations</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-gray-400">Name</TableHead>
-                  <TableHead className="text-gray-400">Subscription</TableHead>
-                  <TableHead className="text-gray-400">Joined</TableHead>
+                  <TableHead className="text-[#6b7280]">Name</TableHead>
+                  <TableHead className="text-[#6b7280]">Subscription</TableHead>
+                  <TableHead className="text-[#6b7280]">Joined</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data?.recentUsers?.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell className="text-white">
+                    <TableCell className="text-[#1a1a1a]">
                       <div className="flex flex-col">
                         <span className="font-medium">{user.name || 'N/A'}</span>
-                        <span className="text-xs text-gray-400">{user.email}</span>
+                        <span className="text-xs text-[#6b7280]">{user.email}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -320,13 +320,13 @@ export default function DashboardPage() {
                         className={
                           user.subscription === 'PREMIUM'
                             ? 'bg-[#00D09C] text-black'
-                            : 'bg-[#2A2D3A] text-gray-300'
+                            : 'bg-[#f5f7fa] text-[#6b7280]'
                         }
                       >
                         {user.subscription}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-400">
+                    <TableCell className="text-[#6b7280]">
                       {formatRelativeTime(user.createdAt)}
                     </TableCell>
                   </TableRow>
@@ -337,27 +337,27 @@ export default function DashboardPage() {
         </Card>
 
         {/* Recent Trades */}
-        <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+        <Card className="border-[#e5e7eb] bg-white">
           <CardHeader>
-            <CardTitle className="text-white">Recent Trades</CardTitle>
+            <CardTitle className="text-[#1a1a1a]">Recent Trades</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-gray-400">User</TableHead>
-                  <TableHead className="text-gray-400">Symbol</TableHead>
-                  <TableHead className="text-gray-400">Type</TableHead>
-                  <TableHead className="text-gray-400">P&L</TableHead>
+                  <TableHead className="text-[#6b7280]">User</TableHead>
+                  <TableHead className="text-[#6b7280]">Symbol</TableHead>
+                  <TableHead className="text-[#6b7280]">Type</TableHead>
+                  <TableHead className="text-[#6b7280]">P&L</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data?.recentTrades?.map((trade) => (
                   <TableRow key={trade.id}>
-                    <TableCell className="text-white text-sm">
+                    <TableCell className="text-[#1a1a1a] text-sm">
                       {trade.userName || 'N/A'}
                     </TableCell>
-                    <TableCell className="text-white font-medium">
+                    <TableCell className="text-[#1a1a1a] font-medium">
                       {trade.symbol}
                     </TableCell>
                     <TableCell>
@@ -365,8 +365,8 @@ export default function DashboardPage() {
                         variant="outline"
                         className={
                           trade.tradeDirection === 'BUY'
-                            ? 'border-green-500 text-green-500'
-                            : 'border-red-500 text-red-500'
+                            ? 'border-[#00D09C] text-[#00D09C]'
+                            : 'border-[#d44a2d] text-[#d44a2d]'
                         }
                       >
                         {trade.tradeDirection}
@@ -375,10 +375,10 @@ export default function DashboardPage() {
                     <TableCell
                       className={
                         trade.pnl > 0
-                          ? 'text-green-400'
+                          ? 'text-[#00B386]'
                           : trade.pnl < 0
-                          ? 'text-red-400'
-                          : 'text-gray-400'
+                          ? 'text-[#d44a2d]'
+                          : 'text-[#6b7280]'
                       }
                     >
                       {trade.pnl ? formatCurrency(trade.pnl) : '-'}

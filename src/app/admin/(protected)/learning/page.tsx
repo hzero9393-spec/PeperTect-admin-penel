@@ -367,11 +367,11 @@ export default function LearningPage() {
       case 'Beginner':
         return <Badge className="bg-green-500/20 text-green-400">Beginner</Badge>
       case 'Intermediate':
-        return <Badge className="bg-blue-500/20 text-blue-400">Intermediate</Badge>
+        return <Badge className="bg-[#00D09C]/20 text-[#00D09C]">Intermediate</Badge>
       case 'Advanced':
-        return <Badge className="bg-purple-500/20 text-purple-400">Advanced</Badge>
+        return <Badge className="bg-[#00b887]/20 text-[#00b887]">Advanced</Badge>
       default:
-        return <Badge className="bg-gray-500/20 text-gray-400">{difficulty}</Badge>
+        return <Badge className="bg-gray-500/20 text-[#6b7280]">{difficulty}</Badge>
     }
   }
 
@@ -393,17 +393,17 @@ export default function LearningPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-white">Learning Management</h1>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Learning Management</h1>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2 border-[#2A2D3A] bg-[#1A1D29]">
+          <Card className="lg:col-span-2 border-[#e5e7eb] bg-white">
             <CardContent className="p-6">
-              <div className="h-64 animate-pulse bg-[#2A2D3A] rounded" />
+              <div className="h-64 animate-pulse bg-[#f0f2f5] rounded" />
             </CardContent>
           </Card>
-          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <Card className="border-[#e5e7eb] bg-white">
             <CardContent className="p-6">
-              <div className="h-64 animate-pulse bg-[#2A2D3A] rounded" />
+              <div className="h-64 animate-pulse bg-[#f0f2f5] rounded" />
             </CardContent>
           </Card>
         </div>
@@ -416,8 +416,8 @@ export default function LearningPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Learning Management</h1>
-          <p className="text-gray-400 mt-1">Manage learning paths and modules</p>
+          <h1 className="text-3xl font-bold text-[#1a1a1a]">Learning Management</h1>
+          <p className="text-[#6b7280] mt-1">Manage learning paths and modules</p>
         </div>
         <div className="flex gap-3">
           <Dialog open={createPathDialogOpen} onOpenChange={setCreatePathDialogOpen}>
@@ -427,10 +427,10 @@ export default function LearningPage() {
                 Create Path
               </Button>
             </DialogTrigger>
-            <DialogContent className="border-[#2A2D3A] bg-[#1A1D29] text-white max-w-2xl">
+            <DialogContent className="border-[#e5e7eb] bg-white text-[#1a1a1a] max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Create Learning Path</DialogTitle>
-                <DialogDescription className="text-gray-400">
+                <DialogDescription className="text-[#6b7280]">
                   Create a new learning path with modules
                 </DialogDescription>
               </DialogHeader>
@@ -442,7 +442,7 @@ export default function LearningPage() {
                     placeholder="e.g., Introduction to Trading"
                     value={pathForm.title}
                     onChange={(e) => setPathForm({ ...pathForm, title: e.target.value })}
-                    className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                    className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                   />
                 </div>
                 <div className="space-y-2">
@@ -452,7 +452,7 @@ export default function LearningPage() {
                     placeholder="Brief description of the learning path"
                     value={pathForm.description}
                     onChange={(e) => setPathForm({ ...pathForm, description: e.target.value })}
-                    className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[100px]"
+                    className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a] min-h-[100px]"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -463,7 +463,7 @@ export default function LearningPage() {
                       placeholder="e.g., Trading, Investing"
                       value={pathForm.category}
                       onChange={(e) => setPathForm({ ...pathForm, category: e.target.value })}
-                      className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                      className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                     />
                   </div>
                   <div className="space-y-2">
@@ -472,10 +472,10 @@ export default function LearningPage() {
                       value={pathForm.difficulty}
                       onValueChange={(value) => setPathForm({ ...pathForm, difficulty: value })}
                     >
-                      <SelectTrigger className="border-[#2A2D3A] bg-[#0F1117] text-white">
+                      <SelectTrigger className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="border-[#2A2D3A] bg-[#1A1D29]">
+                      <SelectContent className="border-[#e5e7eb] bg-white">
                         <SelectItem value="Beginner">Beginner</SelectItem>
                         <SelectItem value="Intermediate">Intermediate</SelectItem>
                         <SelectItem value="Advanced">Advanced</SelectItem>
@@ -490,10 +490,10 @@ export default function LearningPage() {
                       value={pathForm.tier}
                       onValueChange={(value) => setPathForm({ ...pathForm, tier: value })}
                     >
-                      <SelectTrigger className="border-[#2A2D3A] bg-[#0F1117] text-white">
+                      <SelectTrigger className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="border-[#2A2D3A] bg-[#1A1D29]">
+                      <SelectContent className="border-[#e5e7eb] bg-white">
                         <SelectItem value="FREE">Free</SelectItem>
                         <SelectItem value="PREMIUM">Premium</SelectItem>
                       </SelectContent>
@@ -507,7 +507,7 @@ export default function LearningPage() {
                       placeholder="0"
                       value={pathForm.order}
                       onChange={(e) => setPathForm({ ...pathForm, order: parseInt(e.target.value) || 0 })}
-                      className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                      className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                     />
                   </div>
                 </div>
@@ -519,13 +519,13 @@ export default function LearningPage() {
                       type="color"
                       value={pathForm.accentColor}
                       onChange={(e) => setPathForm({ ...pathForm, accentColor: e.target.value })}
-                      className="w-20 h-10 border-[#2A2D3A] bg-[#0F1117] text-white"
+                      className="w-20 h-10 border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                     />
                     <Input
                       placeholder="#00D09C"
                       value={pathForm.accentColor}
                       onChange={(e) => setPathForm({ ...pathForm, accentColor: e.target.value })}
-                      className="flex-1 border-[#2A2D3A] bg-[#0F1117] text-white"
+                      className="flex-1 border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                     />
                   </div>
                 </div>
@@ -542,7 +542,7 @@ export default function LearningPage() {
                 <Button
                   variant="outline"
                   onClick={() => setCreatePathDialogOpen(false)}
-                  className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+                  className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
                 >
                   Cancel
                 </Button>
@@ -558,7 +558,7 @@ export default function LearningPage() {
           <Button
             onClick={fetchLearningPaths}
             variant="outline"
-            className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+            className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -569,9 +569,9 @@ export default function LearningPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Learning Paths List */}
         <div className="lg:col-span-2">
-          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+          <Card className="border-[#e5e7eb] bg-white">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-[#1a1a1a] flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-[#00D09C]" />
                 Learning Paths ({learningPaths.length})
               </CardTitle>
@@ -585,26 +585,26 @@ export default function LearningPage() {
                       className={`p-4 rounded-lg border transition-all cursor-pointer ${
                         selectedPath?.id === path.id
                           ? 'bg-[#00D09C]/10 border-[#00D09C]'
-                          : 'bg-[#0F1117] border-[#2A2D3A] hover:border-[#2A2D3A]/80'
+                          : 'bg-[#f5f7fa] border-[#e5e7eb] hover:border-[#e5e7eb]/80'
                       }`}
                       onClick={() => selectPath(path)}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-white">{path.title}</h3>
+                            <h3 className="font-semibold text-[#1a1a1a]">{path.title}</h3>
                             {getDifficultyBadge(path.difficulty)}
                             {!path.isActive && (
                               <Badge className="bg-red-500/20 text-red-400">Inactive</Badge>
                             )}
                           </div>
-                          <p className="text-sm text-gray-400 mb-2">{path.category}</p>
+                          <p className="text-sm text-[#6b7280] mb-2">{path.category}</p>
                         </div>
                         <div className="flex gap-1">
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-gray-400 hover:text-white h-8 w-8 p-0"
+                            className="text-[#6b7280] hover:text-[#1a1a1a] h-8 w-8 p-0"
                             onClick={(e) => {
                               e.stopPropagation()
                               openEditPathDialog(path)
@@ -615,7 +615,7 @@ export default function LearningPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-gray-400 hover:text-red-400 h-8 w-8 p-0"
+                            className="text-[#6b7280] hover:text-red-400 h-8 w-8 p-0"
                             onClick={(e) => {
                               e.stopPropagation()
                               handleDeletePath(path.id)
@@ -630,7 +630,7 @@ export default function LearningPage() {
                           </Button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-400">
+                      <div className="flex items-center gap-4 text-sm text-[#6b7280]">
                         <span className="flex items-center gap-1">
                           <PlayCircle className="h-4 w-4" />
                           {path.modulesCount} modules
@@ -643,7 +643,7 @@ export default function LearningPage() {
                           <Badge
                             className={
                               path.tier === 'PREMIUM'
-                                ? 'bg-purple-500/20 text-purple-400'
+                                ? 'bg-[#00b887]/20 text-[#00b887]'
                                 : 'bg-green-500/20 text-green-400'
                             }
                           >
@@ -655,7 +655,7 @@ export default function LearningPage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 text-gray-400">
+                <div className="text-center py-12 text-[#6b7280]">
                   <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>No learning paths found</p>
                   <p className="text-sm mt-2">Create your first learning path to get started</p>
@@ -667,10 +667,10 @@ export default function LearningPage() {
 
         {/* Modules Panel */}
         <div>
-          <Card className="border-[#2A2D3A] bg-[#1A1D29] h-full">
+          <Card className="border-[#e5e7eb] bg-white h-full">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-[#1a1a1a] flex items-center gap-2">
                   <PlayCircle className="h-5 w-5 text-[#00D09C]" />
                   {selectedPath ? selectedPath.title : 'Modules'}
                 </CardTitle>
@@ -682,10 +682,10 @@ export default function LearningPage() {
                         Add
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="border-[#2A2D3A] bg-[#1A1D29] text-white max-w-2xl max-h-[90vh]">
+                    <DialogContent className="border-[#e5e7eb] bg-white text-[#1a1a1a] max-w-2xl max-h-[90vh]">
                       <DialogHeader>
                         <DialogTitle>Add Module</DialogTitle>
-                        <DialogDescription className="text-gray-400">
+                        <DialogDescription className="text-[#6b7280]">
                           Add a new module to {selectedPath.title}
                         </DialogDescription>
                       </DialogHeader>
@@ -697,7 +697,7 @@ export default function LearningPage() {
                             placeholder="e.g., Market Basics"
                             value={moduleForm.title}
                             onChange={(e) => setModuleForm({ ...moduleForm, title: e.target.value })}
-                            className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                            className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                           />
                         </div>
                         <div className="space-y-2">
@@ -707,7 +707,7 @@ export default function LearningPage() {
                             placeholder="Brief description of this module"
                             value={moduleForm.description}
                             onChange={(e) => setModuleForm({ ...moduleForm, description: e.target.value })}
-                            className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[80px]"
+                            className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a] min-h-[80px]"
                           />
                         </div>
                         <div className="space-y-2">
@@ -717,7 +717,7 @@ export default function LearningPage() {
                             placeholder="# Module Content&#10;&#10;Write your module content in markdown format..."
                             value={moduleForm.content}
                             onChange={(e) => setModuleForm({ ...moduleForm, content: e.target.value })}
-                            className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[200px] font-mono text-sm"
+                            className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a] min-h-[200px] font-mono text-sm"
                           />
                         </div>
                         <div className="space-y-2">
@@ -727,7 +727,7 @@ export default function LearningPage() {
                             placeholder="https://..."
                             value={moduleForm.videoUrl}
                             onChange={(e) => setModuleForm({ ...moduleForm, videoUrl: e.target.value })}
-                            className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                            className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                           />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -739,7 +739,7 @@ export default function LearningPage() {
                               placeholder="30"
                               value={moduleForm.duration}
                               onChange={(e) => setModuleForm({ ...moduleForm, duration: parseInt(e.target.value) || 0 })}
-                              className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                              className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                             />
                           </div>
                           <div className="space-y-2">
@@ -750,7 +750,7 @@ export default function LearningPage() {
                               placeholder="0"
                               value={moduleForm.order}
                               onChange={(e) => setModuleForm({ ...moduleForm, order: parseInt(e.target.value) || 0 })}
-                              className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                              className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                             />
                           </div>
                         </div>
@@ -767,7 +767,7 @@ export default function LearningPage() {
                         <Button
                           variant="outline"
                           onClick={() => setAddModuleDialogOpen(false)}
-                          className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+                          className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
                         >
                           Cancel
                         </Button>
@@ -788,9 +788,9 @@ export default function LearningPage() {
                 modulesLoading ? (
                   <div className="space-y-3">
                     {[...Array(3)].map((_, i) => (
-                      <div key={i} className="p-4 rounded-lg bg-[#0F1117] animate-pulse">
-                        <div className="h-4 bg-[#2A2D3A] rounded w-3/4 mb-2" />
-                        <div className="h-3 bg-[#2A2D3A] rounded w-1/2" />
+                      <div key={i} className="p-4 rounded-lg bg-[#f5f7fa] animate-pulse">
+                        <div className="h-4 bg-[#f0f2f5] rounded w-3/4 mb-2" />
+                        <div className="h-3 bg-[#f0f2f5] rounded w-1/2" />
                       </div>
                     ))}
                   </div>
@@ -799,18 +799,18 @@ export default function LearningPage() {
                     {modules.map((module) => (
                       <div
                         key={module.id}
-                        className="p-4 rounded-lg bg-[#0F1117] border border-[#2A2D3A]"
+                        className="p-4 rounded-lg bg-[#f5f7fa] border border-[#e5e7eb]"
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <span className="text-xs text-gray-500">#{module.order + 1}</span>
-                              <h4 className="font-medium text-white">{module.title}</h4>
+                              <h4 className="font-medium text-[#1a1a1a]">{module.title}</h4>
                               {!module.isActive && (
                                 <Badge className="bg-red-500/20 text-red-400 text-xs">Inactive</Badge>
                               )}
                             </div>
-                            <div className="flex items-center gap-3 text-sm text-gray-400">
+                            <div className="flex items-center gap-3 text-sm text-[#6b7280]">
                               <span className="flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
                                 {formatDuration(module.duration)}
@@ -821,7 +821,7 @@ export default function LearningPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-gray-400 hover:text-white h-8 w-8 p-0"
+                              className="text-[#6b7280] hover:text-[#1a1a1a] h-8 w-8 p-0"
                               onClick={() => openEditModuleDialog(module)}
                             >
                               <Edit className="h-4 w-4" />
@@ -829,7 +829,7 @@ export default function LearningPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-gray-400 hover:text-red-400 h-8 w-8 p-0"
+                              className="text-[#6b7280] hover:text-red-400 h-8 w-8 p-0"
                               onClick={() => handleDeleteModule(module.id)}
                               disabled={deletingModuleId === module.id}
                             >
@@ -845,14 +845,14 @@ export default function LearningPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-gray-400">
+                  <div className="text-center py-8 text-[#6b7280]">
                     <PlayCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
                     <p>No modules yet</p>
                     <p className="text-sm mt-1">Add your first module to get started</p>
                   </div>
                 )
               ) : (
-                <div className="text-center py-8 text-gray-400">
+                <div className="text-center py-8 text-[#6b7280]">
                   <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
                   <p>Select a learning path</p>
                   <p className="text-sm mt-1">Click on a path to view its modules</p>
@@ -865,10 +865,10 @@ export default function LearningPage() {
 
       {/* Edit Path Dialog */}
       <Dialog open={editPathDialogOpen} onOpenChange={setEditPathDialogOpen}>
-        <DialogContent className="border-[#2A2D3A] bg-[#1A1D29] text-white max-w-2xl">
+        <DialogContent className="border-[#e5e7eb] bg-white text-[#1a1a1a] max-w-2xl">
           <DialogHeader>
             <DialogTitle>Edit Learning Path</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#6b7280]">
               Update the learning path details
             </DialogDescription>
           </DialogHeader>
@@ -880,7 +880,7 @@ export default function LearningPage() {
                 placeholder="e.g., Introduction to Trading"
                 value={pathForm.title}
                 onChange={(e) => setPathForm({ ...pathForm, title: e.target.value })}
-                className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
               />
             </div>
             <div className="space-y-2">
@@ -890,7 +890,7 @@ export default function LearningPage() {
                 placeholder="Brief description of the learning path"
                 value={pathForm.description}
                 onChange={(e) => setPathForm({ ...pathForm, description: e.target.value })}
-                className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[100px]"
+                className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a] min-h-[100px]"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -901,7 +901,7 @@ export default function LearningPage() {
                   placeholder="e.g., Trading, Investing"
                   value={pathForm.category}
                   onChange={(e) => setPathForm({ ...pathForm, category: e.target.value })}
-                  className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                  className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                 />
               </div>
               <div className="space-y-2">
@@ -910,10 +910,10 @@ export default function LearningPage() {
                   value={pathForm.difficulty}
                   onValueChange={(value) => setPathForm({ ...pathForm, difficulty: value })}
                 >
-                  <SelectTrigger className="border-[#2A2D3A] bg-[#0F1117] text-white">
+                  <SelectTrigger className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="border-[#2A2D3A] bg-[#1A1D29]">
+                  <SelectContent className="border-[#e5e7eb] bg-white">
                     <SelectItem value="Beginner">Beginner</SelectItem>
                     <SelectItem value="Intermediate">Intermediate</SelectItem>
                     <SelectItem value="Advanced">Advanced</SelectItem>
@@ -928,10 +928,10 @@ export default function LearningPage() {
                   value={pathForm.tier}
                   onValueChange={(value) => setPathForm({ ...pathForm, tier: value })}
                 >
-                  <SelectTrigger className="border-[#2A2D3A] bg-[#0F1117] text-white">
+                  <SelectTrigger className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="border-[#2A2D3A] bg-[#1A1D29]">
+                  <SelectContent className="border-[#e5e7eb] bg-white">
                     <SelectItem value="FREE">Free</SelectItem>
                     <SelectItem value="PREMIUM">Premium</SelectItem>
                   </SelectContent>
@@ -945,7 +945,7 @@ export default function LearningPage() {
                   placeholder="0"
                   value={pathForm.order}
                   onChange={(e) => setPathForm({ ...pathForm, order: parseInt(e.target.value) || 0 })}
-                  className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                  className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                 />
               </div>
             </div>
@@ -957,13 +957,13 @@ export default function LearningPage() {
                   type="color"
                   value={pathForm.accentColor}
                   onChange={(e) => setPathForm({ ...pathForm, accentColor: e.target.value })}
-                  className="w-20 h-10 border-[#2A2D3A] bg-[#0F1117] text-white"
+                  className="w-20 h-10 border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                 />
                 <Input
                   placeholder="#00D09C"
                   value={pathForm.accentColor}
                   onChange={(e) => setPathForm({ ...pathForm, accentColor: e.target.value })}
-                  className="flex-1 border-[#2A2D3A] bg-[#0F1117] text-white"
+                  className="flex-1 border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                 />
               </div>
             </div>
@@ -980,7 +980,7 @@ export default function LearningPage() {
             <Button
               variant="outline"
               onClick={() => setEditPathDialogOpen(false)}
-              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+              className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
             >
               Cancel
             </Button>
@@ -997,10 +997,10 @@ export default function LearningPage() {
 
       {/* Edit Module Dialog */}
       <Dialog open={editModuleDialogOpen} onOpenChange={setEditModuleDialogOpen}>
-        <DialogContent className="border-[#2A2D3A] bg-[#1A1D29] text-white max-w-2xl max-h-[90vh]">
+        <DialogContent className="border-[#e5e7eb] bg-white text-[#1a1a1a] max-w-2xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>Edit Module</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#6b7280]">
               Update the module details
             </DialogDescription>
           </DialogHeader>
@@ -1012,7 +1012,7 @@ export default function LearningPage() {
                 placeholder="e.g., Market Basics"
                 value={moduleForm.title}
                 onChange={(e) => setModuleForm({ ...moduleForm, title: e.target.value })}
-                className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
               />
             </div>
             <div className="space-y-2">
@@ -1022,7 +1022,7 @@ export default function LearningPage() {
                 placeholder="Brief description of this module"
                 value={moduleForm.description}
                 onChange={(e) => setModuleForm({ ...moduleForm, description: e.target.value })}
-                className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[80px]"
+                className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a] min-h-[80px]"
               />
             </div>
             <div className="space-y-2">
@@ -1032,7 +1032,7 @@ export default function LearningPage() {
                 placeholder="# Module Content&#10;&#10;Write your module content in markdown format..."
                 value={moduleForm.content}
                 onChange={(e) => setModuleForm({ ...moduleForm, content: e.target.value })}
-                className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[200px] font-mono text-sm"
+                className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a] min-h-[200px] font-mono text-sm"
               />
             </div>
             <div className="space-y-2">
@@ -1042,7 +1042,7 @@ export default function LearningPage() {
                 placeholder="https://..."
                 value={moduleForm.videoUrl}
                 onChange={(e) => setModuleForm({ ...moduleForm, videoUrl: e.target.value })}
-                className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -1054,7 +1054,7 @@ export default function LearningPage() {
                   placeholder="30"
                   value={moduleForm.duration}
                   onChange={(e) => setModuleForm({ ...moduleForm, duration: parseInt(e.target.value) || 0 })}
-                  className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                  className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                 />
               </div>
               <div className="space-y-2">
@@ -1065,7 +1065,7 @@ export default function LearningPage() {
                   placeholder="0"
                   value={moduleForm.order}
                   onChange={(e) => setModuleForm({ ...moduleForm, order: parseInt(e.target.value) || 0 })}
-                  className="border-[#2A2D3A] bg-[#0F1117] text-white"
+                  className="border-[#e5e7eb] bg-[#f5f7fa] text-[#1a1a1a]"
                 />
               </div>
             </div>
@@ -1082,7 +1082,7 @@ export default function LearningPage() {
             <Button
               variant="outline"
               onClick={() => setEditModuleDialogOpen(false)}
-              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+              className="border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
             >
               Cancel
             </Button>

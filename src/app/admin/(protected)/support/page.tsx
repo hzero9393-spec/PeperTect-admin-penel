@@ -147,12 +147,12 @@ export default function SupportPage() {
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { color: string; bg: string }> = {
-      OPEN: { color: 'text-blue-400', bg: 'bg-blue-400/10' },
+      OPEN: { color: 'text-[#00D09C]', bg: 'bg-[#00D09C]/10' },
       IN_PROGRESS: { color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
       RESOLVED: { color: 'text-green-400', bg: 'bg-green-400/10' },
-      CLOSED: { color: 'text-gray-400', bg: 'bg-gray-400/10' },
+      CLOSED: { color: 'text-[#6b7280]', bg: 'bg-gray-400/10' },
     }
-    const style = variants[status] || { color: 'text-gray-400', bg: 'bg-gray-400/10' }
+    const style = variants[status] || { color: 'text-[#6b7280]', bg: 'bg-gray-400/10' }
     return (
       <Badge className={`${style.bg} ${style.color} border-none`}>
         {status.replace('_', ' ')}
@@ -162,12 +162,12 @@ export default function SupportPage() {
 
   const getPriorityBadge = (priority: string) => {
     const variants: Record<string, { color: string; bg: string }> = {
-      LOW: { color: 'text-gray-400', bg: 'bg-gray-400/10' },
+      LOW: { color: 'text-[#6b7280]', bg: 'bg-gray-400/10' },
       MEDIUM: { color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
-      HIGH: { color: 'text-orange-400', bg: 'bg-orange-400/10' },
+      HIGH: { color: 'text-[#00b887]', bg: 'bg-[#00b887]/10' },
       URGENT: { color: 'text-red-400', bg: 'bg-red-400/10' },
     }
-    const style = variants[priority] || { color: 'text-gray-400', bg: 'bg-gray-400/10' }
+    const style = variants[priority] || { color: 'text-[#6b7280]', bg: 'bg-gray-400/10' }
     return (
       <Badge className={`${style.bg} ${style.color} border-none`}>
         {priority}
@@ -331,15 +331,15 @@ export default function SupportPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Support Tickets</h1>
-          <p className="text-gray-400 mt-1">Manage customer support tickets and inquiries</p>
+          <h1 className="text-2xl font-bold text-[#1a1a1a]">Support Tickets</h1>
+          <p className="text-[#6b7280] mt-1">Manage customer support tickets and inquiries</p>
         </div>
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
-            className="bg-[#1A1D29] border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+            className="bg-white border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
           >
             <Filter className="h-4 w-4 mr-2" />
             Filters
@@ -352,7 +352,7 @@ export default function SupportPage() {
             size="sm"
             onClick={fetchTickets}
             disabled={loading}
-            className="bg-[#1A1D29] border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+            className="bg-white border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </Button>
@@ -361,15 +361,15 @@ export default function SupportPage() {
 
       {/* Filters */}
       {showFilters && (
-        <Card className="p-4 bg-[#1A1D29] border-[#2A2D3A]">
+        <Card className="p-4 bg-white border-[#e5e7eb]">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">Status</label>
+              <label className="text-sm font-medium text-[#6b7280]">Status</label>
               <Select value={status} onValueChange={setStatus}>
-                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                   <SelectValue placeholder="All Status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                <SelectContent className="bg-white border-[#e5e7eb]">
                   <SelectItem value="">All Status</SelectItem>
                   <SelectItem value="OPEN">Open</SelectItem>
                   <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
@@ -380,12 +380,12 @@ export default function SupportPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">Priority</label>
+              <label className="text-sm font-medium text-[#6b7280]">Priority</label>
               <Select value={priority} onValueChange={setPriority}>
-                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                   <SelectValue placeholder="All Priority" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                <SelectContent className="bg-white border-[#e5e7eb]">
                   <SelectItem value="">All Priority</SelectItem>
                   <SelectItem value="LOW">Low</SelectItem>
                   <SelectItem value="MEDIUM">Medium</SelectItem>
@@ -396,12 +396,12 @@ export default function SupportPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">Category</label>
+              <label className="text-sm font-medium text-[#6b7280]">Category</label>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+                <SelectTrigger className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                <SelectContent className="bg-white border-[#e5e7eb]">
                   <SelectItem value="">All Categories</SelectItem>
                   <SelectItem value="ACCOUNT">Account</SelectItem>
                   <SelectItem value="BILLING">Billing</SelectItem>
@@ -413,33 +413,33 @@ export default function SupportPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">Start Date</label>
+              <label className="text-sm font-medium text-[#6b7280]">Start Date</label>
               <Input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">End Date</label>
+              <label className="text-sm font-medium text-[#6b7280]">End Date</label>
               <Input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+                className="bg-[#f5f7fa] border-[#e5e7eb] text-[#1a1a1a]"
               />
             </div>
           </div>
 
           {hasActiveFilters && (
-            <div className="mt-4 pt-4 border-t border-[#2A2D3A] flex items-center justify-end">
+            <div className="mt-4 pt-4 border-t border-[#e5e7eb] flex items-center justify-end">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="text-gray-400 hover:text-white"
+                className="text-[#6b7280] hover:text-[#1a1a1a]"
               >
                 <X className="h-4 w-4 mr-2" />
                 Clear Filters
@@ -450,53 +450,53 @@ export default function SupportPage() {
       )}
 
       {/* Tickets Table */}
-      <Card className="bg-[#1A1D29] border-[#2A2D3A]">
+      <Card className="bg-white border-[#e5e7eb]">
         <Table>
           <TableHeader>
-            <TableRow className="border-[#2A2D3A] hover:bg-[#1A1D29]">
-              <TableHead className="text-gray-400 font-medium">ID</TableHead>
-              <TableHead className="text-gray-400 font-medium">User</TableHead>
-              <TableHead className="text-gray-400 font-medium">Subject</TableHead>
-              <TableHead className="text-gray-400 font-medium">Status</TableHead>
-              <TableHead className="text-gray-400 font-medium">Priority</TableHead>
-              <TableHead className="text-gray-400 font-medium">Category</TableHead>
-              <TableHead className="text-gray-400 font-medium">Created At</TableHead>
-              <TableHead className="text-gray-400 font-medium text-right">Actions</TableHead>
+            <TableRow className="border-[#e5e7eb] hover:bg-white">
+              <TableHead className="text-[#6b7280] font-medium">ID</TableHead>
+              <TableHead className="text-[#6b7280] font-medium">User</TableHead>
+              <TableHead className="text-[#6b7280] font-medium">Subject</TableHead>
+              <TableHead className="text-[#6b7280] font-medium">Status</TableHead>
+              <TableHead className="text-[#6b7280] font-medium">Priority</TableHead>
+              <TableHead className="text-[#6b7280] font-medium">Category</TableHead>
+              <TableHead className="text-[#6b7280] font-medium">Created At</TableHead>
+              <TableHead className="text-[#6b7280] font-medium text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i} className="border-[#2A2D3A]">
+                <TableRow key={i} className="border-[#e5e7eb]">
                   <TableCell>
-                    <Skeleton className="h-4 w-16 bg-[#2A2D3A]" />
+                    <Skeleton className="h-4 w-16 bg-[#f0f2f5]" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-4 w-32 bg-[#2A2D3A]" />
+                    <Skeleton className="h-4 w-32 bg-[#f0f2f5]" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-4 w-48 bg-[#2A2D3A]" />
+                    <Skeleton className="h-4 w-48 bg-[#f0f2f5]" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-6 w-20 bg-[#2A2D3A]" />
+                    <Skeleton className="h-6 w-20 bg-[#f0f2f5]" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-6 w-20 bg-[#2A2D3A]" />
+                    <Skeleton className="h-6 w-20 bg-[#f0f2f5]" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-4 w-24 bg-[#2A2D3A]" />
+                    <Skeleton className="h-4 w-24 bg-[#f0f2f5]" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-4 w-24 bg-[#2A2D3A]" />
+                    <Skeleton className="h-4 w-24 bg-[#f0f2f5]" />
                   </TableCell>
                   <TableCell className="text-right">
-                    <Skeleton className="h-8 w-20 ml-auto bg-[#2A2D3A]" />
+                    <Skeleton className="h-8 w-20 ml-auto bg-[#f0f2f5]" />
                   </TableCell>
                 </TableRow>
               ))
             ) : tickets.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-400">
+                <TableCell colSpan={8} className="text-center py-8 text-[#6b7280]">
                   No tickets found
                 </TableCell>
               </TableRow>
@@ -504,42 +504,42 @@ export default function SupportPage() {
               tickets.map((ticket) => (
                 <TableRow
                   key={ticket.id}
-                  className="border-[#2A2D3A] hover:bg-[#242836] cursor-pointer"
+                  className="border-[#e5e7eb] hover:bg-[#242836] cursor-pointer"
                   onClick={() => handleViewTicket(ticket)}
                 >
-                  <TableCell className="text-gray-300 font-mono text-sm">
+                  <TableCell className="text-[#6b7280] font-mono text-sm">
                     #{ticket.id.slice(-6)}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-[#2A2D3A] flex items-center justify-center">
-                        <User className="h-4 w-4 text-gray-400" />
+                      <div className="w-8 h-8 rounded-full bg-[#f0f2f5] flex items-center justify-center">
+                        <User className="h-4 w-4 text-[#6b7280]" />
                       </div>
                       <div>
-                        <div className="text-white font-medium">
+                        <div className="text-[#1a1a1a] font-medium">
                           {ticket.userName || 'Unknown'}
                         </div>
-                        <div className="text-gray-400 text-xs">
+                        <div className="text-[#6b7280] text-xs">
                           {ticket.userEmail || ''}
                         </div>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-white font-medium max-w-xs truncate">
+                  <TableCell className="text-[#1a1a1a] font-medium max-w-xs truncate">
                     {ticket.subject}
                   </TableCell>
                   <TableCell>{getStatusBadge(ticket.status)}</TableCell>
                   <TableCell>{getPriorityBadge(ticket.priority)}</TableCell>
-                  <TableCell className="text-gray-300">
+                  <TableCell className="text-[#6b7280]">
                     {ticket.category || '—'}
                   </TableCell>
-                  <TableCell className="text-gray-400">
+                  <TableCell className="text-[#6b7280]">
                     {formatDate(ticket.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
                       {ticket.replyCount > 0 && (
-                        <Badge variant="outline" className="border-[#2A2D3A] text-gray-400">
+                        <Badge variant="outline" className="border-[#e5e7eb] text-[#6b7280]">
                           <MessageSquare className="h-3 w-3 mr-1" />
                           {ticket.replyCount}
                         </Badge>
@@ -561,8 +561,8 @@ export default function SupportPage() {
 
         {/* Pagination */}
         {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#2A2D3A]">
-            <div className="text-sm text-gray-400">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#e5e7eb]">
+            <div className="text-sm text-[#6b7280]">
               Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
               {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
               {pagination.total} tickets
@@ -573,11 +573,11 @@ export default function SupportPage() {
                 size="sm"
                 onClick={() => setPagination((prev) => ({ ...prev, page: prev.page - 1 }))}
                 disabled={pagination.page === 1}
-                className="bg-[#1A1D29] border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+                className="bg-white border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
               >
                 Previous
               </Button>
-              <span className="text-sm text-gray-400 px-2">
+              <span className="text-sm text-[#6b7280] px-2">
                 Page {pagination.page} of {pagination.totalPages}
               </span>
               <Button
@@ -585,7 +585,7 @@ export default function SupportPage() {
                 size="sm"
                 onClick={() => setPagination((prev) => ({ ...prev, page: prev.page + 1 }))}
                 disabled={pagination.page === pagination.totalPages}
-                className="bg-[#1A1D29] border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+                className="bg-white border-[#e5e7eb] text-[#1a1a1a] hover:bg-[#f0f2f5]"
               >
                 Next
               </Button>
@@ -596,70 +596,70 @@ export default function SupportPage() {
 
       {/* Ticket Detail Dialog */}
       <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] bg-[#1A1D29] border-[#2A2D3A] text-white">
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-white border-[#e5e7eb] text-[#1a1a1a]">
           <DialogHeader>
             <DialogTitle className="text-xl">Ticket Details</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#6b7280]">
               Manage and respond to support ticket
             </DialogDescription>
           </DialogHeader>
 
           {ticketLoading ? (
             <div className="space-y-4 py-4">
-              <Skeleton className="h-8 w-full bg-[#2A2D3A]" />
-              <Skeleton className="h-32 w-full bg-[#2A2D3A]" />
-              <Skeleton className="h-20 w-full bg-[#2A2D3A]" />
+              <Skeleton className="h-8 w-full bg-[#f0f2f5]" />
+              <Skeleton className="h-32 w-full bg-[#f0f2f5]" />
+              <Skeleton className="h-20 w-full bg-[#f0f2f5]" />
             </div>
           ) : selectedTicket ? (
             <div className="space-y-4 py-2">
               {/* Ticket Info */}
-              <Card className="p-4 bg-[#0F1117] border-[#2A2D3A]">
+              <Card className="p-4 bg-[#f5f7fa] border-[#e5e7eb]">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm text-gray-400">Subject</label>
-                    <p className="text-white font-medium mt-1">{selectedTicket.subject}</p>
+                    <label className="text-sm text-[#6b7280]">Subject</label>
+                    <p className="text-[#1a1a1a] font-medium mt-1">{selectedTicket.subject}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-400">User</label>
-                    <p className="text-white mt-1">{selectedTicket.userName || 'Unknown'}</p>
-                    <p className="text-gray-400 text-sm">{selectedTicket.userEmail || ''}</p>
+                    <label className="text-sm text-[#6b7280]">User</label>
+                    <p className="text-[#1a1a1a] mt-1">{selectedTicket.userName || 'Unknown'}</p>
+                    <p className="text-[#6b7280] text-sm">{selectedTicket.userEmail || ''}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-400">Status</label>
+                    <label className="text-sm text-[#6b7280]">Status</label>
                     <div className="mt-1">{getStatusBadge(selectedTicket.status)}</div>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-400">Priority</label>
+                    <label className="text-sm text-[#6b7280]">Priority</label>
                     <div className="mt-1">{getPriorityBadge(selectedTicket.priority)}</div>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-400">Category</label>
-                    <p className="text-white mt-1">{selectedTicket.category || '—'}</p>
+                    <label className="text-sm text-[#6b7280]">Category</label>
+                    <p className="text-[#1a1a1a] mt-1">{selectedTicket.category || '—'}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-400">Created</label>
-                    <p className="text-white mt-1">{formatDateTime(selectedTicket.createdAt)}</p>
+                    <label className="text-sm text-[#6b7280]">Created</label>
+                    <p className="text-[#1a1a1a] mt-1">{formatDateTime(selectedTicket.createdAt)}</p>
                   </div>
                 </div>
                 <div className="mt-4">
-                  <label className="text-sm text-gray-400">Description</label>
-                  <p className="text-gray-300 mt-1 bg-[#1A1D29] p-3 rounded border border-[#2A2D3A]">
+                  <label className="text-sm text-[#6b7280]">Description</label>
+                  <p className="text-[#6b7280] mt-1 bg-white p-3 rounded border border-[#e5e7eb]">
                     {selectedTicket.description}
                   </p>
                 </div>
               </Card>
 
               {/* Update Controls */}
-              <Card className="p-4 bg-[#0F1117] border-[#2A2D3A]">
-                <h3 className="text-sm font-medium text-gray-400 mb-3">Update Ticket</h3>
+              <Card className="p-4 bg-[#f5f7fa] border-[#e5e7eb]">
+                <h3 className="text-sm font-medium text-[#6b7280] mb-3">Update Ticket</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                   <div>
-                    <label className="text-xs text-gray-400 mb-1 block">Status</label>
+                    <label className="text-xs text-[#6b7280] mb-1 block">Status</label>
                     <Select value={updateStatus} onValueChange={setUpdateStatus}>
-                      <SelectTrigger className="bg-[#1A1D29] border-[#2A2D3A] text-white h-8">
+                      <SelectTrigger className="bg-white border-[#e5e7eb] text-[#1a1a1a] h-8">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                      <SelectContent className="bg-white border-[#e5e7eb]">
                         <SelectItem value="OPEN">Open</SelectItem>
                         <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
                         <SelectItem value="RESOLVED">Resolved</SelectItem>
@@ -668,12 +668,12 @@ export default function SupportPage() {
                     </Select>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-400 mb-1 block">Priority</label>
+                    <label className="text-xs text-[#6b7280] mb-1 block">Priority</label>
                     <Select value={updatePriority} onValueChange={setUpdatePriority}>
-                      <SelectTrigger className="bg-[#1A1D29] border-[#2A2D3A] text-white h-8">
+                      <SelectTrigger className="bg-white border-[#e5e7eb] text-[#1a1a1a] h-8">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                      <SelectContent className="bg-white border-[#e5e7eb]">
                         <SelectItem value="LOW">Low</SelectItem>
                         <SelectItem value="MEDIUM">Medium</SelectItem>
                         <SelectItem value="HIGH">High</SelectItem>
@@ -682,12 +682,12 @@ export default function SupportPage() {
                     </Select>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-400 mb-1 block">Category</label>
+                    <label className="text-xs text-[#6b7280] mb-1 block">Category</label>
                     <Select value={updateCategory} onValueChange={setUpdateCategory}>
-                      <SelectTrigger className="bg-[#1A1D29] border-[#2A2D3A] text-white h-8">
+                      <SelectTrigger className="bg-white border-[#e5e7eb] text-[#1a1a1a] h-8">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+                      <SelectContent className="bg-white border-[#e5e7eb]">
                         <SelectItem value="">—</SelectItem>
                         <SelectItem value="ACCOUNT">Account</SelectItem>
                         <SelectItem value="BILLING">Billing</SelectItem>
@@ -710,27 +710,27 @@ export default function SupportPage() {
               </Card>
 
               {/* Conversation Thread */}
-              <Card className="bg-[#0F1117] border-[#2A2D3A]">
-                <div className="p-4 border-b border-[#2A2D3A]">
-                  <h3 className="text-sm font-medium text-gray-400">Conversation</h3>
+              <Card className="bg-[#f5f7fa] border-[#e5e7eb]">
+                <div className="p-4 border-b border-[#e5e7eb]">
+                  <h3 className="text-sm font-medium text-[#6b7280]">Conversation</h3>
                 </div>
                 <ScrollArea className="h-80 p-4" ref={scrollAreaRef}>
                   <div className="space-y-4">
                     {/* Initial Ticket Message */}
                     <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#2A2D3A] flex items-center justify-center flex-shrink-0">
-                        <User className="h-4 w-4 text-gray-400" />
+                      <div className="w-8 h-8 rounded-full bg-[#f0f2f5] flex items-center justify-center flex-shrink-0">
+                        <User className="h-4 w-4 text-[#6b7280]" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-white font-medium text-sm">
+                          <span className="text-[#1a1a1a] font-medium text-sm">
                             {selectedTicket.userName || 'User'}
                           </span>
                           <span className="text-gray-500 text-xs">
                             {formatDate(selectedTicket.createdAt)}
                           </span>
                         </div>
-                        <div className="bg-[#1A1D29] rounded-lg p-3 text-gray-300 text-sm">
+                        <div className="bg-white rounded-lg p-3 text-[#6b7280] text-sm">
                           {selectedTicket.description}
                         </div>
                       </div>
@@ -748,13 +748,13 @@ export default function SupportPage() {
                           className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                             reply.isAdmin
                               ? 'bg-[#00D09C] text-black'
-                              : 'bg-[#2A2D3A]'
+                              : 'bg-[#f0f2f5]'
                           }`}
                         >
                           {reply.isAdmin ? (
                             <MessageSquare className="h-4 w-4" />
                           ) : (
-                            <User className="h-4 w-4 text-gray-400" />
+                            <User className="h-4 w-4 text-[#6b7280]" />
                           )}
                         </div>
                         <div className={`flex-1 ${reply.isAdmin ? 'text-right' : ''}`}>
@@ -763,7 +763,7 @@ export default function SupportPage() {
                               reply.isAdmin ? 'justify-end' : ''
                             }`}
                           >
-                            <span className="text-white font-medium text-sm">
+                            <span className="text-[#1a1a1a] font-medium text-sm">
                               {reply.isAdmin ? 'Admin' : selectedTicket.userName || 'User'}
                             </span>
                             <span className="text-gray-500 text-xs">
@@ -774,7 +774,7 @@ export default function SupportPage() {
                             className={`rounded-lg p-3 text-sm ${
                               reply.isAdmin
                                 ? 'bg-[#00D09C]/20 text-gray-200'
-                                : 'bg-[#1A1D29] text-gray-300'
+                                : 'bg-white text-[#6b7280]'
                             }`}
                           >
                             {reply.message}
@@ -792,13 +792,13 @@ export default function SupportPage() {
                 </ScrollArea>
 
                 {/* Reply Input */}
-                <div className="p-4 border-t border-[#2A2D3A]">
+                <div className="p-4 border-t border-[#e5e7eb]">
                   <div className="flex gap-3">
                     <Textarea
                       placeholder="Type your reply..."
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
-                      className="flex-1 bg-[#1A1D29] border-[#2A2D3A] text-white resize-none min-h-[60px]"
+                      className="flex-1 bg-white border-[#e5e7eb] text-[#1a1a1a] resize-none min-h-[60px]"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                           handleSendReply()
