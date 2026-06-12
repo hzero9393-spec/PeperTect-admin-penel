@@ -1,72 +1,37 @@
-import { redirect } from 'next/navigation'
+'use client'
+
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { AdminHeader } from '@/components/admin/admin-header'
+import { ProtectedAdminWrapper } from '@/components/admin/protected-admin-wrapper'
+import { AdminProvider } from '@/contexts/admin-context'
 
-export const dynamic = 'force-dynamic'
-
-async function checkAdminAuth() {
-  try {
-    const { headers } = await import('next/headers')
-    const headersList = headers()
-    const cookieHeader = headersList.get('cookie') || ''
-    
-    // Parse cookies manually from the header
-    const cookies: Record<string, string> = {}
-    cookieHeader.split(';').forEach(cookie => {
-      const [name, value] = cookie.trim().split('=')
-      if (name && value) {
-        cookies[name] = value
-      }
-    })
-    
-    const token = cookies['admin-token']
-
-    if (!token) {
-      // TEMPORARY: Return a dummy admin for testing
-      return {
-        id: 'test',
-        username: 'admin',
-        name: 'Admin',
-        email: 'admin@test.com',
-        role: 'SUPER_ADMIN',
-      }
-    }
-
-    const { getAdminFromToken } = await import('@/lib/admin-auth')
-    return await getAdminFromToken(token)
-  } catch (error) {
-    console.error('Auth check error:', error)
-    // TEMPORARY: Return a dummy admin for testing
-    return {
-      id: 'test',
-      username: 'admin',
-      name: 'Admin',
-      email: 'admin@test.com',
-      role: 'SUPER_ADMIN',
-    }
-  }
+// Default admin object for server-side rendering
+const defaultAdmin = {
+  id: 'server',
+  username: 'admin',
+  name: 'Admin',
+  email: 'admin@pepertect.com',
+  role: 'SUPER_ADMIN',
 }
 
-export default async function ProtectedAdminLayout({
+export default function ProtectedAdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const admin = await checkAdminAuth()
-
-  if (!admin) {
-    redirect('/admin/login')
-  }
-
   return (
-    <div className="min-h-screen bg-[#0F1117]">
-      <AdminSidebar />
-      <div className="lg:pl-64">
-        <AdminHeader admin={admin} />
-        <main className="p-6">
-          {children}
-        </main>
-      </div>
-    </div>
+    <AdminProvider>
+      <ProtectedAdminWrapper>
+        <div className="min-h-screen bg-[#0F1117]">
+          <AdminSidebar />
+          <div className="lg:pl-64">
+            <AdminHeader admin={defaultAdmin} />
+            <main className="p-6">
+              {children}
+            </main>
+          </div>
+        </div>
+      </ProtectedAdminWrapper>
+    </AdminProvider>
   )
 }
