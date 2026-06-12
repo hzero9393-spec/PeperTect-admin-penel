@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useAdmin } from '@/contexts/admin-context'
+import { useRouter } from 'next/navigation'
 
 export default function AdminLoginPage() {
-  const { login } = useAdmin()
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     username: '',
@@ -17,13 +17,24 @@ export default function AdminLoginPage() {
     setIsLoading(true)
     setError('')
 
-    const success = await login(formData.username, formData.password)
+    try {
+      const response = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
 
-    if (success) {
-      // Full page reload to ensure cookies are set
-      window.location.href = '/admin/dashboard'
-    } else {
-      setError('Invalid username or password')
+      const data = await response.json()
+
+      if (data.success) {
+        // Full page reload to ensure cookies are set
+        window.location.href = '/admin/dashboard'
+      } else {
+        setError(data.error || 'Invalid username or password')
+        setIsLoading(false)
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.')
       setIsLoading(false)
     }
   }
@@ -35,12 +46,12 @@ export default function AdminLoginPage() {
           <h1 style={{ color: 'white', fontSize: '24px', marginBottom: '0.5rem' }}>Admin Login</h1>
           <p style={{ color: '#9CA3AF', fontSize: '14px' }}>Pepertect Trading Platform</p>
         </div>
-        
+
         {error && (
-          <div style={{ 
-            padding: '0.75rem', 
-            marginBottom: '1rem', 
-            backgroundColor: '#dc262620', 
+          <div style={{
+            padding: '0.75rem',
+            marginBottom: '1rem',
+            backgroundColor: '#dc262620',
             border: '1px solid #dc2626',
             borderRadius: '4px',
             color: '#ef4444',
@@ -50,7 +61,7 @@ export default function AdminLoginPage() {
             {error}
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
             <label style={{ color: '#D1D5DB', display: 'block', marginBottom: '0.5rem', fontSize: '14px' }}>Username</label>
