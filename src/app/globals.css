@@ -43,7 +43,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Groww-inspired Light Theme */
+  /* Groww-inspired Light Theme - Only Green Theme */
   --color-tp-surface: #ffffff;
   --color-tp-surface-dim: #f5f7fa;
   --color-tp-surface-bright: #ffffff;
@@ -61,7 +61,7 @@
   --color-tp-primary: #00D09C;
   --color-tp-on-primary: #ffffff;
   --color-tp-primary-container: rgba(0, 208, 156, 0.08);
-  --color-tp-on-primary-container: #3a4fd4;
+  --color-tp-on-primary-container: #009e76;
   --color-tp-primary-fixed: #00D09C;
   --color-tp-primary-fixed-dim: #00b88a;
   --color-tp-on-primary-fixed: #ffffff;
@@ -74,30 +74,30 @@
   --color-tp-secondary-fixed-dim: #00b887;
   --color-tp-on-secondary-fixed: #ffffff;
   --color-tp-on-secondary-fixed-variant: #e6faf3;
-  --color-tp-tertiary: #eb5b3c;
+  --color-tp-tertiary: #00a080;
   --color-tp-on-tertiary: #ffffff;
-  --color-tp-tertiary-container: #fde8e3;
-  --color-tp-on-tertiary-container: #c4422a;
-  --color-tp-tertiary-fixed: #eb5b3c;
-  --color-tp-tertiary-fixed-dim: #d44a2d;
+  --color-tp-tertiary-container: #e6faf5;
+  --color-tp-on-tertiary-container: #008066;
+  --color-tp-tertiary-fixed: #00a080;
+  --color-tp-tertiary-fixed-dim: #009070;
   --color-tp-on-tertiary-fixed: #ffffff;
-  --color-tp-on-tertiary-fixed-variant: #fde8e3;
-  --color-tp-error: #eb5b3c;
+  --color-tp-on-tertiary-fixed-variant: #e6faf5;
+  --color-tp-error: #00a080;
   --color-tp-on-error: #ffffff;
-  --color-tp-error-container: #fde8e3;
-  --color-tp-on-error-container: #c4422a;
+  --color-tp-error-container: #e6faf5;
+  --color-tp-on-error-container: #008066;
   --color-tp-inverse-surface: #1a1a1a;
   --color-tp-inverse-on-surface: #f5f7fa;
-  --color-tp-inverse-primary: #95a3ff;
+  --color-tp-inverse-primary: #00D09C;
   --color-tp-surface-tint: #00D09C;
 
-  /* Trading-specific semantic colors */
-  --color-tp-profit: #00B386;
-  --color-tp-loss: #EB5B3C;
-  --color-tp-profit-bg: rgba(0, 179, 134, 0.08);
-  --color-tp-loss-bg: rgba(235, 91, 60, 0.08);
-  --color-tp-profit-border: rgba(0, 179, 134, 0.2);
-  --color-tp-loss-border: rgba(235, 91, 60, 0.2);
+  /* Trading-specific semantic colors - Only Green */
+  --color-tp-profit: #00D09C;
+  --color-tp-loss: #00a080;
+  --color-tp-profit-bg: rgba(0, 208, 156, 0.08);
+  --color-tp-loss-bg: rgba(0, 160, 128, 0.08);
+  --color-tp-profit-border: rgba(0, 208, 156, 0.2);
+  --color-tp-loss-border: rgba(0, 160, 128, 0.2);
 }
 
 :root {
@@ -117,15 +117,15 @@
   --muted-foreground: #6b7280;
   --accent: #f0f2f5;
   --accent-foreground: #1a1a1a;
-  --destructive: #eb5b3c;
+  --destructive: #00a080;
   --border: #e5e7eb;
   --input: #e5e7eb;
   --ring: #00D09C;
   --chart-1: #00D09C;
-  --chart-2: #00d09c;
-  --chart-3: #eb5b3c;
-  --chart-4: #f59e0b;
-  --chart-5: #8b5cf6;
+  --chart-2: #00c090;
+  --chart-3: #00b080;
+  --chart-4: #00a070;
+  --chart-5: #009060;
   --sidebar: #ffffff;
   --sidebar-foreground: #1a1a1a;
   --sidebar-primary: #00D09C;
@@ -151,15 +151,15 @@
   --muted-foreground: #6b7280;
   --accent: #f0f2f5;
   --accent-foreground: #1a1a1a;
-  --destructive: #eb5b3c;
+  --destructive: #00a080;
   --border: #e5e7eb;
   --input: #e5e7eb;
   --ring: #00D09C;
   --chart-1: #00D09C;
-  --chart-2: #00d09c;
-  --chart-3: #eb5b3c;
-  --chart-4: #f59e0b;
-  --chart-5: #8b5cf6;
+  --chart-2: #00c090;
+  --chart-3: #00b080;
+  --chart-4: #00a070;
+  --chart-5: #009060;
   --sidebar: #ffffff;
   --sidebar-foreground: #1a1a1a;
   --sidebar-primary: #00D09C;
@@ -243,24 +243,24 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Trading-specific utility classes - Light Theme */
+/* Trading-specific utility classes - Only Green Theme */
 .text-profit {
-  color: #00B386;
+  color: #00D09C;
 }
 .text-loss {
-  color: #EB5B3C;
+  color: #00a080;
 }
 .bg-profit {
-  background-color: rgba(0, 179, 134, 0.1);
+  background-color: rgba(0, 208, 156, 0.1);
 }
 .bg-loss {
-  background-color: rgba(235, 91, 60, 0.1);
+  background-color: rgba(0, 160, 128, 0.1);
 }
 .border-profit {
-  border-color: rgba(0, 179, 134, 0.2);
+  border-color: rgba(0, 208, 156, 0.2);
 }
 .border-loss {
-  border-color: rgba(235, 91, 60, 0.2);
+  border-color: rgba(0, 160, 128, 0.2);
 }
 
 /* Groww-style card */
@@ -325,25 +325,25 @@
   box-shadow: 0 0 0 3px rgba(0, 208, 156, 0.1);
 }
 
-/* Profit/Loss pill */
+/* Profit/Loss pill - Only Green */
 .pill-profit {
-  background: rgba(0, 179, 134, 0.1);
+  background: rgba(0, 208, 156, 0.1);
   color: #009e76;
-  border: 1px solid rgba(0, 179, 134, 0.15);
+  border: 1px solid rgba(0, 208, 156, 0.15);
 }
 .pill-loss {
-  background: rgba(235, 91, 60, 0.08);
-  color: #d44a2d;
-  border: 1px solid rgba(235, 91, 60, 0.12);
+  background: rgba(0, 160, 128, 0.08);
+  color: #009070;
+  border: 1px solid rgba(0, 160, 128, 0.12);
 }
 
-/* Real-time price flash animations (stable, no remounting) */
+/* Real-time price flash animations - Only Green */
 @keyframes flashGreen {
-  0% { background-color: rgba(0, 179, 134, 0.18); }
+  0% { background-color: rgba(0, 208, 156, 0.18); }
   100% { background-color: transparent; }
 }
-@keyframes flashRed {
-  0% { background-color: rgba(235, 91, 60, 0.18); }
+@keyframes flashTeal {
+  0% { background-color: rgba(0, 160, 128, 0.18); }
   100% { background-color: transparent; }
 }
 @keyframes pnlFlash {
@@ -356,32 +356,32 @@
   animation: flashGreen 0.5s ease-out forwards;
   border-radius: 4px;
 }
-.animate-flash-red {
-  animation: flashRed 0.5s ease-out forwards;
+.animate-flash-teal {
+  animation: flashTeal 0.5s ease-out forwards;
   border-radius: 4px;
 }
 .animate-pnl-flash {
   animation: pnlFlash 0.35s ease-out forwards;
 }
 
-/* Groww-style P&L fill backgrounds */
+/* Groww-style P&L fill backgrounds - Only Green */
 .pnl-fill-profit {
-  background: linear-gradient(135deg, rgba(0, 179, 134, 0.12) 0%, rgba(0, 179, 134, 0.04) 100%);
-  border: 1px solid rgba(0, 179, 134, 0.18);
+  background: linear-gradient(135deg, rgba(0, 208, 156, 0.12) 0%, rgba(0, 208, 156, 0.04) 100%);
+  border: 1px solid rgba(0, 208, 156, 0.18);
 }
 .pnl-fill-loss {
-  background: linear-gradient(135deg, rgba(235, 91, 60, 0.10) 0%, rgba(235, 91, 60, 0.03) 100%);
-  border: 1px solid rgba(235, 91, 60, 0.15);
+  background: linear-gradient(135deg, rgba(0, 160, 128, 0.10) 0%, rgba(0, 160, 128, 0.03) 100%);
+  border: 1px solid rgba(0, 160, 128, 0.15);
 }
 
-/* Groww-style position card bottom bar */
+/* Groww-style position card bottom bar - Only Green */
 .position-bar-profit {
-  background-color: rgba(0, 179, 134, 0.03);
-  border-top: 1px solid rgba(0, 179, 134, 0.10);
+  background-color: rgba(0, 208, 156, 0.03);
+  border-top: 1px solid rgba(0, 208, 156, 0.10);
 }
 .position-bar-loss {
-  background-color: rgba(235, 91, 60, 0.03);
-  border-top: 1px solid rgba(235, 91, 60, 0.10);
+  background-color: rgba(0, 160, 128, 0.03);
+  border-top: 1px solid rgba(0, 160, 128, 0.10);
 }
 
 /* Groww-style tab pill */

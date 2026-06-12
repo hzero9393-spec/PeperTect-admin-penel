@@ -301,7 +301,7 @@ export default function SettingsPage() {
                   </TableCell>
                   <TableCell>
                     <Badge
-                      className={admin.isActive ? 'bg-[#00D09C] text-black' : 'bg-[#d44a2d]'}
+                      className={admin.isActive ? 'bg-[#00D09C] text-black' : 'bg-[#00a080] text-black'}
                     >
                       {admin.isActive ? 'Active' : 'Inactive'}
                     </Badge>

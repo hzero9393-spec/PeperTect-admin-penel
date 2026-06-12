@@ -62,8 +62,8 @@ export default function AdminLoginPage() {
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-[#fde8e3] border border-[#eb5b3c]/20 rounded-lg">
-              <p className="text-sm text-[#d44a2d]">{error}</p>
+            <div className="mb-6 p-4 bg-[#e6faf5] border border-[#00a080]/20 rounded-lg">
+              <p className="text-sm text-[#009070]">{error}</p>
             </div>
           )}
 

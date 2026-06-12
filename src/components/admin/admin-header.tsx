@@ -78,7 +78,7 @@ export function AdminHeader({ admin }: AdminHeaderProps) {
                 </a>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-[#e5e7eb]" />
-              <DropdownMenuItem onClick={handleLogout} className="text-[#d44a2d] hover:text-[#d44a2d] hover:bg-[#eb5b3c]/10">
+              <DropdownMenuItem onClick={handleLogout} className="text-[#00a080] hover:text-[#00a080] hover:bg-[#00a080]/10">
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

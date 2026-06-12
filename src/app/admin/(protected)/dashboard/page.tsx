@@ -366,7 +366,7 @@ export default function DashboardPage() {
                         className={
                           trade.tradeDirection === 'BUY'
                             ? 'border-[#00D09C] text-[#00D09C]'
-                            : 'border-[#d44a2d] text-[#d44a2d]'
+                            : 'border-[#00a080] text-[#00a080]'
                         }
                       >
                         {trade.tradeDirection}
@@ -375,9 +375,9 @@ export default function DashboardPage() {
                     <TableCell
                       className={
                         trade.pnl > 0
-                          ? 'text-[#00B386]'
+                          ? 'text-[#00D09C]'
                           : trade.pnl < 0
-                          ? 'text-[#d44a2d]'
+                          ? 'text-[#00a080]'
                           : 'text-[#6b7280]'
                       }
                     >

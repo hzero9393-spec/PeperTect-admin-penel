@@ -50,9 +50,9 @@ interface Notification {
 
 const NOTIFICATION_TYPES = [
   { value: 'INFO', label: 'Info', icon: Info, color: 'bg-[#00D09C]/20 text-[#00D09C] border-[#00D09C]/30' },
-  { value: 'WARNING', label: 'Warning', icon: AlertTriangle, color: 'bg-[#f59e0b]/20 text-[#f59e0b] border-[#f59e0b]/30' },
-  { value: 'SUCCESS', label: 'Success', icon: CheckCircle, color: 'bg-[#00D09C]/20 text-[#00B386] border-[#00D09C]/30' },
-  { value: 'ERROR', label: 'Error', icon: XCircle, color: 'bg-[#d44a2d]/20 text-[#d44a2d] border-[#d44a2d]/30' },
+  { value: 'WARNING', label: 'Warning', icon: AlertTriangle, color: 'bg-[#00b080]/20 text-[#00b080] border-[#00b080]/30' },
+  { value: 'SUCCESS', label: 'Success', icon: CheckCircle, color: 'bg-[#00D09C]/20 text-[#00D09C] border-[#00D09C]/30' },
+  { value: 'ERROR', label: 'Error', icon: XCircle, color: 'bg-[#00a080]/20 text-[#00a080] border-[#00a080]/30' },
 ]
 
 const TARGET_TYPES = [
@@ -305,7 +305,7 @@ export default function NotificationsPage() {
                         className="text-[#1a1a1a]"
                       >
                         <div className="flex items-center gap-2">
-                          <typeOption.icon className={`h-4 w-4 ${typeOption.color.includes('yellow') ? 'text-[#f59e0b]' : typeOption.color.includes('#00B386') ? 'text-[#00B386]' : typeOption.color.includes('#d44a2d') ? 'text-[#d44a2d]' : 'text-[#00D09C]'}`} />
+                          <typeOption.icon className={`h-4 w-4 ${typeOption.color.includes('#00b080') ? 'text-[#00b080]' : typeOption.color.includes('#00a080') ? 'text-[#00a080]' : 'text-[#00D09C]'}`} />
                           {typeOption.label}
                         </div>
                       </SelectItem>

@@ -125,7 +125,7 @@ export function AdminSidebar() {
         <div className="px-3 py-3 border-t border-[#e5e7eb]">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-xs font-medium text-[#d44a2d] hover:bg-[#eb5b3c]/10 transition-colors"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-xs font-medium text-[#00a080] hover:bg-[#00a080]/10 transition-colors"
           >
             <LogOut className="size-4" />
             Logout
