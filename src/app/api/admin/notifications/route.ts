@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+
+export const runtime = "nodejs"
 import { cookies } from 'next/headers'
 import { getAdminFromToken } from '@/lib/admin-auth'
 import { db } from '@/lib/db'
