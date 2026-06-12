@@ -27,3 +27,41 @@ Next actions (unblocked fixes):
 - Add explicit error boundaries to surface context-related errors during development.
 
 Note: Because the login page is unavailable, the remaining sections (Dashboard, Users, Subscriptions, Trading, Market Data, Challenges, Learning, Support, Notifications, Analytics, Settings, Profile) were not accessed via agent-browser. Their status is currently unknown pending the login fix and environment support for agent-browser.
+
+---
+Task ID: 2-a
+Agent: general-purpose
+Task: Update all admin pages to light+green theme
+
+Work Log:
+- Reviewed existing worklog.md to understand previous tasks
+- Identified all admin pages in /home/z/my-project/src/app/admin/(protected)/
+- Verified that admin-sidebar.tsx and admin-header.tsx were already updated to light theme with green accents
+- Performed global theme replacements across all admin pages:
+  - Replaced dark backgrounds: bg-[#1A1D29] → bg-white, bg-[#2A2D3A] → bg-[#f0f2f5], bg-[#0F1117] → bg-[#f5f7fa]
+  - Replaced dark borders: border-[#2A2D3A] → border-[#e5e7eb]
+  - Replaced dark text: text-white → text-[#1a1a1a]
+  - Replaced muted text: text-gray-400 → text-[#6b7280], text-gray-300 → text-[#6b7280]
+- Updated all non-green accent colors to green variants:
+  - blue-400, purple-400, orange-400, pink-400 → [#00D09C], [#00b887], [#00B386]
+  - Chart colors: #3B82F6, #8B5CF6, #F97316, #EC4899 → #00D09C, #00b887
+- Fixed specific instances in:
+  - notifications/page.tsx: Updated NOTIFICATION_TYPES colors and getTargetBadge function
+  - analytics/page.tsx: Updated plan type badges
+  - market/page.tsx: Updated holiday badges
+  - challenges/page.tsx: Updated status badge colors
+- Updated chart colors throughout all pages to use only green (#00D09C) and lighter green variants
+- Verified admin-sidebar.tsx and admin-header.tsx were already correctly themed
+- Ran `bun run lint` - no errors reported
+- Confirmed theme consistency across all admin pages
+
+Stage Summary:
+- ✅ All 11 admin pages updated to light theme with green accents
+- ✅ Backgrounds changed from dark (#1A1D29, #0F1117) to light (white, #f5f7fa, #f0f2f5)
+- ✅ Borders changed from dark (#2A2D3A) to light (#e5e7eb)
+- ✅ Text colors updated: main text to #1a1a1a, muted text to #6b7280
+- ✅ All accent colors replaced with green variants (#00D09C, #00b887, #00B386)
+- ✅ Chart colors updated to use only green palette
+- ✅ Sidebar and header verified to already use light+green theme
+- ✅ Linter passes with no errors
+- ✅ Theme is now consistent with specification: light gray backgrounds, white cards, green accents, dark text

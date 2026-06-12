@@ -1,0 +1,759 @@
+     1→'use client'
+     2→
+     3→import { useEffect, useState } from 'react'
+     4→import { RefreshCw, Search, Filter, X, AlertTriangle } from 'lucide-react'
+     5→import { Card, CardContent } from '@/components/ui/card'
+     6→import { Button } from '@/components/ui/button'
+     7→import { Input } from '@/components/ui/input'
+     8→import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+     9→import { Badge } from '@/components/ui/badge'
+    10→import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+    11→import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+    12→import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+    13→import { toast } from 'sonner'
+    14→import { format } from 'date-fns'
+    15→
+    16→interface Position {
+    17→  id: string
+    18→  userId: string
+    19→  stockId: string
+    20→  quantity: number
+    21→  avgPrice: number
+    22→  currentPrice: number
+    23→  totalValue: number
+    24→  unrealizedPnl: number
+    25→  unrealizedPnlPercent: number
+    26→  dayChange: number
+    27→  dayChangePercent: number
+    28→  type: string
+    29→  createdAt: string
+    30→  updatedAt: string
+    31→  userName: string
+    32→  userEmail: string
+    33→  stockSymbol: string
+    34→  stockName: string
+    35→  stockType: string
+    36→  exchange: string
+    37→}
+    38→
+    39→interface Order {
+    40→  id: string
+    41→  userId: string
+    42→  stockId: string
+    43→  orderType: string
+    44→  tradeType: string
+    45→  quantity: number
+    46→  price: number | null
+    47→  stopPrice: number | null
+    48→  filledQuantity: number
+    49→  status: string
+    50→  reason: string | null
+    51→  createdAt: string
+    52→  updatedAt: string
+    53→  filledAt: string | null
+    54→  cancelledAt: string | null
+    55→  userName: string
+    56→  userEmail: string
+    57→  stockSymbol: string
+    58→  stockName: string
+    59→  stockType: string
+    60→  exchange: string
+    61→}
+    62→
+    63→interface Trade {
+    64→  id: string
+    65→  userId: string
+    66→  stockId: string
+    67→  orderId: string | null
+    68→  tradeType: string
+    69→  quantity: number
+    70→  fillPrice: number
+    71→  totalValue: number
+    72→  pnl: number | null
+    73→  pnlPercent: number | null
+    74→  brokerage: number
+    75→  tax: number
+    76→  transactionType: string
+    77→  createdAt: string
+    78→  updatedAt: string
+    79→  userName: string
+    80→  userEmail: string
+    81→  stockSymbol: string
+    82→  stockName: string
+    83→  stockType: string
+    84→  exchange: string
+    85→}
+    86→
+    87→export default function TradingPage() {
+    88→  const [loading, setLoading] = useState(true)
+    89→  const [positions, setPositions] = useState<Position[]>([])
+    90→  const [orders, setOrders] = useState<Order[]>([])
+    91→  const [trades, setTrades] = useState<Trade[]>([])
+    92→  const [activeTab, setActiveTab] = useState('positions')
+    93→
+    94→  // Filters
+    95→  const [userSearch, setUserSearch] = useState('')
+    96→  const [symbolSearch, setSymbolSearch] = useState('')
+    97→  const [segment, setSegment] = useState('all')
+    98→  const [status, setStatus] = useState('all')
+    99→  const [startDate, setStartDate] = useState('')
+   100→  const [endDate, setEndDate] = useState('')
+   101→
+   102→  // Dialog states
+   103→  const [squareOffDialog, setSquareOffDialog] = useState(false)
+   104→  const [selectedPosition, setSelectedPosition] = useState<Position | null>(null)
+   105→  const [cancelOrderDialog, setCancelOrderDialog] = useState(false)
+   106→  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+   107→  const [actionLoading, setActionLoading] = useState(false)
+   108→
+   109→  const fetchData = async () => {
+   110→    setLoading(true)
+   111→    try {
+   112→      const params = new URLSearchParams()
+   113→      if (userSearch) params.append('userId', userSearch)
+   114→      if (symbolSearch) params.append('symbol', symbolSearch)
+   115→      if (segment && segment !== 'all') params.append('segment', segment)
+   116→      if (status && status !== 'all') params.append('status', status)
+   117→      if (startDate) params.append('startDate', startDate)
+   118→      if (endDate) params.append('endDate', endDate)
+   119→
+   120→      const response = await fetch(`/api/admin/trading?${params.toString()}`)
+   121→      const result = await response.json()
+   122→
+   123→      if (result.success) {
+   124→        setPositions(result.data.positions || [])
+   125→        setOrders(result.data.orders || [])
+   126→        setTrades(result.data.trades || [])
+   127→      } else {
+   128→        toast.error('Failed to load trading data')
+   129→      }
+   130→    } catch (error) {
+   131→      toast.error('An error occurred while fetching data')
+   132→    } finally {
+   133→      setLoading(false)
+   134→    }
+   135→  }
+   136→
+   137→  useEffect(() => {
+   138→    fetchData()
+   139→  }, [activeTab])
+   140→
+   141→  const formatCurrency = (value: number) => {
+   142→    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(value)
+   143→  }
+   144→
+   145→  const formatDate = (dateString: string) => {
+   146→    if (!dateString) return '-'
+   147→    return format(new Date(dateString), 'MMM dd, yyyy HH:mm')
+   148→  }
+   149→
+   150→  const handleForceSquareOff = async () => {
+   151→    if (!selectedPosition) return
+   152→
+   153→    setActionLoading(true)
+   154→    try {
+   155→      // Here you would implement the actual square-off API call
+   156→      // For now, just simulate it
+   157→      await new Promise(resolve => setTimeout(resolve, 1000))
+   158→      toast.success(`Position ${selectedPosition.stockSymbol} squared off successfully`)
+   159→      setSquareOffDialog(false)
+   160→      setSelectedPosition(null)
+   161→      fetchData()
+   162→    } catch (error) {
+   163→      toast.error('Failed to square off position')
+   164→    } finally {
+   165→      setActionLoading(false)
+   166→    }
+   167→  }
+   168→
+   169→  const handleCancelOrder = async () => {
+   170→    if (!selectedOrder) return
+   171→
+   172→    setActionLoading(true)
+   173→    try {
+   174→      // Here you would implement the actual cancel order API call
+   175→      // For now, just simulate it
+   176→      await new Promise(resolve => setTimeout(resolve, 1000))
+   177→      toast.success(`Order ${selectedOrder.id} cancelled successfully`)
+   178→      setCancelOrderDialog(false)
+   179→      setSelectedOrder(null)
+   180→      fetchData()
+   181→    } catch (error) {
+   182→      toast.error('Failed to cancel order')
+   183→    } finally {
+   184→      setActionLoading(false)
+   185→    }
+   186→  }
+   187→
+   188→  const clearFilters = () => {
+   189→    setUserSearch('')
+   190→    setSymbolSearch('')
+   191→    setSegment('all')
+   192→    setStatus('all')
+   193→    setStartDate('')
+   194→    setEndDate('')
+   195→  }
+   196→
+   197→  const renderPositions = () => (
+   198→    <div className="space-y-4">
+   199→      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+   200→        <CardContent className="p-0">
+   201→          <div className="overflow-x-auto">
+   202→            <Table>
+   203→              <TableHeader>
+   204→                <TableRow className="border-[#2A2D3A] hover:bg-transparent">
+   205→                  <TableHead className="text-gray-400">User</TableHead>
+   206→                  <TableHead className="text-gray-400">Symbol</TableHead>
+   207→                  <TableHead className="text-gray-400">Segment</TableHead>
+   208→                  <TableHead className="text-gray-400 text-right">Quantity</TableHead>
+   209→                  <TableHead className="text-gray-400 text-right">Avg Price</TableHead>
+   210→                  <TableHead className="text-gray-400 text-right">Current Price</TableHead>
+   211→                  <TableHead className="text-gray-400 text-right">Unrealized P&L</TableHead>
+   212→                  <TableHead className="text-gray-400 text-right">P&L %</TableHead>
+   213→                  <TableHead className="text-gray-400 text-right">Day Change</TableHead>
+   214→                  <TableHead className="text-gray-400 text-center">Actions</TableHead>
+   215→                </TableRow>
+   216→              </TableHeader>
+   217→              <TableBody>
+   218→                {loading ? (
+   219→                  [...Array(5)].map((_, i) => (
+   220→                    <TableRow key={i} className="border-[#2A2D3A]">
+   221→                      {[...Array(10)].map((_, j) => (
+   222→                        <TableCell key={j}>
+   223→                          <div className="h-4 bg-[#2A2D3A] animate-pulse rounded" />
+   224→                        </TableCell>
+   225→                      ))}
+   226→                    </TableRow>
+   227→                  ))
+   228→                ) : positions.length === 0 ? (
+   229→                  <TableRow>
+   230→                    <TableCell colSpan={10} className="text-center text-gray-400 py-8">
+   231→                      No positions found
+   232→                    </TableCell>
+   233→                  </TableRow>
+   234→                ) : (
+   235→                  positions.map((position) => (
+   236→                    <TableRow key={position.id} className="border-[#2A2D3A] hover:bg-[#2A2D3A]/30">
+   237→                      <TableCell>
+   238→                        <div className="text-white font-medium">{position.userName || 'N/A'}</div>
+   239→                        <div className="text-xs text-gray-400">{position.userEmail || ''}</div>
+   240→                      </TableCell>
+   241→                      <TableCell>
+   242→                        <div className="text-white font-medium">{position.stockSymbol}</div>
+   243→                        <div className="text-xs text-gray-400">{position.stockName || ''}</div>
+   244→                      </TableCell>
+   245→                      <TableCell>
+   246→                        <Badge variant="outline" className="border-[#2A2D3A] text-gray-300">
+   247→                          {position.stockType}
+   248→                        </Badge>
+   249→                      </TableCell>
+   250→                      <TableCell className="text-white text-right">{position.quantity}</TableCell>
+   251→                      <TableCell className="text-white text-right">{formatCurrency(position.avgPrice)}</TableCell>
+   252→                      <TableCell className="text-white text-right">{formatCurrency(position.currentPrice)}</TableCell>
+   253→                      <TableCell className={`text-right font-medium ${
+   254→                        position.unrealizedPnl > 0 ? 'text-green-400' : position.unrealizedPnl < 0 ? 'text-red-400' : 'text-gray-400'
+   255→                      }`}>
+   256→                        {formatCurrency(position.unrealizedPnl)}
+   257→                      </TableCell>
+   258→                      <TableCell className={`text-right ${
+   259→                        position.unrealizedPnlPercent > 0 ? 'text-green-400' : position.unrealizedPnlPercent < 0 ? 'text-red-400' : 'text-gray-400'
+   260→                      }`}>
+   261→                        {position.unrealizedPnlPercent?.toFixed(2)}%
+   262→                      </TableCell>
+   263→                      <TableCell className={`text-right ${
+   264→                        position.dayChange > 0 ? 'text-green-400' : position.dayChange < 0 ? 'text-red-400' : 'text-gray-400'
+   265→                      }`}>
+   266→                        {position.dayChange > 0 ? '+' : ''}{position.dayChange?.toFixed(2)}
+   267→                      </TableCell>
+   268→                      <TableCell className="text-center">
+   269→                        <Button
+   270→                          size="sm"
+   271→                          variant="outline"
+   272→                          className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+   273→                          onClick={() => {
+   274→                            setSelectedPosition(position)
+   275→                            setSquareOffDialog(true)
+   276→                          }}
+   277→                        >
+   278→                          Force Square-off
+   279→                        </Button>
+   280→                      </TableCell>
+   281→                    </TableRow>
+   282→                  ))
+   283→                )}
+   284→              </TableBody>
+   285→            </Table>
+   286→          </div>
+   287→        </CardContent>
+   288→      </Card>
+   289→    </div>
+   290→  )
+   291→
+   292→  const renderOrders = () => (
+   293→    <div className="space-y-4">
+   294→      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+   295→        <CardContent className="p-0">
+   296→          <div className="overflow-x-auto">
+   297→            <Table>
+   298→              <TableHeader>
+   299→                <TableRow className="border-[#2A2D3A] hover:bg-transparent">
+   300→                  <TableHead className="text-gray-400">User</TableHead>
+   301→                  <TableHead className="text-gray-400">Symbol</TableHead>
+   302→                  <TableHead className="text-gray-400">Type</TableHead>
+   303→                  <TableHead className="text-gray-400 text-right">Quantity</TableHead>
+   304→                  <TableHead className="text-gray-400 text-right">Price</TableHead>
+   305→                  <TableHead className="text-gray-400 text-right">Filled</TableHead>
+   306→                  <TableHead className="text-gray-400">Status</TableHead>
+   307→                  <TableHead className="text-gray-400">Created At</TableHead>
+   308→                  <TableHead className="text-gray-400 text-center">Actions</TableHead>
+   309→                </TableRow>
+   310→              </TableHeader>
+   311→              <TableBody>
+   312→                {loading ? (
+   313→                  [...Array(5)].map((_, i) => (
+   314→                    <TableRow key={i} className="border-[#2A2D3A]">
+   315→                      {[...Array(9)].map((_, j) => (
+   316→                        <TableCell key={j}>
+   317→                          <div className="h-4 bg-[#2A2D3A] animate-pulse rounded" />
+   318→                        </TableCell>
+   319→                      ))}
+   320→                    </TableRow>
+   321→                  ))
+   322→                ) : orders.length === 0 ? (
+   323→                  <TableRow>
+   324→                    <TableCell colSpan={9} className="text-center text-gray-400 py-8">
+   325→                      No orders found
+   326→                    </TableCell>
+   327→                  </TableRow>
+   328→                ) : (
+   329→                  orders.map((order) => (
+   330→                    <TableRow key={order.id} className="border-[#2A2D3A] hover:bg-[#2A2D3A]/30">
+   331→                      <TableCell>
+   332→                        <div className="text-white font-medium">{order.userName || 'N/A'}</div>
+   333→                        <div className="text-xs text-gray-400">{order.userEmail || ''}</div>
+   334→                      </TableCell>
+   335→                      <TableCell>
+   336→                        <div className="text-white font-medium">{order.stockSymbol}</div>
+   337→                        <div className="text-xs text-gray-400">{order.stockName || ''}</div>
+   338→                      </TableCell>
+   339→                      <TableCell>
+   340→                        <div className="flex gap-1">
+   341→                          <Badge
+   342→                            variant="outline"
+   343→                            className={
+   344→                              order.tradeType === 'BUY'
+   345→                                ? 'border-green-500 text-green-500'
+   346→                                : 'border-red-500 text-red-500'
+   347→                            }
+   348→                          >
+   349→                            {order.tradeType}
+   350→                          </Badge>
+   351→                          <Badge variant="outline" className="border-[#2A2D3A] text-gray-300">
+   352→                            {order.orderType}
+   353→                          </Badge>
+   354→                        </div>
+   355→                      </TableCell>
+   356→                      <TableCell className="text-white text-right">{order.quantity}</TableCell>
+   357→                      <TableCell className="text-white text-right">
+   358→                        {order.price ? formatCurrency(order.price) : 'Market'}
+   359→                      </TableCell>
+   360→                      <TableCell className="text-white text-right">
+   361→                        {order.filledQuantity || 0}
+   362→                      </TableCell>
+   363→                      <TableCell>
+   364→                        <Badge
+   365→                          variant="outline"
+   366→                          className={
+   367→                            order.status === 'FILLED'
+   368→                              ? 'border-green-500 text-green-500'
+   369→                              : order.status === 'PENDING'
+   370→                              ? 'border-yellow-500 text-yellow-500'
+   371→                              : order.status === 'CANCELLED'
+   372→                              ? 'border-red-500 text-red-500'
+   373→                              : 'border-gray-500 text-gray-400'
+   374→                          }
+   375→                        >
+   376→                          {order.status}
+   377→                        </Badge>
+   378→                      </TableCell>
+   379→                      <TableCell className="text-gray-400">{formatDate(order.createdAt)}</TableCell>
+   380→                      <TableCell className="text-center">
+   381→                        {order.status === 'PENDING' && (
+   382→                          <Button
+   383→                            size="sm"
+   384→                            variant="outline"
+   385→                            className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+   386→                            onClick={() => {
+   387→                              setSelectedOrder(order)
+   388→                              setCancelOrderDialog(true)
+   389→                            }}
+   390→                          >
+   391→                            Cancel
+   392→                          </Button>
+   393→                        )}
+   394→                      </TableCell>
+   395→                    </TableRow>
+   396→                  ))
+   397→                )}
+   398→              </TableBody>
+   399→            </Table>
+   400→          </div>
+   401→        </CardContent>
+   402→      </Card>
+   403→    </div>
+   404→  )
+   405→
+   406→  const renderTrades = () => (
+   407→    <div className="space-y-4">
+   408→      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+   409→        <CardContent className="p-0">
+   410→          <div className="overflow-x-auto">
+   411→            <Table>
+   412→              <TableHeader>
+   413→                <TableRow className="border-[#2A2D3A] hover:bg-transparent">
+   414→                  <TableHead className="text-gray-400">User</TableHead>
+   415→                  <TableHead className="text-gray-400">Symbol</TableHead>
+   416→                  <TableHead className="text-gray-400">Type</TableHead>
+   417→                  <TableHead className="text-gray-400 text-right">Quantity</TableHead>
+   418→                  <TableHead className="text-gray-400 text-right">Fill Price</TableHead>
+   419→                  <TableHead className="text-gray-400 text-right">Total Value</TableHead>
+   420→                  <TableHead className="text-gray-400 text-right">P&L</TableHead>
+   421→                  <TableHead className="text-gray-400 text-right">Brokerage</TableHead>
+   422→                  <TableHead className="text-gray-400">Executed At</TableHead>
+   423→                </TableRow>
+   424→              </TableHeader>
+   425→              <TableBody>
+   426→                {loading ? (
+   427→                  [...Array(5)].map((_, i) => (
+   428→                    <TableRow key={i} className="border-[#2A2D3A]">
+   429→                      {[...Array(9)].map((_, j) => (
+   430→                        <TableCell key={j}>
+   431→                          <div className="h-4 bg-[#2A2D3A] animate-pulse rounded" />
+   432→                        </TableCell>
+   433→                      ))}
+   434→                    </TableRow>
+   435→                  ))
+   436→                ) : trades.length === 0 ? (
+   437→                  <TableRow>
+   438→                    <TableCell colSpan={9} className="text-center text-gray-400 py-8">
+   439→                      No trades found
+   440→                    </TableCell>
+   441→                  </TableRow>
+   442→                ) : (
+   443→                  trades.map((trade) => (
+   444→                    <TableRow key={trade.id} className="border-[#2A2D3A] hover:bg-[#2A2D3A]/30">
+   445→                      <TableCell>
+   446→                        <div className="text-white font-medium">{trade.userName || 'N/A'}</div>
+   447→                        <div className="text-xs text-gray-400">{trade.userEmail || ''}</div>
+   448→                      </TableCell>
+   449→                      <TableCell>
+   450→                        <div className="text-white font-medium">{trade.stockSymbol}</div>
+   451→                        <div className="text-xs text-gray-400">{trade.stockName || ''}</div>
+   452→                      </TableCell>
+   453→                      <TableCell>
+   454→                        <Badge
+   455→                          variant="outline"
+   456→                          className={
+   457→                            trade.tradeType === 'BUY'
+   458→                              ? 'border-green-500 text-green-500'
+   459→                              : 'border-red-500 text-red-500'
+   460→                          }
+   461→                        >
+   462→                          {trade.tradeType}
+   463→                        </Badge>
+   464→                      </TableCell>
+   465→                      <TableCell className="text-white text-right">{trade.quantity}</TableCell>
+   466→                      <TableCell className="text-white text-right">{formatCurrency(trade.fillPrice)}</TableCell>
+   467→                      <TableCell className="text-white text-right">{formatCurrency(trade.totalValue)}</TableCell>
+   468→                      <TableCell className={`text-right font-medium ${
+   469→                        trade.pnl > 0 ? 'text-green-400' : trade.pnl < 0 ? 'text-red-400' : 'text-gray-400'
+   470→                      }`}>
+   471→                        {trade.pnl ? formatCurrency(trade.pnl) : '-'}
+   472→                      </TableCell>
+   473→                      <TableCell className="text-gray-400 text-right">{formatCurrency(trade.brokerage)}</TableCell>
+   474→                      <TableCell className="text-gray-400">{formatDate(trade.createdAt)}</TableCell>
+   475→                    </TableRow>
+   476→                  ))
+   477→                )}
+   478→              </TableBody>
+   479→            </Table>
+   480→          </div>
+   481→        </CardContent>
+   482→      </Card>
+   483→    </div>
+   484→  )
+   485→
+   486→  return (
+   487→    <div className="space-y-6">
+   488→      {/* Header */}
+   489→      <div className="flex items-center justify-between">
+   490→        <div>
+   491→          <h1 className="text-3xl font-bold text-white">Trading Management</h1>
+   492→          <p className="text-gray-400 mt-1">Monitor and manage positions, orders, and trades</p>
+   493→        </div>
+   494→        <Button
+   495→          onClick={fetchData}
+   496→          variant="outline"
+   497→          className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   498→        >
+   499→          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+   500→          Refresh
+   501→        </Button>
+   502→      </div>
+   503→
+   504→      {/* Filters */}
+   505→      <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+   506→        <CardContent className="p-4">
+   507→          <div className="flex items-center gap-2 mb-4">
+   508→            <Filter className="h-4 w-4 text-[#00D09C]" />
+   509→            <span className="text-sm font-medium text-white">Filters</span>
+   510→          </div>
+   511→          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+   512→            <div className="space-y-1">
+   513→              <label className="text-xs text-gray-400">User ID/Name</label>
+   514→              <Input
+   515→                placeholder="Search user..."
+   516→                value={userSearch}
+   517→                onChange={(e) => setUserSearch(e.target.value)}
+   518→                className="bg-[#0F1117] border-[#2A2D3A] text-white placeholder:text-gray-500"
+   519→              />
+   520→            </div>
+   521→            <div className="space-y-1">
+   522→              <label className="text-xs text-gray-400">Symbol</label>
+   523→              <Input
+   524→                placeholder="Search symbol..."
+   525→                value={symbolSearch}
+   526→                onChange={(e) => setSymbolSearch(e.target.value)}
+   527→                className="bg-[#0F1117] border-[#2A2D3A] text-white placeholder:text-gray-500"
+   528→              />
+   529→            </div>
+   530→            <div className="space-y-1">
+   531→              <label className="text-xs text-gray-400">Segment</label>
+   532→              <Select value={segment} onValueChange={setSegment}>
+   533→                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+   534→                  <SelectValue />
+   535→                </SelectTrigger>
+   536→                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   537→                  <SelectItem value="all">All Segments</SelectItem>
+   538→                  <SelectItem value="EQUITY">Equity</SelectItem>
+   539→                  <SelectItem value="FUTURES">Futures</SelectItem>
+   540→                  <SelectItem value="OPTIONS">Options</SelectItem>
+   541→                  <SelectItem value="ETF">ETF</SelectItem>
+   542→                  <SelectItem value="INDEX">Index</SelectItem>
+   543→                </SelectContent>
+   544→              </Select>
+   545→            </div>
+   546→            <div className="space-y-1">
+   547→              <label className="text-xs text-gray-400">Order Status</label>
+   548→              <Select value={status} onValueChange={setStatus}>
+   549→                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+   550→                  <SelectValue />
+   551→                </SelectTrigger>
+   552→                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   553→                  <SelectItem value="all">All Status</SelectItem>
+   554→                  <SelectItem value="PENDING">Pending</SelectItem>
+   555→                  <SelectItem value="FILLED">Filled</SelectItem>
+   556→                  <SelectItem value="PARTIALLY_FILLED">Partially Filled</SelectItem>
+   557→                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+   558→                  <SelectItem value="REJECTED">Rejected</SelectItem>
+   559→                </SelectContent>
+   560→              </Select>
+   561→            </div>
+   562→            <div className="space-y-1">
+   563→              <label className="text-xs text-gray-400">Start Date</label>
+   564→              <Input
+   565→                type="date"
+   566→                value={startDate}
+   567→                onChange={(e) => setStartDate(e.target.value)}
+   568→                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   569→              />
+   570→            </div>
+   571→            <div className="space-y-1">
+   572→              <label className="text-xs text-gray-400">End Date</label>
+   573→              <Input
+   574→                type="date"
+   575→                value={endDate}
+   576→                onChange={(e) => setEndDate(e.target.value)}
+   577→                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   578→              />
+   579→            </div>
+   580→          </div>
+   581→          <div className="flex items-center gap-2 mt-4">
+   582→            <Button
+   583→              onClick={fetchData}
+   584→              className="bg-[#00D09C] hover:bg-[#00B889] text-black font-medium"
+   585→            >
+   586→              <Search className="h-4 w-4 mr-2" />
+   587→              Apply Filters
+   588→            </Button>
+   589→            <Button
+   590→              onClick={clearFilters}
+   591→              variant="outline"
+   592→              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   593→            >
+   594→              <X className="h-4 w-4 mr-2" />
+   595→              Clear
+   596→            </Button>
+   597→          </div>
+   598→        </CardContent>
+   599→      </Card>
+   600→
+   601→      {/* Tabs */}
+   602→      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+   603→        <TabsList className="bg-[#1A1D29] border-[#2A2D3A] p-1">
+   604→          <TabsTrigger
+   605→            value="positions"
+   606→            className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black text-gray-400"
+   607→          >
+   608→            Positions
+   609→            {positions.length > 0 && (
+   610→              <span className="ml-2 bg-[#2A2D3A] text-white text-xs px-2 py-0.5 rounded-full">
+   611→                {positions.length}
+   612→              </span>
+   613→            )}
+   614→          </TabsTrigger>
+   615→          <TabsTrigger
+   616→            value="orders"
+   617→            className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black text-gray-400"
+   618→          >
+   619→            Orders
+   620→            {orders.length > 0 && (
+   621→              <span className="ml-2 bg-[#2A2D3A] text-white text-xs px-2 py-0.5 rounded-full">
+   622→                {orders.length}
+   623→              </span>
+   624→            )}
+   625→          </TabsTrigger>
+   626→          <TabsTrigger
+   627→            value="trades"
+   628→            className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black text-gray-400"
+   629→          >
+   630→            Trades
+   631→            {trades.length > 0 && (
+   632→              <span className="ml-2 bg-[#2A2D3A] text-white text-xs px-2 py-0.5 rounded-full">
+   633→                {trades.length}
+   634→              </span>
+   635→            )}
+   636→          </TabsTrigger>
+   637→        </TabsList>
+   638→
+   639→        <TabsContent value="positions">{renderPositions()}</TabsContent>
+   640→        <TabsContent value="orders">{renderOrders()}</TabsContent>
+   641→        <TabsContent value="trades">{renderTrades()}</TabsContent>
+   642→      </Tabs>
+   643→
+   644→      {/* Force Square-off Dialog */}
+   645→      <Dialog open={squareOffDialog} onOpenChange={setSquareOffDialog}>
+   646→        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white">
+   647→          <DialogHeader>
+   648→            <DialogTitle className="flex items-center gap-2">
+   649→              <AlertTriangle className="h-5 w-5 text-red-500" />
+   650→              Force Square-off Position
+   651→            </DialogTitle>
+   652→            <DialogDescription className="text-gray-400">
+   653→              Are you sure you want to force square-off this position? This action cannot be undone.
+   654→            </DialogDescription>
+   655→          </DialogHeader>
+   656→          {selectedPosition && (
+   657→            <div className="bg-[#0F1117] p-4 rounded-lg space-y-2 border border-[#2A2D3A]">
+   658→              <div className="flex justify-between">
+   659→                <span className="text-gray-400">Symbol:</span>
+   660→                <span className="text-white font-medium">{selectedPosition.stockSymbol}</span>
+   661→              </div>
+   662→              <div className="flex justify-between">
+   663→                <span className="text-gray-400">User:</span>
+   664→                <span className="text-white">{selectedPosition.userName || 'N/A'}</span>
+   665→              </div>
+   666→              <div className="flex justify-between">
+   667→                <span className="text-gray-400">Quantity:</span>
+   668→                <span className="text-white">{selectedPosition.quantity}</span>
+   669→              </div>
+   670→              <div className="flex justify-between">
+   671→                <span className="text-gray-400">Avg Price:</span>
+   672→                <span className="text-white">{formatCurrency(selectedPosition.avgPrice)}</span>
+   673→              </div>
+   674→              <div className="flex justify-between">
+   675→                <span className="text-gray-400">Unrealized P&L:</span>
+   676→                <span className={selectedPosition.unrealizedPnl > 0 ? 'text-green-400' : 'text-red-400'}>
+   677→                  {formatCurrency(selectedPosition.unrealizedPnl)}
+   678→                </span>
+   679→              </div>
+   680→            </div>
+   681→          )}
+   682→          <DialogFooter>
+   683→            <Button
+   684→              variant="outline"
+   685→              onClick={() => setSquareOffDialog(false)}
+   686→              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   687→              disabled={actionLoading}
+   688→            >
+   689→              Cancel
+   690→            </Button>
+   691→            <Button
+   692→              onClick={handleForceSquareOff}
+   693→              className="bg-red-500 hover:bg-red-600 text-white"
+   694→              disabled={actionLoading}
+   695→            >
+   696→              {actionLoading ? 'Processing...' : 'Force Square-off'}
+   697→            </Button>
+   698→          </DialogFooter>
+   699→        </DialogContent>
+   700→      </Dialog>
+   701→
+   702→      {/* Cancel Order Dialog */}
+   703→      <Dialog open={cancelOrderDialog} onOpenChange={setCancelOrderDialog}>
+   704→        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white">
+   705→          <DialogHeader>
+   706→            <DialogTitle className="flex items-center gap-2">
+   707→              <AlertTriangle className="h-5 w-5 text-yellow-500" />
+   708→              Cancel Order
+   709→            </DialogTitle>
+   710→            <DialogDescription className="text-gray-400">
+   711→              Are you sure you want to cancel this order? This action cannot be undone.
+   712→            </DialogDescription>
+   713→          </DialogHeader>
+   714→          {selectedOrder && (
+   715→            <div className="bg-[#0F1117] p-4 rounded-lg space-y-2 border border-[#2A2D3A]">
+   716→              <div className="flex justify-between">
+   717→                <span className="text-gray-400">Symbol:</span>
+   718→                <span className="text-white font-medium">{selectedOrder.stockSymbol}</span>
+   719→              </div>
+   720→              <div className="flex justify-between">
+   721→                <span className="text-gray-400">User:</span>
+   722→                <span className="text-white">{selectedOrder.userName || 'N/A'}</span>
+   723→              </div>
+   724→              <div className="flex justify-between">
+   725→                <span className="text-gray-400">Type:</span>
+   726→                <span className="text-white">{selectedOrder.tradeType} {selectedOrder.orderType}</span>
+   727→              </div>
+   728→              <div className="flex justify-between">
+   729→                <span className="text-gray-400">Quantity:</span>
+   730→                <span className="text-white">{selectedOrder.quantity}</span>
+   731→              </div>
+   732→              <div className="flex justify-between">
+   733→                <span className="text-gray-400">Price:</span>
+   734→                <span className="text-white">{selectedOrder.price ? formatCurrency(selectedOrder.price) : 'Market'}</span>
+   735→              </div>
+   736→            </div>
+   737→          )}
+   738→          <DialogFooter>
+   739→            <Button
+   740→              variant="outline"
+   741→              onClick={() => setCancelOrderDialog(false)}
+   742→              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   743→              disabled={actionLoading}
+   744→            >
+   745→              Cancel
+   746→            </Button>
+   747→            <Button
+   748→              onClick={handleCancelOrder}
+   749→              className="bg-yellow-500 hover:bg-yellow-600 text-black font-medium"
+   750→              disabled={actionLoading}
+   751→            >
+   752→              {actionLoading ? 'Processing...' : 'Confirm Cancel'}
+   753→            </Button>
+   754→          </DialogFooter>
+   755→        </DialogContent>
+   756→      </Dialog>
+   757→    </div>
+   758→  )
+   759→}

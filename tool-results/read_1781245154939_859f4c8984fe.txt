@@ -1,0 +1,1101 @@
+     1→'use client'
+     2→
+     3→import { useEffect, useState } from 'react'
+     4→import { BookOpen, Plus, Edit, Trash2, PlayCircle, Clock, CheckCircle, XCircle, RefreshCw, Save, X } from 'lucide-react'
+     5→import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+     6→import { Button } from '@/components/ui/button'
+     7→import { Input } from '@/components/ui/input'
+     8→import { Label } from '@/components/ui/label'
+     9→import { Textarea } from '@/components/ui/textarea'
+    10→import { Switch } from '@/components/ui/switch'
+    11→import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+    12→import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+    13→import { Badge } from '@/components/ui/badge'
+    14→import { toast } from 'sonner'
+    15→
+    16→interface LearningPath {
+    17→  id: string
+    18→  title: string
+    19→  description: string
+    20→  category: string
+    21→  difficulty: string
+    22→  totalModules: number
+    23→  estimatedHours: number
+    24→  modulesCount: number
+    25→  totalHours: number
+    26→  accentColor: string
+    27→  order: number
+    28→  isActive: boolean
+    29→  tier: string
+    30→  createdAt: string
+    31→  updatedAt: string
+    32→}
+    33→
+    34→interface LearningModule {
+    35→  id: string
+    36→  pathId: string
+    37→  title: string
+    38→  description: string
+    39→  content: string
+    40→  videoUrl: string
+    41→  duration: number
+    42→  order: number
+    43→  isActive: boolean
+    44→  createdAt: string
+    45→  updatedAt: string
+    46→}
+    47→
+    48→export default function LearningPage() {
+    49→  const [loading, setLoading] = useState(true)
+    50→  const [learningPaths, setLearningPaths] = useState<LearningPath[]>([])
+    51→  const [selectedPath, setSelectedPath] = useState<LearningPath | null>(null)
+    52→  const [modules, setModules] = useState<LearningModule[]>([])
+    53→  const [modulesLoading, setModulesLoading] = useState(false)
+    54→
+    55→  // Dialog states
+    56→  const [createPathDialogOpen, setCreatePathDialogOpen] = useState(false)
+    57→  const [editPathDialogOpen, setEditPathDialogOpen] = useState(false)
+    58→  const [addModuleDialogOpen, setAddModuleDialogOpen] = useState(false)
+    59→  const [editModuleDialogOpen, setEditModuleDialogOpen] = useState(false)
+    60→
+    61→  // Form states
+    62→  const [pathForm, setPathForm] = useState({
+    63→    title: '',
+    64→    description: '',
+    65→    category: '',
+    66→    difficulty: 'Beginner',
+    67→    tier: 'FREE',
+    68→    accentColor: '#00D09C',
+    69→    order: 0,
+    70→    isActive: true,
+    71→  })
+    72→
+    73→  const [moduleForm, setModuleForm] = useState({
+    74→    title: '',
+    75→    description: '',
+    76→    content: '',
+    77→    videoUrl: '',
+    78→    duration: 0,
+    79→    order: 0,
+    80→    isActive: true,
+    81→  })
+    82→
+    83→  const [editingPathId, setEditingPathId] = useState<string | null>(null)
+    84→  const [editingModuleId, setEditingModuleId] = useState<string | null>(null)
+    85→  const [deletingPathId, setDeletingPathId] = useState<string | null>(null)
+    86→  const [deletingModuleId, setDeletingModuleId] = useState<string | null>(null)
+    87→
+    88→  const fetchLearningPaths = async () => {
+    89→    setLoading(true)
+    90→    try {
+    91→      const response = await fetch('/api/admin/learning')
+    92→      const result = await response.json()
+    93→      if (result.success) {
+    94→        setLearningPaths(result.data)
+    95→      } else {
+    96→        toast.error('Failed to load learning paths')
+    97→      }
+    98→    } catch (error) {
+    99→      toast.error('An error occurred')
+   100→    } finally {
+   101→      setLoading(false)
+   102→    }
+   103→  }
+   104→
+   105→  const fetchModules = async (pathId: string) => {
+   106→    setModulesLoading(true)
+   107→    try {
+   108→      const response = await fetch('/api/admin/learning', {
+   109→        method: 'POST',
+   110→        headers: { 'Content-Type': 'application/json' },
+   111→        body: JSON.stringify({ action: 'fetchModules', pathId }),
+   112→      })
+   113→      const result = await response.json()
+   114→
+   115→      if (result.success) {
+   116→        setModules(result.data || [])
+   117→      } else {
+   118→        toast.error('Failed to load modules')
+   119→      }
+   120→    } catch (error) {
+   121→      toast.error('An error occurred')
+   122→    } finally {
+   123→      setModulesLoading(false)
+   124→    }
+   125→  }
+   126→
+   127→  useEffect(() => {
+   128→    fetchLearningPaths()
+   129→  }, [])
+   130→
+   131→  const handleCreatePath = async () => {
+   132→    if (!pathForm.title || !pathForm.category || !pathForm.difficulty) {
+   133→      toast.error('Please fill all required fields')
+   134→      return
+   135→    }
+   136→
+   137→    try {
+   138→      const response = await fetch('/api/admin/learning', {
+   139→        method: 'POST',
+   140→        headers: { 'Content-Type': 'application/json' },
+   141→        body: JSON.stringify(pathForm),
+   142→      })
+   143→      const result = await response.json()
+   144→
+   145→      if (result.success) {
+   146→        toast.success('Learning path created successfully')
+   147→        setCreatePathDialogOpen(false)
+   148→        resetPathForm()
+   149→        fetchLearningPaths()
+   150→      } else {
+   151→        toast.error(result.error || 'Failed to create learning path')
+   152→      }
+   153→    } catch (error) {
+   154→      toast.error('An error occurred')
+   155→    }
+   156→  }
+   157→
+   158→  const handleUpdatePath = async () => {
+   159→    if (!editingPathId) {
+   160→      toast.error('No path selected for editing')
+   161→      return
+   162→    }
+   163→
+   164→    try {
+   165→      const response = await fetch('/api/admin/learning', {
+   166→        method: 'PUT',
+   167→        headers: { 'Content-Type': 'application/json' },
+   168→        body: JSON.stringify({ id: editingPathId, ...pathForm }),
+   169→      })
+   170→      const result = await response.json()
+   171→
+   172→      if (result.success) {
+   173→        toast.success('Learning path updated successfully')
+   174→        setEditPathDialogOpen(false)
+   175→        resetPathForm()
+   176→        setEditingPathId(null)
+   177→        fetchLearningPaths()
+   178→      } else {
+   179→        toast.error(result.error || 'Failed to update learning path')
+   180→      }
+   181→    } catch (error) {
+   182→      toast.error('An error occurred')
+   183→    }
+   184→  }
+   185→
+   186→  const handleDeletePath = async (id: string) => {
+   187→    setDeletingPathId(id)
+   188→    try {
+   189→      const response = await fetch(`/api/admin/learning?id=${id}`, {
+   190→        method: 'DELETE',
+   191→      })
+   192→      const result = await response.json()
+   193→
+   194→      if (result.success) {
+   195→        toast.success('Learning path deleted successfully')
+   196→        if (selectedPath?.id === id) {
+   197→          setSelectedPath(null)
+   198→          setModules([])
+   199→        }
+   200→        fetchLearningPaths()
+   201→      } else {
+   202→        toast.error(result.error || 'Failed to delete learning path')
+   203→      }
+   204→    } catch (error) {
+   205→      toast.error('An error occurred')
+   206→    } finally {
+   207→      setDeletingPathId(null)
+   208→    }
+   209→  }
+   210→
+   211→  const handleAddModule = async () => {
+   212→    if (!selectedPath || !moduleForm.title || !moduleForm.duration) {
+   213→      toast.error('Please fill all required fields')
+   214→      return
+   215→    }
+   216→
+   217→    try {
+   218→      const response = await fetch('/api/admin/learning', {
+   219→        method: 'POST',
+   220→        headers: { 'Content-Type': 'application/json' },
+   221→        body: JSON.stringify({
+   222→          action: 'addModule',
+   223→          pathId: selectedPath.id,
+   224→          ...moduleForm,
+   225→        }),
+   226→      })
+   227→      const result = await response.json()
+   228→
+   229→      if (result.success) {
+   230→        toast.success('Module added successfully')
+   231→        setAddModuleDialogOpen(false)
+   232→        resetModuleForm()
+   233→        fetchLearningPaths()
+   234→        fetchModules(selectedPath.id)
+   235→      } else {
+   236→        toast.error(result.error || 'Failed to add module')
+   237→      }
+   238→    } catch (error) {
+   239→      toast.error('An error occurred')
+   240→    }
+   241→  }
+   242→
+   243→  const handleUpdateModule = async () => {
+   244→    if (!editingModuleId) {
+   245→      toast.error('No module selected for editing')
+   246→      return
+   247→    }
+   248→
+   249→    try {
+   250→      const response = await fetch('/api/admin/learning', {
+   251→        method: 'PUT',
+   252→        headers: { 'Content-Type': 'application/json' },
+   253→        body: JSON.stringify({
+   254→          action: 'updateModule',
+   255→          moduleId: editingModuleId,
+   256→          ...moduleForm,
+   257→        }),
+   258→      })
+   259→      const result = await response.json()
+   260→
+   261→      if (result.success) {
+   262→        toast.success('Module updated successfully')
+   263→        setEditModuleDialogOpen(false)
+   264→        resetModuleForm()
+   265→        setEditingModuleId(null)
+   266→        if (selectedPath) {
+   267→          fetchModules(selectedPath.id)
+   268→        }
+   269→      } else {
+   270→        toast.error(result.error || 'Failed to update module')
+   271→      }
+   272→    } catch (error) {
+   273→      toast.error('An error occurred')
+   274→    }
+   275→  }
+   276→
+   277→  const handleDeleteModule = async (moduleId: string) => {
+   278→    setDeletingModuleId(moduleId)
+   279→    try {
+   280→      const response = await fetch('/api/admin/learning', {
+   281→        method: 'POST',
+   282→        headers: { 'Content-Type': 'application/json' },
+   283→        body: JSON.stringify({
+   284→          action: 'deleteModule',
+   285→          moduleId,
+   286→        }),
+   287→      })
+   288→      const result = await response.json()
+   289→
+   290→      if (result.success) {
+   291→        toast.success('Module deleted successfully')
+   292→        if (selectedPath) {
+   293→          fetchModules(selectedPath.id)
+   294→        }
+   295→        fetchLearningPaths()
+   296→      } else {
+   297→        toast.error(result.error || 'Failed to delete module')
+   298→      }
+   299→    } catch (error) {
+   300→      toast.error('An error occurred')
+   301→    } finally {
+   302→      setDeletingModuleId(null)
+   303→    }
+   304→  }
+   305→
+   306→  const resetPathForm = () => {
+   307→    setPathForm({
+   308→      title: '',
+   309→      description: '',
+   310→      category: '',
+   311→      difficulty: 'Beginner',
+   312→      tier: 'FREE',
+   313→      accentColor: '#00D09C',
+   314→      order: 0,
+   315→      isActive: true,
+   316→    })
+   317→  }
+   318→
+   319→  const resetModuleForm = () => {
+   320→    setModuleForm({
+   321→      title: '',
+   322→      description: '',
+   323→      content: '',
+   324→      videoUrl: '',
+   325→      duration: 0,
+   326→      order: 0,
+   327→      isActive: true,
+   328→    })
+   329→  }
+   330→
+   331→  const openEditPathDialog = (path: LearningPath) => {
+   332→    setEditingPathId(path.id)
+   333→    setPathForm({
+   334→      title: path.title,
+   335→      description: path.description,
+   336→      category: path.category,
+   337→      difficulty: path.difficulty,
+   338→      tier: path.tier,
+   339→      accentColor: path.accentColor,
+   340→      order: path.order,
+   341→      isActive: path.isActive,
+   342→    })
+   343→    setEditPathDialogOpen(true)
+   344→  }
+   345→
+   346→  const openEditModuleDialog = (module: LearningModule) => {
+   347→    setEditingModuleId(module.id)
+   348→    setModuleForm({
+   349→      title: module.title,
+   350→      description: module.description,
+   351→      content: module.content,
+   352→      videoUrl: module.videoUrl,
+   353→      duration: module.duration,
+   354→      order: module.order,
+   355→      isActive: module.isActive,
+   356→    })
+   357→    setEditModuleDialogOpen(true)
+   358→  }
+   359→
+   360→  const selectPath = (path: LearningPath) => {
+   361→    setSelectedPath(path)
+   362→    fetchModules(path.id)
+   363→  }
+   364→
+   365→  const getDifficultyBadge = (difficulty: string) => {
+   366→    switch (difficulty) {
+   367→      case 'Beginner':
+   368→        return <Badge className="bg-green-500/20 text-green-400">Beginner</Badge>
+   369→      case 'Intermediate':
+   370→        return <Badge className="bg-blue-500/20 text-blue-400">Intermediate</Badge>
+   371→      case 'Advanced':
+   372→        return <Badge className="bg-purple-500/20 text-purple-400">Advanced</Badge>
+   373→      default:
+   374→        return <Badge className="bg-gray-500/20 text-gray-400">{difficulty}</Badge>
+   375→    }
+   376→  }
+   377→
+   378→  const formatDuration = (minutes: number) => {
+   379→    if (minutes < 60) {
+   380→      return `${minutes}m`
+   381→    }
+   382→    const hours = Math.floor(minutes / 60)
+   383→    const remainingMinutes = minutes % 60
+   384→    return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`
+   385→  }
+   386→
+   387→  const formatTotalHours = (totalHours: number) => {
+   388→    const hours = Math.floor(totalHours / 60)
+   389→    return `${hours}h`
+   390→  }
+   391→
+   392→  if (loading) {
+   393→    return (
+   394→      <div className="space-y-6">
+   395→        <div className="flex items-center justify-between">
+   396→          <h1 className="text-3xl font-bold text-white">Learning Management</h1>
+   397→        </div>
+   398→        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+   399→          <Card className="lg:col-span-2 border-[#2A2D3A] bg-[#1A1D29]">
+   400→            <CardContent className="p-6">
+   401→              <div className="h-64 animate-pulse bg-[#2A2D3A] rounded" />
+   402→            </CardContent>
+   403→          </Card>
+   404→          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+   405→            <CardContent className="p-6">
+   406→              <div className="h-64 animate-pulse bg-[#2A2D3A] rounded" />
+   407→            </CardContent>
+   408→          </Card>
+   409→        </div>
+   410→      </div>
+   411→    )
+   412→  }
+   413→
+   414→  return (
+   415→    <div className="space-y-6">
+   416→      {/* Header */}
+   417→      <div className="flex items-center justify-between">
+   418→        <div>
+   419→          <h1 className="text-3xl font-bold text-white">Learning Management</h1>
+   420→          <p className="text-gray-400 mt-1">Manage learning paths and modules</p>
+   421→        </div>
+   422→        <div className="flex gap-3">
+   423→          <Dialog open={createPathDialogOpen} onOpenChange={setCreatePathDialogOpen}>
+   424→            <DialogTrigger asChild>
+   425→              <Button className="bg-[#00D09C] text-black hover:bg-[#00D09C]/80">
+   426→                <Plus className="h-4 w-4 mr-2" />
+   427→                Create Path
+   428→              </Button>
+   429→            </DialogTrigger>
+   430→            <DialogContent className="border-[#2A2D3A] bg-[#1A1D29] text-white max-w-2xl">
+   431→              <DialogHeader>
+   432→                <DialogTitle>Create Learning Path</DialogTitle>
+   433→                <DialogDescription className="text-gray-400">
+   434→                  Create a new learning path with modules
+   435→                </DialogDescription>
+   436→              </DialogHeader>
+   437→              <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+   438→                <div className="space-y-2">
+   439→                  <Label htmlFor="title">Title *</Label>
+   440→                  <Input
+   441→                    id="title"
+   442→                    placeholder="e.g., Introduction to Trading"
+   443→                    value={pathForm.title}
+   444→                    onChange={(e) => setPathForm({ ...pathForm, title: e.target.value })}
+   445→                    className="border-[#2A2D3A] bg-[#0F1117] text-white"
+   446→                  />
+   447→                </div>
+   448→                <div className="space-y-2">
+   449→                  <Label htmlFor="description">Description</Label>
+   450→                  <Textarea
+   451→                    id="description"
+   452→                    placeholder="Brief description of the learning path"
+   453→                    value={pathForm.description}
+   454→                    onChange={(e) => setPathForm({ ...pathForm, description: e.target.value })}
+   455→                    className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[100px]"
+   456→                  />
+   457→                </div>
+   458→                <div className="grid grid-cols-2 gap-4">
+   459→                  <div className="space-y-2">
+   460→                    <Label htmlFor="category">Category *</Label>
+   461→                    <Input
+   462→                      id="category"
+   463→                      placeholder="e.g., Trading, Investing"
+   464→                      value={pathForm.category}
+   465→                      onChange={(e) => setPathForm({ ...pathForm, category: e.target.value })}
+   466→                      className="border-[#2A2D3A] bg-[#0F1117] text-white"
+   467→                    />
+   468→                  </div>
+   469→                  <div className="space-y-2">
+   470→                    <Label htmlFor="difficulty">Difficulty *</Label>
+   471→                    <Select
+   472→                      value={pathForm.difficulty}
+   473→                      onValueChange={(value) => setPathForm({ ...pathForm, difficulty: value })}
+   474→                    >
+   475→                      <SelectTrigger className="border-[#2A2D3A] bg-[#0F1117] text-white">
+   476→                        <SelectValue />
+   477→                      </SelectTrigger>
+   478→                      <SelectContent className="border-[#2A2D3A] bg-[#1A1D29]">
+   479→                        <SelectItem value="Beginner">Beginner</SelectItem>
+   480→                        <SelectItem value="Intermediate">Intermediate</SelectItem>
+   481→                        <SelectItem value="Advanced">Advanced</SelectItem>
+   482→                      </SelectContent>
+   483→                    </Select>
+   484→                  </div>
+   485→                </div>
+   486→                <div className="grid grid-cols-2 gap-4">
+   487→                  <div className="space-y-2">
+   488→                    <Label htmlFor="tier">Tier</Label>
+   489→                    <Select
+   490→                      value={pathForm.tier}
+   491→                      onValueChange={(value) => setPathForm({ ...pathForm, tier: value })}
+   492→                    >
+   493→                      <SelectTrigger className="border-[#2A2D3A] bg-[#0F1117] text-white">
+   494→                        <SelectValue />
+   495→                      </SelectTrigger>
+   496→                      <SelectContent className="border-[#2A2D3A] bg-[#1A1D29]">
+   497→                        <SelectItem value="FREE">Free</SelectItem>
+   498→                        <SelectItem value="PREMIUM">Premium</SelectItem>
+   499→                      </SelectContent>
+   500→                    </Select>
+   501→                  </div>
+   502→                  <div className="space-y-2">
+   503→                    <Label htmlFor="order">Order</Label>
+   504→                    <Input
+   505→                      id="order"
+   506→                      type="number"
+   507→                      placeholder="0"
+   508→                      value={pathForm.order}
+   509→                      onChange={(e) => setPathForm({ ...pathForm, order: parseInt(e.target.value) || 0 })}
+   510→                      className="border-[#2A2D3A] bg-[#0F1117] text-white"
+   511→                    />
+   512→                  </div>
+   513→                </div>
+   514→                <div className="space-y-2">
+   515→                  <Label htmlFor="accentColor">Accent Color</Label>
+   516→                  <div className="flex gap-2">
+   517→                    <Input
+   518→                      id="accentColor"
+   519→                      type="color"
+   520→                      value={pathForm.accentColor}
+   521→                      onChange={(e) => setPathForm({ ...pathForm, accentColor: e.target.value })}
+   522→                      className="w-20 h-10 border-[#2A2D3A] bg-[#0F1117] text-white"
+   523→                    />
+   524→                    <Input
+   525→                      placeholder="#00D09C"
+   526→                      value={pathForm.accentColor}
+   527→                      onChange={(e) => setPathForm({ ...pathForm, accentColor: e.target.value })}
+   528→                      className="flex-1 border-[#2A2D3A] bg-[#0F1117] text-white"
+   529→                    />
+   530→                  </div>
+   531→                </div>
+   532→                <div className="flex items-center justify-between">
+   533→                  <Label htmlFor="isActive">Active</Label>
+   534→                  <Switch
+   535→                    id="isActive"
+   536→                    checked={pathForm.isActive}
+   537→                    onCheckedChange={(checked) => setPathForm({ ...pathForm, isActive: checked })}
+   538→                  />
+   539→                </div>
+   540→              </div>
+   541→              <DialogFooter>
+   542→                <Button
+   543→                  variant="outline"
+   544→                  onClick={() => setCreatePathDialogOpen(false)}
+   545→                  className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   546→                >
+   547→                  Cancel
+   548→                </Button>
+   549→                <Button
+   550→                  onClick={handleCreatePath}
+   551→                  className="bg-[#00D09C] text-black hover:bg-[#00D09C]/80"
+   552→                >
+   553→                  Create Path
+   554→                </Button>
+   555→              </DialogFooter>
+   556→            </DialogContent>
+   557→          </Dialog>
+   558→          <Button
+   559→            onClick={fetchLearningPaths}
+   560→            variant="outline"
+   561→            className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   562→          >
+   563→            <RefreshCw className="h-4 w-4 mr-2" />
+   564→            Refresh
+   565→          </Button>
+   566→        </div>
+   567→      </div>
+   568→
+   569→      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+   570→        {/* Learning Paths List */}
+   571→        <div className="lg:col-span-2">
+   572→          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+   573→            <CardHeader>
+   574→              <CardTitle className="text-white flex items-center gap-2">
+   575→                <BookOpen className="h-5 w-5 text-[#00D09C]" />
+   576→                Learning Paths ({learningPaths.length})
+   577→              </CardTitle>
+   578→            </CardHeader>
+   579→            <CardContent>
+   580→              {learningPaths.length > 0 ? (
+   581→                <div className="space-y-3">
+   582→                  {learningPaths.map((path) => (
+   583→                    <div
+   584→                      key={path.id}
+   585→                      className={`p-4 rounded-lg border transition-all cursor-pointer ${
+   586→                        selectedPath?.id === path.id
+   587→                          ? 'bg-[#00D09C]/10 border-[#00D09C]'
+   588→                          : 'bg-[#0F1117] border-[#2A2D3A] hover:border-[#2A2D3A]/80'
+   589→                      }`}
+   590→                      onClick={() => selectPath(path)}
+   591→                    >
+   592→                      <div className="flex items-start justify-between mb-2">
+   593→                        <div className="flex-1">
+   594→                          <div className="flex items-center gap-2 mb-1">
+   595→                            <h3 className="font-semibold text-white">{path.title}</h3>
+   596→                            {getDifficultyBadge(path.difficulty)}
+   597→                            {!path.isActive && (
+   598→                              <Badge className="bg-red-500/20 text-red-400">Inactive</Badge>
+   599→                            )}
+   600→                          </div>
+   601→                          <p className="text-sm text-gray-400 mb-2">{path.category}</p>
+   602→                        </div>
+   603→                        <div className="flex gap-1">
+   604→                          <Button
+   605→                            variant="ghost"
+   606→                            size="sm"
+   607→                            className="text-gray-400 hover:text-white h-8 w-8 p-0"
+   608→                            onClick={(e) => {
+   609→                              e.stopPropagation()
+   610→                              openEditPathDialog(path)
+   611→                            }}
+   612→                          >
+   613→                            <Edit className="h-4 w-4" />
+   614→                          </Button>
+   615→                          <Button
+   616→                            variant="ghost"
+   617→                            size="sm"
+   618→                            className="text-gray-400 hover:text-red-400 h-8 w-8 p-0"
+   619→                            onClick={(e) => {
+   620→                              e.stopPropagation()
+   621→                              handleDeletePath(path.id)
+   622→                            }}
+   623→                            disabled={deletingPathId === path.id}
+   624→                          >
+   625→                            {deletingPathId === path.id ? (
+   626→                              <RefreshCw className="h-4 w-4 animate-spin" />
+   627→                            ) : (
+   628→                              <Trash2 className="h-4 w-4" />
+   629→                            )}
+   630→                          </Button>
+   631→                        </div>
+   632→                      </div>
+   633→                      <div className="flex items-center gap-4 text-sm text-gray-400">
+   634→                        <span className="flex items-center gap-1">
+   635→                          <PlayCircle className="h-4 w-4" />
+   636→                          {path.modulesCount} modules
+   637→                        </span>
+   638→                        <span className="flex items-center gap-1">
+   639→                          <Clock className="h-4 w-4" />
+   640→                          {formatTotalHours(path.totalHours)}
+   641→                        </span>
+   642→                        <span className="flex items-center gap-1">
+   643→                          <Badge
+   644→                            className={
+   645→                              path.tier === 'PREMIUM'
+   646→                                ? 'bg-purple-500/20 text-purple-400'
+   647→                                : 'bg-green-500/20 text-green-400'
+   648→                            }
+   649→                          >
+   650→                            {path.tier}
+   651→                          </Badge>
+   652→                        </span>
+   653→                      </div>
+   654→                    </div>
+   655→                  ))}
+   656→                </div>
+   657→              ) : (
+   658→                <div className="text-center py-12 text-gray-400">
+   659→                  <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+   660→                  <p>No learning paths found</p>
+   661→                  <p className="text-sm mt-2">Create your first learning path to get started</p>
+   662→                </div>
+   663→              )}
+   664→            </CardContent>
+   665→          </Card>
+   666→        </div>
+   667→
+   668→        {/* Modules Panel */}
+   669→        <div>
+   670→          <Card className="border-[#2A2D3A] bg-[#1A1D29] h-full">
+   671→            <CardHeader>
+   672→              <div className="flex items-center justify-between">
+   673→                <CardTitle className="text-white flex items-center gap-2">
+   674→                  <PlayCircle className="h-5 w-5 text-[#00D09C]" />
+   675→                  {selectedPath ? selectedPath.title : 'Modules'}
+   676→                </CardTitle>
+   677→                {selectedPath && (
+   678→                  <Dialog open={addModuleDialogOpen} onOpenChange={setAddModuleDialogOpen}>
+   679→                    <DialogTrigger asChild>
+   680→                      <Button size="sm" className="bg-[#00D09C] text-black hover:bg-[#00D09C]/80 h-8">
+   681→                        <Plus className="h-4 w-4 mr-1" />
+   682→                        Add
+   683→                      </Button>
+   684→                    </DialogTrigger>
+   685→                    <DialogContent className="border-[#2A2D3A] bg-[#1A1D29] text-white max-w-2xl max-h-[90vh]">
+   686→                      <DialogHeader>
+   687→                        <DialogTitle>Add Module</DialogTitle>
+   688→                        <DialogDescription className="text-gray-400">
+   689→                          Add a new module to {selectedPath.title}
+   690→                        </DialogDescription>
+   691→                      </DialogHeader>
+   692→                      <div className="space-y-4 py-4 max-h-[50vh] overflow-y-auto">
+   693→                        <div className="space-y-2">
+   694→                          <Label htmlFor="moduleTitle">Title *</Label>
+   695→                          <Input
+   696→                            id="moduleTitle"
+   697→                            placeholder="e.g., Market Basics"
+   698→                            value={moduleForm.title}
+   699→                            onChange={(e) => setModuleForm({ ...moduleForm, title: e.target.value })}
+   700→                            className="border-[#2A2D3A] bg-[#0F1117] text-white"
+   701→                          />
+   702→                        </div>
+   703→                        <div className="space-y-2">
+   704→                          <Label htmlFor="moduleDescription">Description</Label>
+   705→                          <Textarea
+   706→                            id="moduleDescription"
+   707→                            placeholder="Brief description of this module"
+   708→                            value={moduleForm.description}
+   709→                            onChange={(e) => setModuleForm({ ...moduleForm, description: e.target.value })}
+   710→                            className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[80px]"
+   711→                          />
+   712→                        </div>
+   713→                        <div className="space-y-2">
+   714→                          <Label htmlFor="moduleContent">Content (Markdown)</Label>
+   715→                          <Textarea
+   716→                            id="moduleContent"
+   717→                            placeholder="# Module Content&#10;&#10;Write your module content in markdown format..."
+   718→                            value={moduleForm.content}
+   719→                            onChange={(e) => setModuleForm({ ...moduleForm, content: e.target.value })}
+   720→                            className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[200px] font-mono text-sm"
+   721→                          />
+   722→                        </div>
+   723→                        <div className="space-y-2">
+   724→                          <Label htmlFor="moduleVideoUrl">Video URL</Label>
+   725→                          <Input
+   726→                            id="moduleVideoUrl"
+   727→                            placeholder="https://..."
+   728→                            value={moduleForm.videoUrl}
+   729→                            onChange={(e) => setModuleForm({ ...moduleForm, videoUrl: e.target.value })}
+   730→                            className="border-[#2A2D3A] bg-[#0F1117] text-white"
+   731→                          />
+   732→                        </div>
+   733→                        <div className="grid grid-cols-2 gap-4">
+   734→                          <div className="space-y-2">
+   735→                            <Label htmlFor="moduleDuration">Duration (minutes) *</Label>
+   736→                            <Input
+   737→                              id="moduleDuration"
+   738→                              type="number"
+   739→                              placeholder="30"
+   740→                              value={moduleForm.duration}
+   741→                              onChange={(e) => setModuleForm({ ...moduleForm, duration: parseInt(e.target.value) || 0 })}
+   742→                              className="border-[#2A2D3A] bg-[#0F1117] text-white"
+   743→                            />
+   744→                          </div>
+   745→                          <div className="space-y-2">
+   746→                            <Label htmlFor="moduleOrder">Order</Label>
+   747→                            <Input
+   748→                              id="moduleOrder"
+   749→                              type="number"
+   750→                              placeholder="0"
+   751→                              value={moduleForm.order}
+   752→                              onChange={(e) => setModuleForm({ ...moduleForm, order: parseInt(e.target.value) || 0 })}
+   753→                              className="border-[#2A2D3A] bg-[#0F1117] text-white"
+   754→                            />
+   755→                          </div>
+   756→                        </div>
+   757→                        <div className="flex items-center justify-between">
+   758→                          <Label htmlFor="moduleIsActive">Active</Label>
+   759→                          <Switch
+   760→                            id="moduleIsActive"
+   761→                            checked={moduleForm.isActive}
+   762→                            onCheckedChange={(checked) => setModuleForm({ ...moduleForm, isActive: checked })}
+   763→                          />
+   764→                        </div>
+   765→                      </div>
+   766→                      <DialogFooter>
+   767→                        <Button
+   768→                          variant="outline"
+   769→                          onClick={() => setAddModuleDialogOpen(false)}
+   770→                          className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   771→                        >
+   772→                          Cancel
+   773→                        </Button>
+   774→                        <Button
+   775→                          onClick={handleAddModule}
+   776→                          className="bg-[#00D09C] text-black hover:bg-[#00D09C]/80"
+   777→                        >
+   778→                          Add Module
+   779→                        </Button>
+   780→                      </DialogFooter>
+   781→                    </DialogContent>
+   782→                  </Dialog>
+   783→                )}
+   784→              </div>
+   785→            </CardHeader>
+   786→            <CardContent>
+   787→              {selectedPath ? (
+   788→                modulesLoading ? (
+   789→                  <div className="space-y-3">
+   790→                    {[...Array(3)].map((_, i) => (
+   791→                      <div key={i} className="p-4 rounded-lg bg-[#0F1117] animate-pulse">
+   792→                        <div className="h-4 bg-[#2A2D3A] rounded w-3/4 mb-2" />
+   793→                        <div className="h-3 bg-[#2A2D3A] rounded w-1/2" />
+   794→                      </div>
+   795→                    ))}
+   796→                  </div>
+   797→                ) : modules.length > 0 ? (
+   798→                  <div className="space-y-3">
+   799→                    {modules.map((module) => (
+   800→                      <div
+   801→                        key={module.id}
+   802→                        className="p-4 rounded-lg bg-[#0F1117] border border-[#2A2D3A]"
+   803→                      >
+   804→                        <div className="flex items-start justify-between mb-2">
+   805→                          <div className="flex-1">
+   806→                            <div className="flex items-center gap-2 mb-1">
+   807→                              <span className="text-xs text-gray-500">#{module.order + 1}</span>
+   808→                              <h4 className="font-medium text-white">{module.title}</h4>
+   809→                              {!module.isActive && (
+   810→                                <Badge className="bg-red-500/20 text-red-400 text-xs">Inactive</Badge>
+   811→                              )}
+   812→                            </div>
+   813→                            <div className="flex items-center gap-3 text-sm text-gray-400">
+   814→                              <span className="flex items-center gap-1">
+   815→                                <Clock className="h-3 w-3" />
+   816→                                {formatDuration(module.duration)}
+   817→                              </span>
+   818→                            </div>
+   819→                          </div>
+   820→                          <div className="flex gap-1">
+   821→                            <Button
+   822→                              variant="ghost"
+   823→                              size="sm"
+   824→                              className="text-gray-400 hover:text-white h-8 w-8 p-0"
+   825→                              onClick={() => openEditModuleDialog(module)}
+   826→                            >
+   827→                              <Edit className="h-4 w-4" />
+   828→                            </Button>
+   829→                            <Button
+   830→                              variant="ghost"
+   831→                              size="sm"
+   832→                              className="text-gray-400 hover:text-red-400 h-8 w-8 p-0"
+   833→                              onClick={() => handleDeleteModule(module.id)}
+   834→                              disabled={deletingModuleId === module.id}
+   835→                            >
+   836→                              {deletingModuleId === module.id ? (
+   837→                                <RefreshCw className="h-4 w-4 animate-spin" />
+   838→                              ) : (
+   839→                                <Trash2 className="h-4 w-4" />
+   840→                              )}
+   841→                            </Button>
+   842→                          </div>
+   843→                        </div>
+   844→                      </div>
+   845→                    ))}
+   846→                  </div>
+   847→                ) : (
+   848→                  <div className="text-center py-8 text-gray-400">
+   849→                    <PlayCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
+   850→                    <p>No modules yet</p>
+   851→                    <p className="text-sm mt-1">Add your first module to get started</p>
+   852→                  </div>
+   853→                )
+   854→              ) : (
+   855→                <div className="text-center py-8 text-gray-400">
+   856→                  <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
+   857→                  <p>Select a learning path</p>
+   858→                  <p className="text-sm mt-1">Click on a path to view its modules</p>
+   859→                </div>
+   860→              )}
+   861→            </CardContent>
+   862→          </Card>
+   863→        </div>
+   864→      </div>
+   865→
+   866→      {/* Edit Path Dialog */}
+   867→      <Dialog open={editPathDialogOpen} onOpenChange={setEditPathDialogOpen}>
+   868→        <DialogContent className="border-[#2A2D3A] bg-[#1A1D29] text-white max-w-2xl">
+   869→          <DialogHeader>
+   870→            <DialogTitle>Edit Learning Path</DialogTitle>
+   871→            <DialogDescription className="text-gray-400">
+   872→              Update the learning path details
+   873→            </DialogDescription>
+   874→          </DialogHeader>
+   875→          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+   876→            <div className="space-y-2">
+   877→              <Label htmlFor="editTitle">Title *</Label>
+   878→              <Input
+   879→                id="editTitle"
+   880→                placeholder="e.g., Introduction to Trading"
+   881→                value={pathForm.title}
+   882→                onChange={(e) => setPathForm({ ...pathForm, title: e.target.value })}
+   883→                className="border-[#2A2D3A] bg-[#0F1117] text-white"
+   884→              />
+   885→            </div>
+   886→            <div className="space-y-2">
+   887→              <Label htmlFor="editDescription">Description</Label>
+   888→              <Textarea
+   889→                id="editDescription"
+   890→                placeholder="Brief description of the learning path"
+   891→                value={pathForm.description}
+   892→                onChange={(e) => setPathForm({ ...pathForm, description: e.target.value })}
+   893→                className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[100px]"
+   894→              />
+   895→            </div>
+   896→            <div className="grid grid-cols-2 gap-4">
+   897→              <div className="space-y-2">
+   898→                <Label htmlFor="editCategory">Category *</Label>
+   899→                <Input
+   900→                  id="editCategory"
+   901→                  placeholder="e.g., Trading, Investing"
+   902→                  value={pathForm.category}
+   903→                  onChange={(e) => setPathForm({ ...pathForm, category: e.target.value })}
+   904→                  className="border-[#2A2D3A] bg-[#0F1117] text-white"
+   905→                />
+   906→              </div>
+   907→              <div className="space-y-2">
+   908→                <Label htmlFor="editDifficulty">Difficulty *</Label>
+   909→                <Select
+   910→                  value={pathForm.difficulty}
+   911→                  onValueChange={(value) => setPathForm({ ...pathForm, difficulty: value })}
+   912→                >
+   913→                  <SelectTrigger className="border-[#2A2D3A] bg-[#0F1117] text-white">
+   914→                    <SelectValue />
+   915→                  </SelectTrigger>
+   916→                  <SelectContent className="border-[#2A2D3A] bg-[#1A1D29]">
+   917→                    <SelectItem value="Beginner">Beginner</SelectItem>
+   918→                    <SelectItem value="Intermediate">Intermediate</SelectItem>
+   919→                    <SelectItem value="Advanced">Advanced</SelectItem>
+   920→                  </SelectContent>
+   921→                </Select>
+   922→              </div>
+   923→            </div>
+   924→            <div className="grid grid-cols-2 gap-4">
+   925→              <div className="space-y-2">
+   926→                <Label htmlFor="editTier">Tier</Label>
+   927→                <Select
+   928→                  value={pathForm.tier}
+   929→                  onValueChange={(value) => setPathForm({ ...pathForm, tier: value })}
+   930→                >
+   931→                  <SelectTrigger className="border-[#2A2D3A] bg-[#0F1117] text-white">
+   932→                    <SelectValue />
+   933→                  </SelectTrigger>
+   934→                  <SelectContent className="border-[#2A2D3A] bg-[#1A1D29]">
+   935→                    <SelectItem value="FREE">Free</SelectItem>
+   936→                    <SelectItem value="PREMIUM">Premium</SelectItem>
+   937→                  </SelectContent>
+   938→                </Select>
+   939→              </div>
+   940→              <div className="space-y-2">
+   941→                <Label htmlFor="editOrder">Order</Label>
+   942→                <Input
+   943→                  id="editOrder"
+   944→                  type="number"
+   945→                  placeholder="0"
+   946→                  value={pathForm.order}
+   947→                  onChange={(e) => setPathForm({ ...pathForm, order: parseInt(e.target.value) || 0 })}
+   948→                  className="border-[#2A2D3A] bg-[#0F1117] text-white"
+   949→                />
+   950→              </div>
+   951→            </div>
+   952→            <div className="space-y-2">
+   953→              <Label htmlFor="editAccentColor">Accent Color</Label>
+   954→              <div className="flex gap-2">
+   955→                <Input
+   956→                  id="editAccentColor"
+   957→                  type="color"
+   958→                  value={pathForm.accentColor}
+   959→                  onChange={(e) => setPathForm({ ...pathForm, accentColor: e.target.value })}
+   960→                  className="w-20 h-10 border-[#2A2D3A] bg-[#0F1117] text-white"
+   961→                />
+   962→                <Input
+   963→                  placeholder="#00D09C"
+   964→                  value={pathForm.accentColor}
+   965→                  onChange={(e) => setPathForm({ ...pathForm, accentColor: e.target.value })}
+   966→                  className="flex-1 border-[#2A2D3A] bg-[#0F1117] text-white"
+   967→                />
+   968→              </div>
+   969→            </div>
+   970→            <div className="flex items-center justify-between">
+   971→              <Label htmlFor="editIsActive">Active</Label>
+   972→              <Switch
+   973→                id="editIsActive"
+   974→                checked={pathForm.isActive}
+   975→                onCheckedChange={(checked) => setPathForm({ ...pathForm, isActive: checked })}
+   976→              />
+   977→            </div>
+   978→          </div>
+   979→          <DialogFooter>
+   980→            <Button
+   981→              variant="outline"
+   982→              onClick={() => setEditPathDialogOpen(false)}
+   983→              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   984→            >
+   985→              Cancel
+   986→            </Button>
+   987→            <Button
+   988→              onClick={handleUpdatePath}
+   989→              className="bg-[#00D09C] text-black hover:bg-[#00D09C]/80"
+   990→            >
+   991→              <Save className="h-4 w-4 mr-2" />
+   992→              Save Changes
+   993→            </Button>
+   994→          </DialogFooter>
+   995→        </DialogContent>
+   996→      </Dialog>
+   997→
+   998→      {/* Edit Module Dialog */}
+   999→      <Dialog open={editModuleDialogOpen} onOpenChange={setEditModuleDialogOpen}>
+  1000→        <DialogContent className="border-[#2A2D3A] bg-[#1A1D29] text-white max-w-2xl max-h-[90vh]">
+  1001→          <DialogHeader>
+  1002→            <DialogTitle>Edit Module</DialogTitle>
+  1003→            <DialogDescription className="text-gray-400">
+  1004→              Update the module details
+  1005→            </DialogDescription>
+  1006→          </DialogHeader>
+  1007→          <div className="space-y-4 py-4 max-h-[50vh] overflow-y-auto">
+  1008→            <div className="space-y-2">
+  1009→              <Label htmlFor="editModuleTitle">Title *</Label>
+  1010→              <Input
+  1011→                id="editModuleTitle"
+  1012→                placeholder="e.g., Market Basics"
+  1013→                value={moduleForm.title}
+  1014→                onChange={(e) => setModuleForm({ ...moduleForm, title: e.target.value })}
+  1015→                className="border-[#2A2D3A] bg-[#0F1117] text-white"
+  1016→              />
+  1017→            </div>
+  1018→            <div className="space-y-2">
+  1019→              <Label htmlFor="editModuleDescription">Description</Label>
+  1020→              <Textarea
+  1021→                id="editModuleDescription"
+  1022→                placeholder="Brief description of this module"
+  1023→                value={moduleForm.description}
+  1024→                onChange={(e) => setModuleForm({ ...moduleForm, description: e.target.value })}
+  1025→                className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[80px]"
+  1026→              />
+  1027→            </div>
+  1028→            <div className="space-y-2">
+  1029→              <Label htmlFor="editModuleContent">Content (Markdown)</Label>
+  1030→              <Textarea
+  1031→                id="editModuleContent"
+  1032→                placeholder="# Module Content&#10;&#10;Write your module content in markdown format..."
+  1033→                value={moduleForm.content}
+  1034→                onChange={(e) => setModuleForm({ ...moduleForm, content: e.target.value })}
+  1035→                className="border-[#2A2D3A] bg-[#0F1117] text-white min-h-[200px] font-mono text-sm"
+  1036→              />
+  1037→            </div>
+  1038→            <div className="space-y-2">
+  1039→              <Label htmlFor="editModuleVideoUrl">Video URL</Label>
+  1040→              <Input
+  1041→                id="editModuleVideoUrl"
+  1042→                placeholder="https://..."
+  1043→                value={moduleForm.videoUrl}
+  1044→                onChange={(e) => setModuleForm({ ...moduleForm, videoUrl: e.target.value })}
+  1045→                className="border-[#2A2D3A] bg-[#0F1117] text-white"
+  1046→              />
+  1047→            </div>
+  1048→            <div className="grid grid-cols-2 gap-4">
+  1049→              <div className="space-y-2">
+  1050→                <Label htmlFor="editModuleDuration">Duration (minutes) *</Label>
+  1051→                <Input
+  1052→                  id="editModuleDuration"
+  1053→                  type="number"
+  1054→                  placeholder="30"
+  1055→                  value={moduleForm.duration}
+  1056→                  onChange={(e) => setModuleForm({ ...moduleForm, duration: parseInt(e.target.value) || 0 })}
+  1057→                  className="border-[#2A2D3A] bg-[#0F1117] text-white"
+  1058→                />
+  1059→              </div>
+  1060→              <div className="space-y-2">
+  1061→                <Label htmlFor="editModuleOrder">Order</Label>
+  1062→                <Input
+  1063→                  id="editModuleOrder"
+  1064→                  type="number"
+  1065→                  placeholder="0"
+  1066→                  value={moduleForm.order}
+  1067→                  onChange={(e) => setModuleForm({ ...moduleForm, order: parseInt(e.target.value) || 0 })}
+  1068→                  className="border-[#2A2D3A] bg-[#0F1117] text-white"
+  1069→                />
+  1070→              </div>
+  1071→            </div>
+  1072→            <div className="flex items-center justify-between">
+  1073→              <Label htmlFor="editModuleIsActive">Active</Label>
+  1074→              <Switch
+  1075→                id="editModuleIsActive"
+  1076→                checked={moduleForm.isActive}
+  1077→                onCheckedChange={(checked) => setModuleForm({ ...moduleForm, isActive: checked })}
+  1078→              />
+  1079→            </div>
+  1080→          </div>
+  1081→          <DialogFooter>
+  1082→            <Button
+  1083→              variant="outline"
+  1084→              onClick={() => setEditModuleDialogOpen(false)}
+  1085→              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+  1086→            >
+  1087→              Cancel
+  1088→            </Button>
+  1089→            <Button
+  1090→              onClick={handleUpdateModule}
+  1091→              className="bg-[#00D09C] text-black hover:bg-[#00D09C]/80"
+  1092→            >
+  1093→              <Save className="h-4 w-4 mr-2" />
+  1094→              Save Changes
+  1095→            </Button>
+  1096→          </DialogFooter>
+  1097→        </DialogContent>
+  1098→      </Dialog>
+  1099→    </div>
+  1100→  )
+  1101→}

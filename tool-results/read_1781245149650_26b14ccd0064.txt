@@ -1,0 +1,877 @@
+     1→'use client'
+     2→
+     3→import { useEffect, useState } from 'react'
+     4→import {
+     5→  Plus,
+     6→  Play,
+     7→  Pause,
+     8→  CheckCircle,
+     9→  XCircle,
+    10→  Edit,
+    11→  Users,
+    12→  Calendar,
+    13→  Trophy,
+    14→  Target,
+    15→  RefreshCw,
+    16→  MoreVertical,
+    17→  X,
+    18→} from 'lucide-react'
+    19→import { Button } from '@/components/ui/button'
+    20→import { Input } from '@/components/ui/input'
+    21→import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+    22→import {
+    23→  Dialog,
+    24→  DialogContent,
+    25→  DialogDescription,
+    26→  DialogFooter,
+    27→  DialogHeader,
+    28→  DialogTitle,
+    29→} from '@/components/ui/dialog'
+    30→import { Badge } from '@/components/ui/badge'
+    31→import {
+    32→  Select,
+    33→  SelectContent,
+    34→  SelectItem,
+    35→  SelectTrigger,
+    36→  SelectValue,
+    37→} from '@/components/ui/select'
+    38→import { Label } from '@/components/ui/label'
+    39→import { Textarea } from '@/components/ui/textarea'
+    40→import {
+    41→  Table,
+    42→  TableBody,
+    43→  TableCell,
+    44→  TableHead,
+    45→  TableHeader,
+    46→  TableRow,
+    47→} from '@/components/ui/table'
+    48→import { toast } from 'sonner'
+    49→import { Skeleton } from '@/components/ui/skeleton'
+    50→import {
+    51→  DropdownMenu,
+    52→  DropdownMenuContent,
+    53→  DropdownMenuItem,
+    54→  DropdownMenuTrigger,
+    55→} from '@/components/ui/dropdown-menu'
+    56→
+    57→interface Challenge {
+    58→  id: string
+    59→  title: string
+    60→  description: string
+    61→  challengeType: string
+    62→  targetMetric: string
+    63→  targetValue: number
+    64→  prize: string | null
+    65→  prizeValue: number | null
+    66→  startDate: string
+    67→  endDate: string
+    68→  maxParticipants: number | null
+    69→  currentParticipants: number
+    70→  status: 'UPCOMING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED'
+    71→  tier: string
+    72→  participationsCount: number
+    73→  createdAt: string
+    74→  updatedAt: string
+    75→}
+    76→
+    77→interface Participation {
+    78→  id: string
+    79→  challengeId: string
+    80→  userId: string
+    81→  progress: number
+    82→  result: string | null
+    83→  reward: string | null
+    84→  joinedAt: string
+    85→  completedAt: string | null
+    86→  userName: string | null
+    87→  userEmail: string | null
+    88→}
+    89→
+    90→export default function ChallengesPage() {
+    91→  const [challenges, setChallenges] = useState<Challenge[]>([])
+    92→  const [loading, setLoading] = useState(true)
+    93→  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+    94→  const [editDialogOpen, setEditDialogOpen] = useState(false)
+    95→  const [participationsDialogOpen, setParticipationsDialogOpen] = useState(false)
+    96→  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null)
+    97→  const [participations, setParticipations] = useState<Participation[]>([])
+    98→  const [participationsLoading, setParticipationsLoading] = useState(false)
+    99→  const [actionLoading, setActionLoading] = useState<string | null>(null)
+   100→
+   101→  // Form state
+   102→  const [formData, setFormData] = useState({
+   103→    title: '',
+   104→    description: '',
+   105→    challengeType: 'TRADING',
+   106→    targetMetric: 'PROFIT_PERCENT',
+   107→    targetValue: '',
+   108→    prize: '',
+   109→    prizeValue: '',
+   110→    startDate: '',
+   111→    endDate: '',
+   112→    maxParticipants: '',
+   113→    tier: 'FREE',
+   114→  })
+   115→
+   116→  const [editFormData, setEditFormData] = useState({
+   117→    title: '',
+   118→    description: '',
+   119→    startDate: '',
+   120→    endDate: '',
+   121→    status: '' as 'UPCOMING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED',
+   122→  })
+   123→
+   124→  // Fetch challenges
+   125→  const fetchChallenges = async () => {
+   126→    try {
+   127→      setLoading(true)
+   128→      const response = await fetch('/api/admin/challenges')
+   129→      const result = await response.json()
+   130→
+   131→      if (result.success) {
+   132→        setChallenges(result.data)
+   133→      } else {
+   134→        toast.error('Failed to fetch challenges')
+   135→      }
+   136→    } catch (error) {
+   137→      console.error('Error fetching challenges:', error)
+   138→      toast.error('Failed to fetch challenges')
+   139→    } finally {
+   140→      setLoading(false)
+   141→    }
+   142→  }
+   143→
+   144→  // Fetch participations for a challenge
+   145→  const fetchParticipations = async (challengeId: string) => {
+   146→    try {
+   147→      setParticipationsLoading(true)
+   148→      const response = await fetch(`/api/admin/challenges/participations?challengeId=${challengeId}`)
+   149→      const result = await response.json()
+   150→
+   151→      if (result.success) {
+   152→        setParticipations(result.data)
+   153→      } else {
+   154→        toast.error('Failed to fetch participations')
+   155→      }
+   156→    } catch (error) {
+   157→      console.error('Error fetching participations:', error)
+   158→      toast.error('Failed to fetch participations')
+   159→    } finally {
+   160→      setParticipationsLoading(false)
+   161→    }
+   162→  }
+   163→
+   164→  useEffect(() => {
+   165→    fetchChallenges()
+   166→  }, [])
+   167→
+   168→  // Handle create challenge
+   169→  const handleCreateChallenge = async (e: React.FormEvent) => {
+   170→    e.preventDefault()
+   171→
+   172→    try {
+   173→      const response = await fetch('/api/admin/challenges', {
+   174→        method: 'POST',
+   175→        headers: { 'Content-Type': 'application/json' },
+   176→        body: JSON.stringify({
+   177→          ...formData,
+   178→          targetValue: parseFloat(formData.targetValue),
+   179→          prizeValue: formData.prizeValue ? parseFloat(formData.prizeValue) : null,
+   180→          maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : null,
+   181→        }),
+   182→      })
+   183→
+   184→      const result = await response.json()
+   185→
+   186→      if (result.success) {
+   187→        toast.success('Challenge created successfully')
+   188→        setCreateDialogOpen(false)
+   189→        setFormData({
+   190→          title: '',
+   191→          description: '',
+   192→          challengeType: 'TRADING',
+   193→          targetMetric: 'PROFIT_PERCENT',
+   194→          targetValue: '',
+   195→          prize: '',
+   196→          prizeValue: '',
+   197→          startDate: '',
+   198→          endDate: '',
+   199→          maxParticipants: '',
+   200→          tier: 'FREE',
+   201→        })
+   202→        fetchChallenges()
+   203→      } else {
+   204→        toast.error(result.error || 'Failed to create challenge')
+   205→      }
+   206→    } catch (error) {
+   207→      console.error('Error creating challenge:', error)
+   208→      toast.error('Failed to create challenge')
+   209→    }
+   210→  }
+   211→
+   212→  // Handle update challenge
+   213→  const handleUpdateChallenge = async (e: React.FormEvent) => {
+   214→    e.preventDefault()
+   215→
+   216→    if (!selectedChallenge) return
+   217→
+   218→    try {
+   219→      const response = await fetch('/api/admin/challenges', {
+   220→        method: 'PUT',
+   221→        headers: { 'Content-Type': 'application/json' },
+   222→        body: JSON.stringify({
+   223→          id: selectedChallenge.id,
+   224→          ...editFormData,
+   225→        }),
+   226→      })
+   227→
+   228→      const result = await response.json()
+   229→
+   230→      if (result.success) {
+   231→        toast.success('Challenge updated successfully')
+   232→        setEditDialogOpen(false)
+   233→        fetchChallenges()
+   234→      } else {
+   235→        toast.error(result.error || 'Failed to update challenge')
+   236→      }
+   237→    } catch (error) {
+   238→      console.error('Error updating challenge:', error)
+   239→      toast.error('Failed to update challenge')
+   240→    }
+   241→  }
+   242→
+   243→  // Handle status action
+   244→  const handleStatusAction = async (challengeId: string, action: 'start' | 'pause' | 'complete' | 'cancel') => {
+   245→    try {
+   246→      setActionLoading(challengeId)
+   247→      const response = await fetch('/api/admin/challenges', {
+   248→        method: 'POST',
+   249→        headers: { 'Content-Type': 'application/json' },
+   250→        body: JSON.stringify({ action, id: challengeId }),
+   251→      })
+   252→
+   253→      const result = await response.json()
+   254→
+   255→      if (result.success) {
+   256→        toast.success(result.message || `Challenge ${action}ed successfully`)
+   257→        fetchChallenges()
+   258→      } else {
+   259→        toast.error(result.error || 'Failed to update challenge status')
+   260→      }
+   261→    } catch (error) {
+   262→      console.error('Error updating status:', error)
+   263→      toast.error('Failed to update challenge status')
+   264→    } finally {
+   265→      setActionLoading(null)
+   266→    }
+   267→  }
+   268→
+   269→  // Open edit dialog
+   270→  const openEditDialog = (challenge: Challenge) => {
+   271→    setSelectedChallenge(challenge)
+   272→    setEditFormData({
+   273→      title: challenge.title,
+   274→      description: challenge.description,
+   275→      startDate: challenge.startDate.split('T')[0],
+   276→      endDate: challenge.endDate.split('T')[0],
+   277→      status: challenge.status,
+   278→    })
+   279→    setEditDialogOpen(true)
+   280→  }
+   281→
+   282→  // Open participations dialog
+   283→  const openParticipationsDialog = (challenge: Challenge) => {
+   284→    setSelectedChallenge(challenge)
+   285→    setParticipationsDialogOpen(true)
+   286→    fetchParticipations(challenge.id)
+   287→  }
+   288→
+   289→  // Get status badge color
+   290→  const getStatusBadgeColor = (status: string) => {
+   291→    switch (status) {
+   292→      case 'UPCOMING':
+   293→        return 'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20'
+   294→      case 'ONGOING':
+   295→        return 'bg-[#00D09C]/10 text-[#00D09C] hover:bg-[#00D09C]/20'
+   296→      case 'COMPLETED':
+   297→        return 'bg-gray-500/10 text-gray-400 hover:bg-gray-500/20'
+   298→      case 'CANCELLED':
+   299→        return 'bg-red-500/10 text-red-500 hover:bg-red-500/20'
+   300→      default:
+   301→        return 'bg-gray-500/10 text-gray-400 hover:bg-gray-500/20'
+   302→    }
+   303→  }
+   304→
+   305→  // Format date
+   306→  const formatDate = (dateString: string) => {
+   307→    return new Date(dateString).toLocaleDateString('en-US', {
+   308→      year: 'numeric',
+   309→      month: 'short',
+   310→      day: 'numeric',
+   311→    })
+   312→  }
+   313→
+   314→  return (
+   315→    <div className="space-y-6">
+   316→      <div className="flex items-center justify-between">
+   317→        <div>
+   318→          <h1 className="text-3xl font-bold text-white">Challenges Management</h1>
+   319→          <p className="text-gray-400 mt-1">Manage trading challenges and competitions</p>
+   320→        </div>
+   321→        <div className="flex gap-3">
+   322→          <Button
+   323→            variant="outline"
+   324→            onClick={fetchChallenges}
+   325→            disabled={loading}
+   326→            className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   327→          >
+   328→            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+   329→            Refresh
+   330→          </Button>
+   331→          <Button
+   332→            onClick={() => setCreateDialogOpen(true)}
+   333→            className="bg-[#00D09C] hover:bg-[#00D09C]/90 text-black font-semibold"
+   334→          >
+   335→            <Plus className="w-4 h-4 mr-2" />
+   336→            Create Challenge
+   337→          </Button>
+   338→        </div>
+   339→      </div>
+   340→
+   341→      {/* Challenges List */}
+   342→      {loading ? (
+   343→        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+   344→          {[1, 2, 3, 4, 5, 6].map((i) => (
+   345→            <Card key={i} className="bg-[#1A1D29] border-[#2A2D3A]">
+   346→              <CardHeader>
+   347→                <Skeleton className="h-6 w-3/4 bg-[#2A2D3A]" />
+   348→                <Skeleton className="h-4 w-1/2 bg-[#2A2D3A]" />
+   349→              </CardHeader>
+   350→              <CardContent>
+   351→                <div className="space-y-3">
+   352→                  <Skeleton className="h-4 w-full bg-[#2A2D3A]" />
+   353→                  <Skeleton className="h-4 w-full bg-[#2A2D3A]" />
+   354→                  <Skeleton className="h-4 w-2/3 bg-[#2A2D3A]" />
+   355→                </div>
+   356→              </CardContent>
+   357→            </Card>
+   358→          ))}
+   359→        </div>
+   360→      ) : challenges.length === 0 ? (
+   361→        <Card className="bg-[#1A1D29] border-[#2A2D3A]">
+   362→          <CardContent className="py-12">
+   363→            <div className="text-center">
+   364→              <Trophy className="w-16 h-16 mx-auto text-gray-600 mb-4" />
+   365→              <h3 className="text-xl font-semibold text-white mb-2">No challenges yet</h3>
+   366→              <p className="text-gray-400 mb-6">Create your first challenge to get started</p>
+   367→              <Button
+   368→                onClick={() => setCreateDialogOpen(true)}
+   369→                className="bg-[#00D09C] hover:bg-[#00D09C]/90 text-black font-semibold"
+   370→              >
+   371→                <Plus className="w-4 h-4 mr-2" />
+   372→                Create Challenge
+   373→              </Button>
+   374→            </div>
+   375→          </CardContent>
+   376→        </Card>
+   377→      ) : (
+   378→        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+   379→          {challenges.map((challenge) => (
+   380→            <Card key={challenge.id} className="bg-[#1A1D29] border-[#2A2D3A] hover:border-[#00D09C]/50 transition-colors">
+   381→              <CardHeader>
+   382→                <div className="flex items-start justify-between">
+   383→                  <div className="flex-1">
+   384→                    <CardTitle className="text-white text-lg mb-2">{challenge.title}</CardTitle>
+   385→                    <CardDescription className="text-gray-400 line-clamp-2">
+   386→                      {challenge.description}
+   387→                    </CardDescription>
+   388→                  </div>
+   389→                  <DropdownMenu>
+   390→                    <DropdownMenuTrigger asChild>
+   391→                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+   392→                        <MoreVertical className="h-4 w-4 text-gray-400" />
+   393→                      </Button>
+   394→                    </DropdownMenuTrigger>
+   395→                    <DropdownMenuContent align="end" className="bg-[#1A1D29] border-[#2A2D3A]">
+   396→                      <DropdownMenuItem
+   397→                        onClick={() => openEditDialog(challenge)}
+   398→                        className="text-white hover:bg-[#2A2D3A] cursor-pointer"
+   399→                      >
+   400→                        <Edit className="w-4 h-4 mr-2" />
+   401→                        Edit
+   402→                      </DropdownMenuItem>
+   403→                      <DropdownMenuItem
+   404→                        onClick={() => openParticipationsDialog(challenge)}
+   405→                        className="text-white hover:bg-[#2A2D3A] cursor-pointer"
+   406→                      >
+   407→                        <Users className="w-4 h-4 mr-2" />
+   408→                        View Participations
+   409→                      </DropdownMenuItem>
+   410→                    </DropdownMenuContent>
+   411→                  </DropdownMenu>
+   412→                </div>
+   413→              </CardHeader>
+   414→              <CardContent className="space-y-4">
+   415→                <div className="flex items-center justify-between">
+   416→                  <Badge className={getStatusBadgeColor(challenge.status)}>
+   417→                    {challenge.status}
+   418→                  </Badge>
+   419→                  <Badge variant="outline" className="border-[#2A2D3A] text-gray-400">
+   420→                    {challenge.tier}
+   421→                  </Badge>
+   422→                </div>
+   423→
+   424→                <div className="grid grid-cols-2 gap-3 text-sm">
+   425→                  <div className="space-y-1">
+   426→                    <div className="flex items-center text-gray-400">
+   427→                      <Target className="w-3 h-3 mr-1" />
+   428→                      Type
+   429→                    </div>
+   430→                    <div className="text-white font-medium">{challenge.challengeType}</div>
+   431→                  </div>
+   432→                  <div className="space-y-1">
+   433→                    <div className="flex items-center text-gray-400">
+   434→                      <Target className="w-3 h-3 mr-1" />
+   435→                      Target
+   436→                    </div>
+   437→                    <div className="text-white font-medium">{challenge.targetMetric}</div>
+   438→                  </div>
+   439→                </div>
+   440→
+   441→                <div className="grid grid-cols-2 gap-3 text-sm">
+   442→                  <div className="space-y-1">
+   443→                    <div className="flex items-center text-gray-400">
+   444→                      <Trophy className="w-3 h-3 mr-1" />
+   445→                      Prize
+   446→                    </div>
+   447→                    <div className="text-white font-medium">
+   448→                      {challenge.prize || challenge.prizeValue
+   449→                        ? `${challenge.prize || ''}${challenge.prizeValue ? ` ₹${challenge.prizeValue}` : ''}`
+   450→                        : 'None'}
+   451→                    </div>
+   452→                  </div>
+   453→                  <div className="space-y-1">
+   454→                    <div className="flex items-center text-gray-400">
+   455→                      <Users className="w-3 h-3 mr-1" />
+   456→                      Participants
+   457→                    </div>
+   458→                    <div className="text-white font-medium">
+   459→                      {challenge.participationsCount}
+   460→                      {challenge.maxParticipants && ` / ${challenge.maxParticipants}`}
+   461→                    </div>
+   462→                  </div>
+   463→                </div>
+   464→
+   465→                <div className="pt-3 border-t border-[#2A2D3A]">
+   466→                  <div className="flex items-center text-gray-400 text-sm mb-3">
+   467→                    <Calendar className="w-3 h-3 mr-1" />
+   468→                    {formatDate(challenge.startDate)} - {formatDate(challenge.endDate)}
+   469→                  </div>
+   470→
+   471→                  {/* Action Buttons */}
+   472→                  <div className="flex gap-2">
+   473→                    {challenge.status === 'UPCOMING' && (
+   474→                      <Button
+   475→                        size="sm"
+   476→                        variant="outline"
+   477→                        onClick={() => handleStatusAction(challenge.id, 'start')}
+   478→                        disabled={actionLoading === challenge.id}
+   479→                        className="flex-1 border-[#00D09C]/50 text-[#00D09C] hover:bg-[#00D09C]/10"
+   480→                      >
+   481→                        <Play className="w-3 h-3 mr-1" />
+   482→                        Start
+   483→                      </Button>
+   484→                    )}
+   485→                    {challenge.status === 'ONGOING' && (
+   486→                      <>
+   487→                        <Button
+   488→                          size="sm"
+   489→                          variant="outline"
+   490→                          onClick={() => handleStatusAction(challenge.id, 'pause')}
+   491→                          disabled={actionLoading === challenge.id}
+   492→                          className="flex-1 border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   493→                        >
+   494→                          <Pause className="w-3 h-3 mr-1" />
+   495→                          Pause
+   496→                        </Button>
+   497→                        <Button
+   498→                          size="sm"
+   499→                          variant="outline"
+   500→                          onClick={() => handleStatusAction(challenge.id, 'complete')}
+   501→                          disabled={actionLoading === challenge.id}
+   502→                          className="flex-1 border-[#00D09C]/50 text-[#00D09C] hover:bg-[#00D09C]/10"
+   503→                        >
+   504→                          <CheckCircle className="w-3 h-3 mr-1" />
+   505→                          Complete
+   506→                        </Button>
+   507→                      </>
+   508→                    )}
+   509→                    {(challenge.status === 'ONGOING' || challenge.status === 'UPCOMING') && (
+   510→                      <Button
+   511→                        size="sm"
+   512→                        variant="outline"
+   513→                        onClick={() => handleStatusAction(challenge.id, 'cancel')}
+   514→                        disabled={actionLoading === challenge.id}
+   515→                        className="flex-1 border-red-500/50 text-red-500 hover:bg-red-500/10"
+   516→                      >
+   517→                        <XCircle className="w-3 h-3 mr-1" />
+   518→                        Cancel
+   519→                      </Button>
+   520→                    )}
+   521→                  </div>
+   522→                </div>
+   523→              </CardContent>
+   524→            </Card>
+   525→          ))}
+   526→        </div>
+   527→      )}
+   528→
+   529→      {/* Create Challenge Dialog */}
+   530→      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+   531→        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+   532→          <DialogHeader>
+   533→            <DialogTitle>Create New Challenge</DialogTitle>
+   534→            <DialogDescription className="text-gray-400">
+   535→              Create a new trading challenge for users to participate in
+   536→            </DialogDescription>
+   537→          </DialogHeader>
+   538→          <form onSubmit={handleCreateChallenge} className="space-y-4">
+   539→            <div className="grid grid-cols-2 gap-4">
+   540→              <div className="space-y-2">
+   541→                <Label htmlFor="title">Title *</Label>
+   542→                <Input
+   543→                  id="title"
+   544→                  value={formData.title}
+   545→                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+   546→                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   547→                  required
+   548→                />
+   549→              </div>
+   550→              <div className="space-y-2">
+   551→                <Label htmlFor="challengeType">Challenge Type *</Label>
+   552→                <Select
+   553→                  value={formData.challengeType}
+   554→                  onValueChange={(value) => setFormData({ ...formData, challengeType: value })}
+   555→                >
+   556→                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+   557→                    <SelectValue />
+   558→                  </SelectTrigger>
+   559→                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   560→                    <SelectItem value="TRADING">Trading</SelectItem>
+   561→                    <SelectItem value="LEARNING">Learning</SelectItem>
+   562→                    <SelectItem value="PORTFOLIO">Portfolio</SelectItem>
+   563→                    <SelectItem value="REFERRAL">Referral</SelectItem>
+   564→                  </SelectContent>
+   565→                </Select>
+   566→              </div>
+   567→            </div>
+   568→
+   569→            <div className="space-y-2">
+   570→              <Label htmlFor="description">Description *</Label>
+   571→              <Textarea
+   572→                id="description"
+   573→                value={formData.description}
+   574→                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+   575→                className="bg-[#0F1117] border-[#2A2D3A] text-white min-h-[100px]"
+   576→                required
+   577→              />
+   578→            </div>
+   579→
+   580→            <div className="grid grid-cols-2 gap-4">
+   581→              <div className="space-y-2">
+   582→                <Label htmlFor="targetMetric">Target Metric *</Label>
+   583→                <Select
+   584→                  value={formData.targetMetric}
+   585→                  onValueChange={(value) => setFormData({ ...formData, targetMetric: value })}
+   586→                >
+   587→                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+   588→                    <SelectValue />
+   589→                  </SelectTrigger>
+   590→                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   591→                    <SelectItem value="PROFIT_PERCENT">Profit Percentage</SelectItem>
+   592→                    <SelectItem value="PROFIT_AMOUNT">Profit Amount</SelectItem>
+   593→                    <SelectItem value="TRADES_COUNT">Number of Trades</SelectItem>
+   594→                    <SelectItem value="WIN_RATE">Win Rate</SelectItem>
+   595→                    <SelectItem value="MODULES_COMPLETED">Modules Completed</SelectItem>
+   596→                  </SelectContent>
+   597→                </Select>
+   598→              </div>
+   599→              <div className="space-y-2">
+   600→                <Label htmlFor="targetValue">Target Value *</Label>
+   601→                <Input
+   602→                  id="targetValue"
+   603→                  type="number"
+   604→                  step="0.01"
+   605→                  value={formData.targetValue}
+   606→                  onChange={(e) => setFormData({ ...formData, targetValue: e.target.value })}
+   607→                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   608→                  required
+   609→                />
+   610→              </div>
+   611→            </div>
+   612→
+   613→            <div className="grid grid-cols-2 gap-4">
+   614→              <div className="space-y-2">
+   615→                <Label htmlFor="prize">Prize Description</Label>
+   616→                <Input
+   617→                  id="prize"
+   618→                  value={formData.prize}
+   619→                  onChange={(e) => setFormData({ ...formData, prize: e.target.value })}
+   620→                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   621→                  placeholder="e.g., Premium Subscription"
+   622→                />
+   623→              </div>
+   624→              <div className="space-y-2">
+   625→                <Label htmlFor="prizeValue">Prize Value (₹)</Label>
+   626→                <Input
+   627→                  id="prizeValue"
+   628→                  type="number"
+   629→                  step="0.01"
+   630→                  value={formData.prizeValue}
+   631→                  onChange={(e) => setFormData({ ...formData, prizeValue: e.target.value })}
+   632→                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   633→                  placeholder="e.g., 999"
+   634→                />
+   635→              </div>
+   636→            </div>
+   637→
+   638→            <div className="grid grid-cols-2 gap-4">
+   639→              <div className="space-y-2">
+   640→                <Label htmlFor="startDate">Start Date *</Label>
+   641→                <Input
+   642→                  id="startDate"
+   643→                  type="date"
+   644→                  value={formData.startDate}
+   645→                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+   646→                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   647→                  required
+   648→                />
+   649→              </div>
+   650→              <div className="space-y-2">
+   651→                <Label htmlFor="endDate">End Date *</Label>
+   652→                <Input
+   653→                  id="endDate"
+   654→                  type="date"
+   655→                  value={formData.endDate}
+   656→                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+   657→                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   658→                  required
+   659→                />
+   660→              </div>
+   661→            </div>
+   662→
+   663→            <div className="grid grid-cols-2 gap-4">
+   664→              <div className="space-y-2">
+   665→                <Label htmlFor="maxParticipants">Max Participants</Label>
+   666→                <Input
+   667→                  id="maxParticipants"
+   668→                  type="number"
+   669→                  value={formData.maxParticipants}
+   670→                  onChange={(e) => setFormData({ ...formData, maxParticipants: e.target.value })}
+   671→                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   672→                  placeholder="Leave empty for unlimited"
+   673→                />
+   674→              </div>
+   675→              <div className="space-y-2">
+   676→                <Label htmlFor="tier">Tier</Label>
+   677→                <Select
+   678→                  value={formData.tier}
+   679→                  onValueChange={(value) => setFormData({ ...formData, tier: value })}
+   680→                >
+   681→                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+   682→                    <SelectValue />
+   683→                  </SelectTrigger>
+   684→                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   685→                    <SelectItem value="FREE">FREE</SelectItem>
+   686→                    <SelectItem value="PREMIUM">PREMIUM</SelectItem>
+   687→                    <SelectItem value="PRO">PRO</SelectItem>
+   688→                  </SelectContent>
+   689→                </Select>
+   690→              </div>
+   691→            </div>
+   692→
+   693→            <DialogFooter>
+   694→              <Button
+   695→                type="button"
+   696→                variant="outline"
+   697→                onClick={() => setCreateDialogOpen(false)}
+   698→                className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   699→              >
+   700→                Cancel
+   701→              </Button>
+   702→              <Button
+   703→                type="submit"
+   704→                className="bg-[#00D09C] hover:bg-[#00D09C]/90 text-black font-semibold"
+   705→              >
+   706→                Create Challenge
+   707→              </Button>
+   708→            </DialogFooter>
+   709→          </form>
+   710→        </DialogContent>
+   711→      </Dialog>
+   712→
+   713→      {/* Edit Challenge Dialog */}
+   714→      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+   715→        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white max-w-lg">
+   716→          <DialogHeader>
+   717→            <DialogTitle>Edit Challenge</DialogTitle>
+   718→            <DialogDescription className="text-gray-400">
+   719→              Update challenge details
+   720→            </DialogDescription>
+   721→          </DialogHeader>
+   722→          <form onSubmit={handleUpdateChallenge} className="space-y-4">
+   723→            <div className="space-y-2">
+   724→              <Label htmlFor="editTitle">Title</Label>
+   725→              <Input
+   726→                id="editTitle"
+   727→                value={editFormData.title}
+   728→                onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+   729→                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   730→              />
+   731→            </div>
+   732→
+   733→            <div className="space-y-2">
+   734→              <Label htmlFor="editDescription">Description</Label>
+   735→              <Textarea
+   736→                id="editDescription"
+   737→                value={editFormData.description}
+   738→                onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+   739→                className="bg-[#0F1117] border-[#2A2D3A] text-white min-h-[80px]"
+   740→              />
+   741→            </div>
+   742→
+   743→            <div className="grid grid-cols-2 gap-4">
+   744→              <div className="space-y-2">
+   745→                <Label htmlFor="editStartDate">Start Date</Label>
+   746→                <Input
+   747→                  id="editStartDate"
+   748→                  type="date"
+   749→                  value={editFormData.startDate}
+   750→                  onChange={(e) => setEditFormData({ ...editFormData, startDate: e.target.value })}
+   751→                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   752→                />
+   753→              </div>
+   754→              <div className="space-y-2">
+   755→                <Label htmlFor="editEndDate">End Date</Label>
+   756→                <Input
+   757→                  id="editEndDate"
+   758→                  type="date"
+   759→                  value={editFormData.endDate}
+   760→                  onChange={(e) => setEditFormData({ ...editFormData, endDate: e.target.value })}
+   761→                  className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   762→                />
+   763→              </div>
+   764→            </div>
+   765→
+   766→            <div className="space-y-2">
+   767→              <Label htmlFor="editStatus">Status</Label>
+   768→              <Select
+   769→                value={editFormData.status}
+   770→                onValueChange={(value: any) => setEditFormData({ ...editFormData, status: value })}
+   771→              >
+   772→                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+   773→                  <SelectValue />
+   774→                </SelectTrigger>
+   775→                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   776→                  <SelectItem value="UPCOMING">UPCOMING</SelectItem>
+   777→                  <SelectItem value="ONGOING">ONGOING</SelectItem>
+   778→                  <SelectItem value="COMPLETED">COMPLETED</SelectItem>
+   779→                  <SelectItem value="CANCELLED">CANCELLED</SelectItem>
+   780→                </SelectContent>
+   781→              </Select>
+   782→            </div>
+   783→
+   784→            <DialogFooter>
+   785→              <Button
+   786→                type="button"
+   787→                variant="outline"
+   788→                onClick={() => setEditDialogOpen(false)}
+   789→                className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   790→              >
+   791→                Cancel
+   792→              </Button>
+   793→              <Button
+   794→                type="submit"
+   795→                className="bg-[#00D09C] hover:bg-[#00D09C]/90 text-black font-semibold"
+   796→              >
+   797→                Update Challenge
+   798→              </Button>
+   799→            </DialogFooter>
+   800→          </form>
+   801→        </DialogContent>
+   802→      </Dialog>
+   803→
+   804→      {/* Participations Dialog */}
+   805→      <Dialog open={participationsDialogOpen} onOpenChange={setParticipationsDialogOpen}>
+   806→        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white max-w-4xl max-h-[80vh]">
+   807→          <DialogHeader>
+   808→            <DialogTitle>Challenge Participations</DialogTitle>
+   809→            <DialogDescription className="text-gray-400">
+   810→              {selectedChallenge?.title} - {selectedChallenge?.participationsCount} participants
+   811→            </DialogDescription>
+   812→          </DialogHeader>
+   813→
+   814→          {participationsLoading ? (
+   815→            <div className="space-y-3">
+   816→              {[1, 2, 3, 4, 5].map((i) => (
+   817→                <Skeleton key={i} className="h-12 w-full bg-[#2A2D3A]" />
+   818→              ))}
+   819→            </div>
+   820→          ) : participations.length === 0 ? (
+   821→            <div className="text-center py-12">
+   822→              <Users className="w-12 h-12 mx-auto text-gray-600 mb-3" />
+   823→              <p className="text-gray-400">No participants yet</p>
+   824→            </div>
+   825→          ) : (
+   826→            <div className="overflow-auto max-h-[400px]">
+   827→              <Table>
+   828→                <TableHeader>
+   829→                  <TableRow className="border-[#2A2D3A] hover:bg-transparent">
+   830→                    <TableHead className="text-gray-400">User</TableHead>
+   831→                    <TableHead className="text-gray-400">Email</TableHead>
+   832→                    <TableHead className="text-gray-400">Progress</TableHead>
+   833→                    <TableHead className="text-gray-400">Result</TableHead>
+   834→                    <TableHead className="text-gray-400">Joined At</TableHead>
+   835→                  </TableRow>
+   836→                </TableHeader>
+   837→                <TableBody>
+   838→                  {participations.map((participation) => (
+   839→                    <TableRow key={participation.id} className="border-[#2A2D3A] hover:bg-[#2A2D3A]/50">
+   840→                      <TableCell className="text-white font-medium">
+   841→                        {participation.userName || 'Unknown'}
+   842→                      </TableCell>
+   843→                      <TableCell className="text-gray-400">
+   844→                        {participation.userEmail || '-'}
+   845→                      </TableCell>
+   846→                      <TableCell className="text-white">
+   847→                        {participation.progress.toFixed(1)}%
+   848→                      </TableCell>
+   849→                      <TableCell>
+   850→                        {participation.result ? (
+   851→                          <Badge
+   852→                            className={
+   853→                              participation.result === 'WON'
+   854→                                ? 'bg-[#00D09C]/10 text-[#00D09C]'
+   855→                                : 'bg-red-500/10 text-red-500'
+   856→                            }
+   857→                          >
+   858→                            {participation.result}
+   859→                          </Badge>
+   860→                        ) : (
+   861→                          <span className="text-gray-500">-</span>
+   862→                        )}
+   863→                      </TableCell>
+   864→                      <TableCell className="text-gray-400">
+   865→                        {formatDate(participation.joinedAt)}
+   866→                      </TableCell>
+   867→                    </TableRow>
+   868→                  ))}
+   869→                </TableBody>
+   870→              </Table>
+   871→            </div>
+   872→          )}
+   873→        </DialogContent>
+   874→      </Dialog>
+   875→    </div>
+   876→  )
+   877→}

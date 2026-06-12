@@ -1,0 +1,985 @@
+     1→'use client'
+     2→
+     3→import { useEffect, useState, useCallback } from 'react'
+     4→import {
+     5→  Search,
+     6→  Download,
+     7→  MoreVertical,
+     8→  Eye,
+     9→  Edit,
+    10→  Ban,
+    11→  RefreshCw,
+    12→  ArrowUpDown,
+    13→} from 'lucide-react'
+    14→import { Button } from '@/components/ui/button'
+    15→import { Input } from '@/components/ui/input'
+    16→import {
+    17→  Table,
+    18→  TableBody,
+    19→  TableCell,
+    20→  TableHead,
+    21→  TableHeader,
+    22→  TableRow,
+    23→} from '@/components/ui/table'
+    24→import { Badge } from '@/components/ui/badge'
+    25→import {
+    26→  Dialog,
+    27→  DialogContent,
+    28→  DialogDescription,
+    29→  DialogFooter,
+    30→  DialogHeader,
+    31→  DialogTitle,
+    32→  DialogTrigger,
+    33→} from '@/components/ui/dialog'
+    34→import {
+    35→  AlertDialog,
+    36→  AlertDialogAction,
+    37→  AlertDialogCancel,
+    38→  AlertDialogContent,
+    39→  AlertDialogDescription,
+    40→  AlertDialogFooter,
+    41→  AlertDialogHeader,
+    42→  AlertDialogTitle,
+    43→  AlertDialogTrigger,
+    44→} from '@/components/ui/alert-dialog'
+    45→import {
+    46→  DropdownMenu,
+    47→  DropdownMenuContent,
+    48→  DropdownMenuItem,
+    49→  DropdownMenuLabel,
+    50→  DropdownMenuSeparator,
+    51→  DropdownMenuTrigger,
+    52→} from '@/components/ui/dropdown-menu'
+    53→import {
+    54→  Select,
+    55→  SelectContent,
+    56→  SelectItem,
+    57→  SelectTrigger,
+    58→  SelectValue,
+    59→} from '@/components/ui/select'
+    60→import {
+    61→  Pagination,
+    62→  PaginationContent,
+    63→  PaginationItem,
+    64→  PaginationLink,
+    65→  PaginationNext,
+    66→  PaginationPrevious,
+    67→  PaginationEllipsis,
+    68→} from '@/components/ui/pagination'
+    69→import { toast } from 'sonner'
+    70→import { Skeleton } from '@/components/ui/skeleton'
+    71→
+    72→interface User {
+    73→  id: string
+    74→  name: string | null
+    75→  email: string
+    76→  phone: string | null
+    77→  role: string
+    78→  subscription: string
+    79→  status: string
+    80→  isActive: boolean
+    81→  cashBalance: number
+    82→  totalPnL: number
+    83→  isEmailVerified: boolean
+    84→  lastLoginAt: string | null
+    85→  createdAt: string
+    86→  updatedAt: string
+    87→}
+    88→
+    89→interface UsersResponse {
+    90→  users: User[]
+    91→  pagination: {
+    92→    page: number
+    93→    limit: number
+    94→    total: number
+    95→    totalPages: number
+    96→  }
+    97→}
+    98→
+    99→export default function UsersPage() {
+   100→  const [loading, setLoading] = useState(true)
+   101→  const [users, setUsers] = useState<User[]>([])
+   102→  const [pagination, setPagination] = useState({
+   103→    page: 1,
+   104→    limit: 20,
+   105→    total: 0,
+   106→    totalPages: 0,
+   107→  })
+   108→
+   109→  // Filters
+   110→  const [search, setSearch] = useState('')
+   111→  const [role, setRole] = useState('')
+   112→  const [subscription, setSubscription] = useState('')
+   113→  const [status, setStatus] = useState('')
+   114→  const [sortBy, setSortBy] = useState('createdAt')
+   115→  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC')
+   116→
+   117→  // Dialog states
+   118→  const [viewDialogOpen, setViewDialogOpen] = useState(false)
+   119→  const [editDialogOpen, setEditDialogOpen] = useState(false)
+   120→  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+   121→  const [editForm, setEditForm] = useState({
+   122→    name: '',
+   123→    email: '',
+   124→    phone: '',
+   125→    role: '',
+   126→    subscription: '',
+   127→    isActive: true,
+   128→  })
+   129→
+   130→  const formatCurrency = (value: number) => {
+   131→    return new Intl.NumberFormat('en-IN', {
+   132→      style: 'currency',
+   133→      currency: 'INR',
+   134→      maximumFractionDigits: 2,
+   135→    }).format(value)
+   136→  }
+   137→
+   138→  const formatDate = (dateString: string | null) => {
+   139→    if (!dateString) return 'N/A'
+   140→    return new Date(dateString).toLocaleDateString('en-IN', {
+   141→      day: '2-digit',
+   142→      month: 'short',
+   143→      year: 'numeric',
+   144→    })
+   145→  }
+   146→
+   147→  const formatDateTime = (dateString: string | null) => {
+   148→    if (!dateString) return 'N/A'
+   149→    return new Date(dateString).toLocaleString('en-IN', {
+   150→      day: '2-digit',
+   151→      month: 'short',
+   152→      year: 'numeric',
+   153→      hour: '2-digit',
+   154→      minute: '2-digit',
+   155→    })
+   156→  }
+   157→
+   158→  const fetchUsers = useCallback(async () => {
+   159→    setLoading(true)
+   160→    try {
+   161→      const params = new URLSearchParams({
+   162→        page: pagination.page.toString(),
+   163→        limit: pagination.limit.toString(),
+   164→        sortBy,
+   165→        sortOrder,
+   166→      })
+   167→
+   168→      if (search) params.append('search', search)
+   169→      if (role) params.append('role', role)
+   170→      if (subscription) params.append('subscription', subscription)
+   171→      if (status) params.append('status', status)
+   172→
+   173→      const response = await fetch(`/api/admin/users?${params}`)
+   174→      const result = await response.json()
+   175→
+   176→      if (result.success) {
+   177→        setUsers(result.data.users)
+   178→        setPagination(result.data.pagination)
+   179→      } else {
+   180→        toast.error('Failed to load users')
+   181→      }
+   182→    } catch (error) {
+   183→      toast.error('An error occurred')
+   184→    } finally {
+   185→      setLoading(false)
+   186→    }
+   187→  }, [pagination.page, pagination.limit, search, role, subscription, status, sortBy, sortOrder])
+   188→
+   189→  // Debounced search
+   190→  useEffect(() => {
+   191→    const timer = setTimeout(() => {
+   192→      setPagination((prev) => ({ ...prev, page: 1 }))
+   193→      fetchUsers()
+   194→    }, 300)
+   195→
+   196→    return () => clearTimeout(timer)
+   197→  }, [search])
+   198→
+   199→  // Fetch on filter/sort changes
+   200→  useEffect(() => {
+   201→    setPagination((prev) => ({ ...prev, page: 1 }))
+   202→    fetchUsers()
+   203→  }, [role, subscription, status, sortBy, sortOrder])
+   204→
+   205→  useEffect(() => {
+   206→    fetchUsers()
+   207→  }, [pagination.page])
+   208→
+   209→  const handleView = (user: User) => {
+   210→    setSelectedUser(user)
+   211→    setViewDialogOpen(true)
+   212→  }
+   213→
+   214→  const handleEdit = (user: User) => {
+   215→    setSelectedUser(user)
+   216→    setEditForm({
+   217→      name: user.name || '',
+   218→      email: user.email,
+   219→      phone: user.phone || '',
+   220→      role: user.role,
+   221→      subscription: user.subscription,
+   222→      isActive: user.isActive,
+   223→    })
+   224→    setEditDialogOpen(true)
+   225→  }
+   226→
+   227→  const handleUpdateUser = async () => {
+   228→    if (!selectedUser) return
+   229→
+   230→    try {
+   231→      const response = await fetch('/api/admin/users', {
+   232→        method: 'PUT',
+   233→        headers: { 'Content-Type': 'application/json' },
+   234→        body: JSON.stringify({
+   235→          id: selectedUser.id,
+   236→          ...editForm,
+   237→        }),
+   238→      })
+   239→
+   240→      const result = await response.json()
+   241→
+   242→      if (result.success) {
+   243→        toast.success('User updated successfully')
+   244→        setEditDialogOpen(false)
+   245→        fetchUsers()
+   246→      } else {
+   247→        toast.error(result.error || 'Failed to update user')
+   248→      }
+   249→    } catch (error) {
+   250→      toast.error('An error occurred')
+   251→    }
+   252→  }
+   253→
+   254→  const handleToggleActive = async (user: User) => {
+   255→    try {
+   256→      const response = await fetch('/api/admin/users', {
+   257→        method: 'PUT',
+   258→        headers: { 'Content-Type': 'application/json' },
+   259→        body: JSON.stringify({
+   260→          id: user.id,
+   261→          isActive: !user.isActive,
+   262→        }),
+   263→      })
+   264→
+   265→      const result = await response.json()
+   266→
+   267→      if (result.success) {
+   268→        toast.success(`User ${user.isActive ? 'blocked' : 'unblocked'} successfully`)
+   269→        fetchUsers()
+   270→      } else {
+   271→        toast.error(result.error || 'Failed to update user')
+   272→      }
+   273→    } catch (error) {
+   274→      toast.error('An error occurred')
+   275→    }
+   276→  }
+   277→
+   278→  const handleResetBalance = async (user: User) => {
+   279→    try {
+   280→      const response = await fetch('/api/admin/users', {
+   281→        method: 'PUT',
+   282→        headers: { 'Content-Type': 'application/json' },
+   283→        body: JSON.stringify({
+   284→          id: user.id,
+   285→          cashBalance: 100000,
+   286→        }),
+   287→      })
+   288→
+   289→      const result = await response.json()
+   290→
+   291→      if (result.success) {
+   292→        toast.success('Balance reset successfully')
+   293→        fetchUsers()
+   294→      } else {
+   295→        toast.error(result.error || 'Failed to reset balance')
+   296→      }
+   297→    } catch (error) {
+   298→      toast.error('An error occurred')
+   299→    }
+   300→  }
+   301→
+   302→  const handleDeleteUser = async (userId: string) => {
+   303→    try {
+   304→      const response = await fetch(`/api/admin/users?id=${userId}&confirmation=DELETE`, {
+   305→        method: 'DELETE',
+   306→      })
+   307→
+   308→      const result = await response.json()
+   309→
+   310→      if (result.success) {
+   311→        toast.success('User deleted successfully')
+   312→        fetchUsers()
+   313→      } else {
+   314→        toast.error(result.error || 'Failed to delete user')
+   315→      }
+   316→    } catch (error) {
+   317→      toast.error('An error occurred')
+   318→    }
+   319→  }
+   320→
+   321→  const handleExportCSV = () => {
+   322→    const headers = ['Name', 'Email', 'Phone', 'Role', 'Subscription', 'Balance', 'P&L', 'Status', 'Created']
+   323→    const csvContent = [
+   324→      headers.join(','),
+   325→      ...users.map((user) =>
+   326→        [
+   327→          user.name || '',
+   328→          user.email,
+   329→          user.phone || '',
+   330→          user.role,
+   331→          user.subscription,
+   332→          user.cashBalance,
+   333→          user.totalPnL,
+   334→          user.isActive ? 'ACTIVE' : 'INACTIVE',
+   335→          formatDate(user.createdAt),
+   336→        ].join(',')
+   337→      ),
+   338→    ].join('\n')
+   339→
+   340→    const blob = new Blob([csvContent], { type: 'text/csv' })
+   341→    const url = URL.createObjectURL(blob)
+   342→    const a = document.createElement('a')
+   343→    a.href = url
+   344→    a.download = `users-${new Date().toISOString().split('T')[0]}.csv`
+   345→    document.body.appendChild(a)
+   346→    a.click()
+   347→    document.body.removeChild(a)
+   348→    URL.revokeObjectURL(url)
+   349→
+   350→    toast.success('CSV exported successfully')
+   351→  }
+   352→
+   353→  return (
+   354→    <div className="space-y-6">
+   355→      {/* Header */}
+   356→      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+   357→        <div>
+   358→          <h1 className="text-3xl font-bold text-white">Users Management</h1>
+   359→          <p className="text-gray-400 mt-1">Manage and monitor all users</p>
+   360→        </div>
+   361→        <Button
+   362→          onClick={fetchUsers}
+   363→          variant="outline"
+   364→          className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   365→        >
+   366→          <RefreshCw className="h-4 w-4 mr-2" />
+   367→          Refresh
+   368→        </Button>
+   369→      </div>
+   370→
+   371→      {/* Filters */}
+   372→      <div className="border border-[#2A2D3A] rounded-lg bg-[#1A1D29] p-4">
+   373→        <div className="flex flex-col lg:flex-row gap-4">
+   374→          {/* Search */}
+   375→          <div className="flex-1">
+   376→            <div className="relative">
+   377→              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+   378→              <Input
+   379→                placeholder="Search by name, email, or phone..."
+   380→                value={search}
+   381→                onChange={(e) => setSearch(e.target.value)}
+   382→                className="pl-10 bg-[#0F1117] border-[#2A2D3A] text-white placeholder:text-gray-500"
+   383→              />
+   384→            </div>
+   385→          </div>
+   386→
+   387→          {/* Role Filter */}
+   388→          <Select value={role} onValueChange={setRole}>
+   389→            <SelectTrigger className="w-full lg:w-[180px] bg-[#0F1117] border-[#2A2D3A] text-white">
+   390→              <SelectValue placeholder="Role" />
+   391→            </SelectTrigger>
+   392→            <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   393→              <SelectItem value="">All Roles</SelectItem>
+   394→              <SelectItem value="USER">USER</SelectItem>
+   395→              <SelectItem value="ADMIN">ADMIN</SelectItem>
+   396→              <SelectItem value="SUPER_ADMIN">SUPER_ADMIN</SelectItem>
+   397→            </SelectContent>
+   398→          </Select>
+   399→
+   400→          {/* Subscription Filter */}
+   401→          <Select value={subscription} onValueChange={setSubscription}>
+   402→            <SelectTrigger className="w-full lg:w-[180px] bg-[#0F1117] border-[#2A2D3A] text-white">
+   403→              <SelectValue placeholder="Subscription" />
+   404→            </SelectTrigger>
+   405→            <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   406→              <SelectItem value="">All</SelectItem>
+   407→              <SelectItem value="FREE">FREE</SelectItem>
+   408→              <SelectItem value="PREMIUM">PREMIUM</SelectItem>
+   409→            </SelectContent>
+   410→          </Select>
+   411→
+   412→          {/* Status Filter */}
+   413→          <Select value={status} onValueChange={setStatus}>
+   414→            <SelectTrigger className="w-full lg:w-[180px] bg-[#0F1117] border-[#2A2D3A] text-white">
+   415→              <SelectValue placeholder="Status" />
+   416→            </SelectTrigger>
+   417→            <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   418→              <SelectItem value="">All Status</SelectItem>
+   419→              <SelectItem value="ACTIVE">ACTIVE</SelectItem>
+   420→              <SelectItem value="INACTIVE">INACTIVE</SelectItem>
+   421→            </SelectContent>
+   422→          </Select>
+   423→
+   424→          {/* Sort */}
+   425→          <div className="flex gap-2">
+   426→            <Select value={sortBy} onValueChange={setSortBy}>
+   427→              <SelectTrigger className="w-full lg:w-[180px] bg-[#0F1117] border-[#2A2D3A] text-white">
+   428→                <SelectValue placeholder="Sort by" />
+   429→              </SelectTrigger>
+   430→              <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   431→                <SelectItem value="createdAt">Created Date</SelectItem>
+   432→                <SelectItem value="name">Name</SelectItem>
+   433→                <SelectItem value="email">Email</SelectItem>
+   434→                <SelectItem value="cashBalance">Balance</SelectItem>
+   435→                <SelectItem value="subscription">Subscription</SelectItem>
+   436→              </SelectContent>
+   437→            </Select>
+   438→
+   439→            <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as 'ASC' | 'DESC')}>
+   440→              <SelectTrigger className="w-[100px] bg-[#0F1117] border-[#2A2D3A] text-white">
+   441→                <SelectValue />
+   442→              </SelectTrigger>
+   443→              <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   444→                <SelectItem value="ASC">Asc</SelectItem>
+   445→                <SelectItem value="DESC">Desc</SelectItem>
+   446→              </SelectContent>
+   447→            </Select>
+   448→          </div>
+   449→
+   450→          {/* Export */}
+   451→          <Button
+   452→            onClick={handleExportCSV}
+   453→            variant="outline"
+   454→            className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   455→          >
+   456→            <Download className="h-4 w-4 mr-2" />
+   457→            Export CSV
+   458→          </Button>
+   459→        </div>
+   460→      </div>
+   461→
+   462→      {/* Table */}
+   463→      <div className="border border-[#2A2D3A] rounded-lg bg-[#1A1D29] overflow-hidden">
+   464→        <div className="overflow-x-auto">
+   465→          <Table>
+   466→            <TableHeader>
+   467→              <TableRow className="border-[#2A2D3A] hover:bg-[#2A2D3A]/50">
+   468→                <TableHead className="text-gray-400 font-medium">Name</TableHead>
+   469→                <TableHead className="text-gray-400 font-medium">Email</TableHead>
+   470→                <TableHead className="text-gray-400 font-medium">Phone</TableHead>
+   471→                <TableHead className="text-gray-400 font-medium">Role</TableHead>
+   472→                <TableHead className="text-gray-400 font-medium">Subscription</TableHead>
+   473→                <TableHead className="text-gray-400 font-medium">Balance</TableHead>
+   474→                <TableHead className="text-gray-400 font-medium">P&L</TableHead>
+   475→                <TableHead className="text-gray-400 font-medium">Status</TableHead>
+   476→                <TableHead className="text-gray-400 font-medium text-right">Actions</TableHead>
+   477→              </TableRow>
+   478→            </TableHeader>
+   479→            <TableBody>
+   480→              {loading ? (
+   481→                [...Array(5)].map((_, i) => (
+   482→                  <TableRow key={i} className="border-[#2A2D3A]">
+   483→                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+   484→                    <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+   485→                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+   486→                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+   487→                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+   488→                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+   489→                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+   490→                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+   491→                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+   492→                  </TableRow>
+   493→                ))
+   494→              ) : users.length === 0 ? (
+   495→                <TableRow>
+   496→                  <TableCell colSpan={9} className="text-center py-8 text-gray-400">
+   497→                    No users found
+   498→                  </TableCell>
+   499→                </TableRow>
+   500→              ) : (
+   501→                users.map((user) => (
+   502→                  <TableRow key={user.id} className="border-[#2A2D3A] hover:bg-[#2A2D3A]/30">
+   503→                    <TableCell className="text-white font-medium">
+   504→                      {user.name || 'N/A'}
+   505→                    </TableCell>
+   506→                    <TableCell className="text-gray-300">{user.email}</TableCell>
+   507→                    <TableCell className="text-gray-300">{user.phone || 'N/A'}</TableCell>
+   508→                    <TableCell>
+   509→                      <Badge
+   510→                        variant="outline"
+   511→                        className={
+   512→                          user.role === 'SUPER_ADMIN'
+   513→                            ? 'border-yellow-500 text-yellow-500'
+   514→                            : user.role === 'ADMIN'
+   515→                            ? 'border-blue-500 text-blue-500'
+   516→                            : 'border-gray-500 text-gray-400'
+   517→                        }
+   518→                      >
+   519→                        {user.role}
+   520→                      </Badge>
+   521→                    </TableCell>
+   522→                    <TableCell>
+   523→                      <Badge
+   524→                        variant={user.subscription === 'PREMIUM' ? 'default' : 'secondary'}
+   525→                        className={
+   526→                          user.subscription === 'PREMIUM'
+   527→                            ? 'bg-[#00D09C] text-black'
+   528→                            : 'bg-[#2A2D3A] text-gray-300'
+   529→                        }
+   530→                      >
+   531→                        {user.subscription}
+   532→                      </Badge>
+   533→                    </TableCell>
+   534→                    <TableCell className="text-white">
+   535→                      {formatCurrency(user.cashBalance)}
+   536→                    </TableCell>
+   537→                    <TableCell
+   538→                      className={
+   539→                        user.totalPnL > 0
+   540→                          ? 'text-green-400'
+   541→                          : user.totalPnL < 0
+   542→                          ? 'text-red-400'
+   543→                          : 'text-gray-400'
+   544→                      }
+   545→                    >
+   546→                      {formatCurrency(user.totalPnL)}
+   547→                    </TableCell>
+   548→                    <TableCell>
+   549→                      <Badge
+   550→                        variant={user.isActive ? 'default' : 'secondary'}
+   551→                        className={
+   552→                          user.isActive
+   553→                            ? 'bg-[#00D09C]/20 text-[#00D09C] border-[#00D09C]/30'
+   554→                            : 'bg-red-500/20 text-red-400 border-red-500/30'
+   555→                        }
+   556→                      >
+   557→                        {user.isActive ? 'ACTIVE' : 'INACTIVE'}
+   558→                      </Badge>
+   559→                    </TableCell>
+   560→                    <TableCell className="text-right">
+   561→                      <DropdownMenu>
+   562→                        <DropdownMenuTrigger asChild>
+   563→                          <Button
+   564→                            variant="ghost"
+   565→                            size="icon"
+   566→                            className="text-gray-400 hover:text-white hover:bg-[#2A2D3A]"
+   567→                          >
+   568→                            <MoreVertical className="h-4 w-4" />
+   569→                          </Button>
+   570→                        </DropdownMenuTrigger>
+   571→                        <DropdownMenuContent align="end" className="bg-[#1A1D29] border-[#2A2D3A]">
+   572→                          <DropdownMenuLabel className="text-gray-300">Actions</DropdownMenuLabel>
+   573→                          <DropdownMenuSeparator className="bg-[#2A2D3A]" />
+   574→                          <DropdownMenuItem
+   575→                            onClick={() => handleView(user)}
+   576→                            className="text-gray-300 focus:text-white focus:bg-[#2A2D3A] cursor-pointer"
+   577→                          >
+   578→                            <Eye className="h-4 w-4 mr-2" />
+   579→                            View Profile
+   580→                          </DropdownMenuItem>
+   581→                          <DropdownMenuItem
+   582→                            onClick={() => handleEdit(user)}
+   583→                            className="text-gray-300 focus:text-white focus:bg-[#2A2D3A] cursor-pointer"
+   584→                          >
+   585→                            <Edit className="h-4 w-4 mr-2" />
+   586→                            Edit
+   587→                          </DropdownMenuItem>
+   588→                          <DropdownMenuItem
+   589→                            onClick={() => handleToggleActive(user)}
+   590→                            className={`${
+   591→                              user.isActive ? 'text-red-400' : 'text-green-400'
+   592→                            } focus:bg-[#2A2D3A] cursor-pointer`}
+   593→                          >
+   594→                            <Ban className="h-4 w-4 mr-2" />
+   595→                            {user.isActive ? 'Block User' : 'Unblock User'}
+   596→                          </DropdownMenuItem>
+   597→                          <DropdownMenuSeparator className="bg-[#2A2D3A]" />
+   598→                          <DropdownMenuItem
+   599→                            onClick={() => handleResetBalance(user)}
+   600→                            className="text-yellow-400 focus:text-yellow-300 focus:bg-[#2A2D3A] cursor-pointer"
+   601→                          >
+   602→                            <RefreshCw className="h-4 w-4 mr-2" />
+   603→                            Reset Balance
+   604→                          </DropdownMenuItem>
+   605→                          <DropdownMenuSeparator className="bg-[#2A2D3A]" />
+   606→                          <AlertDialog>
+   607→                            <AlertDialogTrigger asChild>
+   608→                              <DropdownMenuItem
+   609→                                onSelect={(e) => e.preventDefault()}
+   610→                                className="text-red-400 focus:text-red-300 focus:bg-red-500/10 cursor-pointer"
+   611→                              >
+   612→                                Delete User
+   613→                              </DropdownMenuItem>
+   614→                            </AlertDialogTrigger>
+   615→                            <AlertDialogContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   616→                              <AlertDialogHeader>
+   617→                                <AlertDialogTitle className="text-white">
+   618→                                  Delete User
+   619→                                </AlertDialogTitle>
+   620→                                <AlertDialogDescription className="text-gray-400">
+   621→                                  Are you sure you want to delete this user? This action cannot be undone.
+   622→                                  Type <span className="text-[#00D09C] font-mono">DELETE</span> to confirm.
+   623→                                </AlertDialogDescription>
+   624→                              </AlertDialogHeader>
+   625→                              <AlertDialogFooter>
+   626→                                <AlertDialogCancel className="bg-[#2A2D3A] text-white hover:bg-[#3A3D4A]">
+   627→                                  Cancel
+   628→                                </AlertDialogCancel>
+   629→                                <AlertDialogAction
+   630→                                  onClick={() => handleDeleteUser(user.id)}
+   631→                                  className="bg-red-500 hover:bg-red-600 text-white"
+   632→                                >
+   633→                                  Delete
+   634→                                </AlertDialogAction>
+   635→                              </AlertDialogFooter>
+   636→                            </AlertDialogContent>
+   637→                          </AlertDialog>
+   638→                        </DropdownMenuContent>
+   639→                      </DropdownMenu>
+   640→                    </TableCell>
+   641→                  </TableRow>
+   642→                ))
+   643→              )}
+   644→            </TableBody>
+   645→          </Table>
+   646→        </div>
+   647→      </div>
+   648→
+   649→      {/* Pagination */}
+   650→      {pagination.totalPages > 1 && (
+   651→        <div className="flex justify-center">
+   652→          <Pagination>
+   653→            <PaginationContent>
+   654→              <PaginationItem>
+   655→                <PaginationPrevious
+   656→                  onClick={() =>
+   657→                    setPagination((prev) => ({ ...prev, page: Math.max(1, prev.page - 1) }))
+   658→                  }
+   659→                  className={
+   660→                    pagination.page === 1
+   661→                      ? 'pointer-events-none opacity-50'
+   662→                      : 'cursor-pointer text-gray-300 hover:text-white hover:bg-[#2A2D3A]'
+   663→                  }
+   664→                />
+   665→              </PaginationItem>
+   666→
+   667→              {pagination.page > 2 && (
+   668→                <>
+   669→                  <PaginationItem>
+   670→                    <PaginationLink
+   671→                      onClick={() => setPagination((prev) => ({ ...prev, page: 1 }))}
+   672→                      className="cursor-pointer text-gray-300 hover:text-white hover:bg-[#2A2D3A]"
+   673→                    >
+   674→                      1
+   675→                    </PaginationLink>
+   676→                  </PaginationItem>
+   677→                  {pagination.page > 3 && (
+   678→                    <PaginationItem>
+   679→                      <PaginationEllipsis />
+   680→                    </PaginationItem>
+   681→                  )}
+   682→                </>
+   683→              )}
+   684→
+   685→              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+   686→                let pageNum
+   687→                if (pagination.totalPages <= 5) {
+   688→                  pageNum = i + 1
+   689→                } else if (pagination.page <= 3) {
+   690→                  pageNum = i + 1
+   691→                } else if (pagination.page >= pagination.totalPages - 2) {
+   692→                  pageNum = pagination.totalPages - 4 + i
+   693→                } else {
+   694→                  pageNum = pagination.page - 2 + i
+   695→                }
+   696→
+   697→                return (
+   698→                  <PaginationItem key={pageNum}>
+   699→                    <PaginationLink
+   700→                      onClick={() => setPagination((prev) => ({ ...prev, page: pageNum }))}
+   701→                      isActive={pagination.page === pageNum}
+   702→                      className={
+   703→                        pagination.page === pageNum
+   704→                          ? 'bg-[#00D09C] text-black cursor-pointer'
+   705→                          : 'cursor-pointer text-gray-300 hover:text-white hover:bg-[#2A2D3A]'
+   706→                      }
+   707→                    >
+   708→                      {pageNum}
+   709→                    </PaginationLink>
+   710→                  </PaginationItem>
+   711→                )
+   712→              })}
+   713→
+   714→              {pagination.page < pagination.totalPages - 1 && (
+   715→                <>
+   716→                  {pagination.page < pagination.totalPages - 2 && (
+   717→                    <PaginationItem>
+   718→                      <PaginationEllipsis />
+   719→                    </PaginationItem>
+   720→                  )}
+   721→                  <PaginationItem>
+   722→                    <PaginationLink
+   723→                      onClick={() =>
+   724→                        setPagination((prev) => ({ ...prev, page: pagination.totalPages }))
+   725→                      }
+   726→                      className="cursor-pointer text-gray-300 hover:text-white hover:bg-[#2A2D3A]"
+   727→                    >
+   728→                      {pagination.totalPages}
+   729→                    </PaginationLink>
+   730→                  </PaginationItem>
+   731→                </>
+   732→              )}
+   733→
+   734→              <PaginationItem>
+   735→                <PaginationNext
+   736→                  onClick={() =>
+   737→                    setPagination((prev) => ({
+   738→                      ...prev,
+   739→                      page: Math.min(pagination.totalPages, prev.page + 1),
+   740→                    }))
+   741→                  }
+   742→                  className={
+   743→                    pagination.page === pagination.totalPages
+   744→                      ? 'pointer-events-none opacity-50'
+   745→                      : 'cursor-pointer text-gray-300 hover:text-white hover:bg-[#2A2D3A]'
+   746→                  }
+   747→                />
+   748→              </PaginationItem>
+   749→            </PaginationContent>
+   750→          </Pagination>
+   751→        </div>
+   752→      )}
+   753→
+   754→      {/* View Profile Dialog */}
+   755→      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+   756→        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+   757→          <DialogHeader>
+   758→            <DialogTitle className="text-2xl">User Profile</DialogTitle>
+   759→            <DialogDescription className="text-gray-400">
+   760→              Complete user details and information
+   761→            </DialogDescription>
+   762→          </DialogHeader>
+   763→          {selectedUser && (
+   764→            <div className="space-y-6 mt-4">
+   765→              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+   766→                <div className="space-y-2">
+   767→                  <label className="text-sm text-gray-400">Full Name</label>
+   768→                  <p className="text-white font-medium">{selectedUser.name || 'N/A'}</p>
+   769→                </div>
+   770→                <div className="space-y-2">
+   771→                  <label className="text-sm text-gray-400">Email</label>
+   772→                  <p className="text-white">{selectedUser.email}</p>
+   773→                </div>
+   774→                <div className="space-y-2">
+   775→                  <label className="text-sm text-gray-400">Phone</label>
+   776→                  <p className="text-white">{selectedUser.phone || 'N/A'}</p>
+   777→                </div>
+   778→                <div className="space-y-2">
+   779→                  <label className="text-sm text-gray-400">Role</label>
+   780→                  <Badge
+   781→                    variant="outline"
+   782→                    className={
+   783→                      selectedUser.role === 'SUPER_ADMIN'
+   784→                        ? 'border-yellow-500 text-yellow-500'
+   785→                        : selectedUser.role === 'ADMIN'
+   786→                        ? 'border-blue-500 text-blue-500'
+   787→                        : 'border-gray-500 text-gray-400'
+   788→                    }
+   789→                  >
+   790→                    {selectedUser.role}
+   791→                  </Badge>
+   792→                </div>
+   793→                <div className="space-y-2">
+   794→                  <label className="text-sm text-gray-400">Subscription</label>
+   795→                  <Badge
+   796→                    variant={selectedUser.subscription === 'PREMIUM' ? 'default' : 'secondary'}
+   797→                    className={
+   798→                      selectedUser.subscription === 'PREMIUM'
+   799→                        ? 'bg-[#00D09C] text-black'
+   800→                        : 'bg-[#2A2D3A] text-gray-300'
+   801→                    }
+   802→                  >
+   803→                    {selectedUser.subscription}
+   804→                  </Badge>
+   805→                </div>
+   806→                <div className="space-y-2">
+   807→                  <label className="text-sm text-gray-400">Status</label>
+   808→                  <Badge
+   809→                    variant={selectedUser.isActive ? 'default' : 'secondary'}
+   810→                    className={
+   811→                      selectedUser.isActive
+   812→                        ? 'bg-[#00D09C]/20 text-[#00D09C] border-[#00D09C]/30'
+   813→                        : 'bg-red-500/20 text-red-400 border-red-500/30'
+   814→                    }
+   815→                  >
+   816→                    {selectedUser.isActive ? 'ACTIVE' : 'INACTIVE'}
+   817→                  </Badge>
+   818→                </div>
+   819→                <div className="space-y-2">
+   820→                  <label className="text-sm text-gray-400">Cash Balance</label>
+   821→                  <p className="text-white text-xl font-bold">{formatCurrency(selectedUser.cashBalance)}</p>
+   822→                </div>
+   823→                <div className="space-y-2">
+   824→                  <label className="text-sm text-gray-400">Total P&L</label>
+   825→                  <p
+   826→                    className={`text-xl font-bold ${
+   827→                      selectedUser.totalPnL > 0
+   828→                        ? 'text-green-400'
+   829→                        : selectedUser.totalPnL < 0
+   830→                        ? 'text-red-400'
+   831→                        : 'text-gray-400'
+   832→                    }`}
+   833→                  >
+   834→                    {formatCurrency(selectedUser.totalPnL)}
+   835→                  </p>
+   836→                </div>
+   837→                <div className="space-y-2">
+   838→                  <label className="text-sm text-gray-400">Email Verified</label>
+   839→                  <Badge
+   840→                    variant={selectedUser.isEmailVerified ? 'default' : 'secondary'}
+   841→                    className={
+   842→                      selectedUser.isEmailVerified
+   843→                        ? 'bg-[#00D09C]/20 text-[#00D09C] border-[#00D09C]/30'
+   844→                        : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+   845→                    }
+   846→                  >
+   847→                    {selectedUser.isEmailVerified ? 'Verified' : 'Not Verified'}
+   848→                  </Badge>
+   849→                </div>
+   850→                <div className="space-y-2">
+   851→                  <label className="text-sm text-gray-400">Status (DB)</label>
+   852→                  <p className="text-white">{selectedUser.status || 'N/A'}</p>
+   853→                </div>
+   854→              </div>
+   855→
+   856→              <div className="border-t border-[#2A2D3A] pt-4 space-y-4">
+   857→                <div className="space-y-2">
+   858→                  <label className="text-sm text-gray-400">User ID</label>
+   859→                  <p className="text-white text-sm font-mono bg-[#0F1117] p-2 rounded">
+   860→                    {selectedUser.id}
+   861→                  </p>
+   862→                </div>
+   863→                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+   864→                  <div className="space-y-2">
+   865→                    <label className="text-sm text-gray-400">Created At</label>
+   866→                    <p className="text-white text-sm">{formatDateTime(selectedUser.createdAt)}</p>
+   867→                  </div>
+   868→                  <div className="space-y-2">
+   869→                    <label className="text-sm text-gray-400">Updated At</label>
+   870→                    <p className="text-white text-sm">{formatDateTime(selectedUser.updatedAt)}</p>
+   871→                  </div>
+   872→                  <div className="space-y-2">
+   873→                    <label className="text-sm text-gray-400">Last Login</label>
+   874→                    <p className="text-white text-sm">{formatDateTime(selectedUser.lastLoginAt)}</p>
+   875→                  </div>
+   876→                </div>
+   877→              </div>
+   878→            </div>
+   879→          )}
+   880→        </DialogContent>
+   881→      </Dialog>
+   882→
+   883→      {/* Edit User Dialog */}
+   884→      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+   885→        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white max-w-lg">
+   886→          <DialogHeader>
+   887→            <DialogTitle>Edit User</DialogTitle>
+   888→            <DialogDescription className="text-gray-400">
+   889→              Update user information and settings
+   890→            </DialogDescription>
+   891→          </DialogHeader>
+   892→          <div className="space-y-4 mt-4">
+   893→            <div className="space-y-2">
+   894→              <label className="text-sm text-gray-400">Full Name</label>
+   895→              <Input
+   896→                value={editForm.name}
+   897→                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+   898→                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   899→                placeholder="Enter full name"
+   900→              />
+   901→            </div>
+   902→            <div className="space-y-2">
+   903→              <label className="text-sm text-gray-400">Email</label>
+   904→              <Input
+   905→                value={editForm.email}
+   906→                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+   907→                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   908→                placeholder="Enter email"
+   909→              />
+   910→            </div>
+   911→            <div className="space-y-2">
+   912→              <label className="text-sm text-gray-400">Phone</label>
+   913→              <Input
+   914→                value={editForm.phone}
+   915→                onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+   916→                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   917→                placeholder="Enter phone number"
+   918→              />
+   919→            </div>
+   920→            <div className="grid grid-cols-2 gap-4">
+   921→              <div className="space-y-2">
+   922→                <label className="text-sm text-gray-400">Role</label>
+   923→                <Select
+   924→                  value={editForm.role}
+   925→                  onValueChange={(v) => setEditForm({ ...editForm, role: v })}
+   926→                >
+   927→                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+   928→                    <SelectValue />
+   929→                  </SelectTrigger>
+   930→                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   931→                    <SelectItem value="USER">USER</SelectItem>
+   932→                    <SelectItem value="ADMIN">ADMIN</SelectItem>
+   933→                    <SelectItem value="SUPER_ADMIN">SUPER_ADMIN</SelectItem>
+   934→                  </SelectContent>
+   935→                </Select>
+   936→              </div>
+   937→              <div className="space-y-2">
+   938→                <label className="text-sm text-gray-400">Subscription</label>
+   939→                <Select
+   940→                  value={editForm.subscription}
+   941→                  onValueChange={(v) => setEditForm({ ...editForm, subscription: v })}
+   942→                >
+   943→                  <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+   944→                    <SelectValue />
+   945→                  </SelectTrigger>
+   946→                  <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   947→                    <SelectItem value="FREE">FREE</SelectItem>
+   948→                    <SelectItem value="PREMIUM">PREMIUM</SelectItem>
+   949→                  </SelectContent>
+   950→                </Select>
+   951→              </div>
+   952→            </div>
+   953→            <div className="flex items-center space-x-2">
+   954→              <input
+   955→                type="checkbox"
+   956→                id="isActive"
+   957→                checked={editForm.isActive}
+   958→                onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })}
+   959→                className="w-4 h-4 rounded border-[#2A2D3A] bg-[#0F1117] text-[#00D09C] focus:ring-[#00D09C]"
+   960→              />
+   961→              <label htmlFor="isActive" className="text-sm text-gray-400">
+   962→                Active Account
+   963→              </label>
+   964→            </div>
+   965→          </div>
+   966→          <DialogFooter className="mt-6">
+   967→            <Button
+   968→              onClick={() => setEditDialogOpen(false)}
+   969→              variant="outline"
+   970→              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   971→            >
+   972→              Cancel
+   973→            </Button>
+   974→            <Button
+   975→              onClick={handleUpdateUser}
+   976→              className="bg-[#00D09C] text-black hover:bg-[#00D09C]/90"
+   977→            >
+   978→              Save Changes
+   979→            </Button>
+   980→          </DialogFooter>
+   981→        </DialogContent>
+   982→      </Dialog>
+   983→    </div>
+   984→  )
+   985→}

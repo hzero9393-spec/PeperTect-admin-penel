@@ -1,0 +1,827 @@
+     1→'use client'
+     2→
+     3→import { useEffect, useState, useCallback, useRef } from 'react'
+     4→import {
+     5→  RefreshCw,
+     6→  MessageSquare,
+     7→  Send,
+     8→  Filter,
+     9→  X,
+    10→  User,
+    11→} from 'lucide-react'
+    12→import { Button } from '@/components/ui/button'
+    13→import { Input } from '@/components/ui/input'
+    14→import {
+    15→  Table,
+    16→  TableBody,
+    17→  TableCell,
+    18→  TableHead,
+    19→  TableHeader,
+    20→  TableRow,
+    21→} from '@/components/ui/table'
+    22→import { Badge } from '@/components/ui/badge'
+    23→import {
+    24→  Dialog,
+    25→  DialogContent,
+    26→  DialogDescription,
+    27→  DialogHeader,
+    28→  DialogTitle,
+    29→} from '@/components/ui/dialog'
+    30→import {
+    31→  Select,
+    32→  SelectContent,
+    33→  SelectItem,
+    34→  SelectTrigger,
+    35→  SelectValue,
+    36→} from '@/components/ui/select'
+    37→import { Textarea } from '@/components/ui/textarea'
+    38→import { Card } from '@/components/ui/card'
+    39→import { toast } from 'sonner'
+    40→import { Skeleton } from '@/components/ui/skeleton'
+    41→import { ScrollArea } from '@/components/ui/scroll-area'
+    42→
+    43→interface Ticket {
+    44→  id: string
+    45→  userId: string
+    46→  userName: string | null
+    47→  userEmail: string | null
+    48→  subject: string
+    49→  description: string
+    50→  status: string
+    51→  priority: string
+    52→  category: string | null
+    53→  createdAt: string
+    54→  updatedAt: string
+    55→  replyCount: number
+    56→}
+    57→
+    58→interface TicketReply {
+    59→  id: string
+    60→  isAdmin: number
+    61→  message: string
+    62→  createdAt: string
+    63→  adminName: string | null
+    64→}
+    65→
+    66→interface TicketDetail extends Ticket {
+    67→  replies: TicketReply[]
+    68→}
+    69→
+    70→interface TicketsResponse {
+    71→  tickets: Ticket[]
+    72→  pagination: {
+    73→    page: number
+    74→    limit: number
+    75→    total: number
+    76→    totalPages: number
+    77→  }
+    78→}
+    79→
+    80→export default function SupportPage() {
+    81→  const [loading, setLoading] = useState(true)
+    82→  const [tickets, setTickets] = useState<Ticket[]>([])
+    83→  const [pagination, setPagination] = useState({
+    84→    page: 1,
+    85→    limit: 20,
+    86→    total: 0,
+    87→    totalPages: 0,
+    88→  })
+    89→
+    90→  // Filters
+    91→  const [status, setStatus] = useState('')
+    92→  const [priority, setPriority] = useState('')
+    93→  const [category, setCategory] = useState('')
+    94→  const [startDate, setStartDate] = useState('')
+    95→  const [endDate, setEndDate] = useState('')
+    96→  const [showFilters, setShowFilters] = useState(false)
+    97→
+    98→  // Dialog states
+    99→  const [detailDialogOpen, setDetailDialogOpen] = useState(false)
+   100→  const [selectedTicket, setSelectedTicket] = useState<TicketDetail | null>(null)
+   101→  const [ticketLoading, setTicketLoading] = useState(false)
+   102→  const [replyText, setReplyText] = useState('')
+   103→  const [sendingReply, setSendingReply] = useState(false)
+   104→
+   105→  // Update states
+   106→  const [updateStatus, setUpdateStatus] = useState('')
+   107→  const [updatePriority, setUpdatePriority] = useState('')
+   108→  const [updateCategory, setUpdateCategory] = useState('')
+   109→
+   110→  const scrollAreaRef = useRef<HTMLDivElement>(null)
+   111→
+   112→  // Auto-scroll to bottom when replies change
+   113→  useEffect(() => {
+   114→    if (scrollAreaRef.current && selectedTicket) {
+   115→      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
+   116→    }
+   117→  }, [selectedTicket])
+   118→
+   119→  const formatDate = (dateString: string) => {
+   120→    const date = new Date(dateString)
+   121→    const now = new Date()
+   122→    const diffMs = now.getTime() - date.getTime()
+   123→    const diffMins = Math.floor(diffMs / 60000)
+   124→    const diffHours = Math.floor(diffMs / 3600000)
+   125→    const diffDays = Math.floor(diffMs / 86400000)
+   126→
+   127→    if (diffMins < 1) return 'Just now'
+   128→    if (diffMins < 60) return `${diffMins} min ago`
+   129→    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+   130→    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+   131→    return date.toLocaleDateString('en-IN', {
+   132→      day: '2-digit',
+   133→      month: 'short',
+   134→      year: 'numeric',
+   135→    })
+   136→  }
+   137→
+   138→  const formatDateTime = (dateString: string) => {
+   139→    return new Date(dateString).toLocaleString('en-IN', {
+   140→      day: '2-digit',
+   141→      month: 'short',
+   142→      year: 'numeric',
+   143→      hour: '2-digit',
+   144→      minute: '2-digit',
+   145→    })
+   146→  }
+   147→
+   148→  const getStatusBadge = (status: string) => {
+   149→    const variants: Record<string, { color: string; bg: string }> = {
+   150→      OPEN: { color: 'text-blue-400', bg: 'bg-blue-400/10' },
+   151→      IN_PROGRESS: { color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
+   152→      RESOLVED: { color: 'text-green-400', bg: 'bg-green-400/10' },
+   153→      CLOSED: { color: 'text-gray-400', bg: 'bg-gray-400/10' },
+   154→    }
+   155→    const style = variants[status] || { color: 'text-gray-400', bg: 'bg-gray-400/10' }
+   156→    return (
+   157→      <Badge className={`${style.bg} ${style.color} border-none`}>
+   158→        {status.replace('_', ' ')}
+   159→      </Badge>
+   160→    )
+   161→  }
+   162→
+   163→  const getPriorityBadge = (priority: string) => {
+   164→    const variants: Record<string, { color: string; bg: string }> = {
+   165→      LOW: { color: 'text-gray-400', bg: 'bg-gray-400/10' },
+   166→      MEDIUM: { color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
+   167→      HIGH: { color: 'text-orange-400', bg: 'bg-orange-400/10' },
+   168→      URGENT: { color: 'text-red-400', bg: 'bg-red-400/10' },
+   169→    }
+   170→    const style = variants[priority] || { color: 'text-gray-400', bg: 'bg-gray-400/10' }
+   171→    return (
+   172→      <Badge className={`${style.bg} ${style.color} border-none`}>
+   173→        {priority}
+   174→      </Badge>
+   175→    )
+   176→  }
+   177→
+   178→  const fetchTickets = useCallback(async () => {
+   179→    setLoading(true)
+   180→    try {
+   181→      const params = new URLSearchParams({
+   182→        page: pagination.page.toString(),
+   183→        limit: pagination.limit.toString(),
+   184→      })
+   185→
+   186→      if (status) params.append('status', status)
+   187→      if (priority) params.append('priority', priority)
+   188→      if (category) params.append('category', category)
+   189→      if (startDate) params.append('startDate', startDate)
+   190→      if (endDate) params.append('endDate', endDate)
+   191→
+   192→      const response = await fetch(`/api/admin/support?${params}`)
+   193→      const result = await response.json()
+   194→
+   195→      if (result.success) {
+   196→        setTickets(result.data.tickets)
+   197→        setPagination(result.data.pagination)
+   198→      } else {
+   199→        toast.error('Failed to load tickets')
+   200→      }
+   201→    } catch (error) {
+   202→      toast.error('An error occurred')
+   203→    } finally {
+   204→      setLoading(false)
+   205→    }
+   206→  }, [pagination.page, pagination.limit, status, priority, category, startDate, endDate])
+   207→
+   208→  // Fetch on mount and filter changes
+   209→  useEffect(() => {
+   210→    fetchTickets()
+   211→  }, [fetchTickets])
+   212→
+   213→  const clearFilters = () => {
+   214→    setStatus('')
+   215→    setPriority('')
+   216→    setCategory('')
+   217→    setStartDate('')
+   218→    setEndDate('')
+   219→    setPagination((prev) => ({ ...prev, page: 1 }))
+   220→  }
+   221→
+   222→  const handleViewTicket = async (ticket: Ticket) => {
+   223→    setTicketLoading(true)
+   224→    setDetailDialogOpen(true)
+   225→    setSelectedTicket(null)
+   226→    setReplyText('')
+   227→
+   228→    try {
+   229→      const response = await fetch(`/api/admin/support/${ticket.id}`)
+   230→      const result = await response.json()
+   231→
+   232→      if (result.success && result.data) {
+   233→        setSelectedTicket(result.data)
+   234→        setUpdateStatus(result.data.status)
+   235→        setUpdatePriority(result.data.priority)
+   236→        setUpdateCategory(result.data.category || '')
+   237→      } else {
+   238→        toast.error('Failed to load ticket details')
+   239→        setDetailDialogOpen(false)
+   240→      }
+   241→    } catch (error) {
+   242→      toast.error('An error occurred')
+   243→      setDetailDialogOpen(false)
+   244→    } finally {
+   245→      setTicketLoading(false)
+   246→    }
+   247→  }
+   248→
+   249→  const handleSendReply = async () => {
+   250→    if (!selectedTicket || !replyText.trim()) return
+   251→
+   252→    setSendingReply(true)
+   253→    try {
+   254→      const response = await fetch('/api/admin/support', {
+   255→        method: 'POST',
+   256→        headers: { 'Content-Type': 'application/json' },
+   257→        body: JSON.stringify({
+   258→          action: 'reply',
+   259→          ticketId: selectedTicket.id,
+   260→          message: replyText,
+   261→        }),
+   262→      })
+   263→
+   264→      const result = await response.json()
+   265→
+   266→      if (result.success) {
+   267→        toast.success('Reply sent successfully')
+   268→        setReplyText('')
+   269→
+   270→        // Refresh ticket details
+   271→        const detailResponse = await fetch(`/api/admin/support/${selectedTicket.id}`)
+   272→        const detailResult = await detailResponse.json()
+   273→        if (detailResult.success) {
+   274→          setSelectedTicket(detailResult.data)
+   275→          setUpdateStatus(detailResult.data.status)
+   276→        }
+   277→
+   278→        // Refresh tickets list
+   279→        fetchTickets()
+   280→      } else {
+   281→        toast.error(result.error || 'Failed to send reply')
+   282→      }
+   283→    } catch (error) {
+   284→      toast.error('An error occurred')
+   285→    } finally {
+   286→      setSendingReply(false)
+   287→    }
+   288→  }
+   289→
+   290→  const handleUpdateTicket = async () => {
+   291→    if (!selectedTicket) return
+   292→
+   293→    try {
+   294→      const response = await fetch('/api/admin/support', {
+   295→        method: 'PUT',
+   296→        headers: { 'Content-Type': 'application/json' },
+   297→        body: JSON.stringify({
+   298→          id: selectedTicket.id,
+   299→          status: updateStatus,
+   300→          priority: updatePriority,
+   301→          category: updateCategory,
+   302→        }),
+   303→      })
+   304→
+   305→      const result = await response.json()
+   306→
+   307→      if (result.success) {
+   308→        toast.success('Ticket updated successfully')
+   309→
+   310→        // Refresh ticket details
+   311→        const detailResponse = await fetch(`/api/admin/support/${selectedTicket.id}`)
+   312→        const detailResult = await detailResponse.json()
+   313→        if (detailResult.success) {
+   314→          setSelectedTicket(detailResult.data)
+   315→        }
+   316→
+   317→        // Refresh tickets list
+   318→        fetchTickets()
+   319→      } else {
+   320→        toast.error(result.error || 'Failed to update ticket')
+   321→      }
+   322→    } catch (error) {
+   323→      toast.error('An error occurred')
+   324→    }
+   325→  }
+   326→
+   327→  const hasActiveFilters = status || priority || category || startDate || endDate
+   328→
+   329→  return (
+   330→    <div className="space-y-6">
+   331→      {/* Header */}
+   332→      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+   333→        <div>
+   334→          <h1 className="text-2xl font-bold text-white">Support Tickets</h1>
+   335→          <p className="text-gray-400 mt-1">Manage customer support tickets and inquiries</p>
+   336→        </div>
+   337→        <div className="flex items-center gap-3">
+   338→          <Button
+   339→            variant="outline"
+   340→            size="sm"
+   341→            onClick={() => setShowFilters(!showFilters)}
+   342→            className="bg-[#1A1D29] border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   343→          >
+   344→            <Filter className="h-4 w-4 mr-2" />
+   345→            Filters
+   346→            {hasActiveFilters && (
+   347→              <Badge className="ml-2 bg-[#00D09C] text-black">Active</Badge>
+   348→            )}
+   349→          </Button>
+   350→          <Button
+   351→            variant="outline"
+   352→            size="sm"
+   353→            onClick={fetchTickets}
+   354→            disabled={loading}
+   355→            className="bg-[#1A1D29] border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   356→          >
+   357→            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+   358→          </Button>
+   359→        </div>
+   360→      </div>
+   361→
+   362→      {/* Filters */}
+   363→      {showFilters && (
+   364→        <Card className="p-4 bg-[#1A1D29] border-[#2A2D3A]">
+   365→          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+   366→            <div className="space-y-2">
+   367→              <label className="text-sm font-medium text-gray-300">Status</label>
+   368→              <Select value={status} onValueChange={setStatus}>
+   369→                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+   370→                  <SelectValue placeholder="All Status" />
+   371→                </SelectTrigger>
+   372→                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   373→                  <SelectItem value="">All Status</SelectItem>
+   374→                  <SelectItem value="OPEN">Open</SelectItem>
+   375→                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+   376→                  <SelectItem value="RESOLVED">Resolved</SelectItem>
+   377→                  <SelectItem value="CLOSED">Closed</SelectItem>
+   378→                </SelectContent>
+   379→              </Select>
+   380→            </div>
+   381→
+   382→            <div className="space-y-2">
+   383→              <label className="text-sm font-medium text-gray-300">Priority</label>
+   384→              <Select value={priority} onValueChange={setPriority}>
+   385→                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+   386→                  <SelectValue placeholder="All Priority" />
+   387→                </SelectTrigger>
+   388→                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   389→                  <SelectItem value="">All Priority</SelectItem>
+   390→                  <SelectItem value="LOW">Low</SelectItem>
+   391→                  <SelectItem value="MEDIUM">Medium</SelectItem>
+   392→                  <SelectItem value="HIGH">High</SelectItem>
+   393→                  <SelectItem value="URGENT">Urgent</SelectItem>
+   394→                </SelectContent>
+   395→              </Select>
+   396→            </div>
+   397→
+   398→            <div className="space-y-2">
+   399→              <label className="text-sm font-medium text-gray-300">Category</label>
+   400→              <Select value={category} onValueChange={setCategory}>
+   401→                <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A] text-white">
+   402→                  <SelectValue placeholder="All Categories" />
+   403→                </SelectTrigger>
+   404→                <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   405→                  <SelectItem value="">All Categories</SelectItem>
+   406→                  <SelectItem value="ACCOUNT">Account</SelectItem>
+   407→                  <SelectItem value="BILLING">Billing</SelectItem>
+   408→                  <SelectItem value="TECHNICAL">Technical</SelectItem>
+   409→                  <SelectItem value="TRADING">Trading</SelectItem>
+   410→                  <SelectItem value="OTHER">Other</SelectItem>
+   411→                </SelectContent>
+   412→              </Select>
+   413→            </div>
+   414→
+   415→            <div className="space-y-2">
+   416→              <label className="text-sm font-medium text-gray-300">Start Date</label>
+   417→              <Input
+   418→                type="date"
+   419→                value={startDate}
+   420→                onChange={(e) => setStartDate(e.target.value)}
+   421→                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   422→              />
+   423→            </div>
+   424→
+   425→            <div className="space-y-2">
+   426→              <label className="text-sm font-medium text-gray-300">End Date</label>
+   427→              <Input
+   428→                type="date"
+   429→                value={endDate}
+   430→                onChange={(e) => setEndDate(e.target.value)}
+   431→                className="bg-[#0F1117] border-[#2A2D3A] text-white"
+   432→              />
+   433→            </div>
+   434→          </div>
+   435→
+   436→          {hasActiveFilters && (
+   437→            <div className="mt-4 pt-4 border-t border-[#2A2D3A] flex items-center justify-end">
+   438→              <Button
+   439→                variant="ghost"
+   440→                size="sm"
+   441→                onClick={clearFilters}
+   442→                className="text-gray-400 hover:text-white"
+   443→              >
+   444→                <X className="h-4 w-4 mr-2" />
+   445→                Clear Filters
+   446→              </Button>
+   447→            </div>
+   448→          )}
+   449→        </Card>
+   450→      )}
+   451→
+   452→      {/* Tickets Table */}
+   453→      <Card className="bg-[#1A1D29] border-[#2A2D3A]">
+   454→        <Table>
+   455→          <TableHeader>
+   456→            <TableRow className="border-[#2A2D3A] hover:bg-[#1A1D29]">
+   457→              <TableHead className="text-gray-400 font-medium">ID</TableHead>
+   458→              <TableHead className="text-gray-400 font-medium">User</TableHead>
+   459→              <TableHead className="text-gray-400 font-medium">Subject</TableHead>
+   460→              <TableHead className="text-gray-400 font-medium">Status</TableHead>
+   461→              <TableHead className="text-gray-400 font-medium">Priority</TableHead>
+   462→              <TableHead className="text-gray-400 font-medium">Category</TableHead>
+   463→              <TableHead className="text-gray-400 font-medium">Created At</TableHead>
+   464→              <TableHead className="text-gray-400 font-medium text-right">Actions</TableHead>
+   465→            </TableRow>
+   466→          </TableHeader>
+   467→          <TableBody>
+   468→            {loading ? (
+   469→              Array.from({ length: 5 }).map((_, i) => (
+   470→                <TableRow key={i} className="border-[#2A2D3A]">
+   471→                  <TableCell>
+   472→                    <Skeleton className="h-4 w-16 bg-[#2A2D3A]" />
+   473→                  </TableCell>
+   474→                  <TableCell>
+   475→                    <Skeleton className="h-4 w-32 bg-[#2A2D3A]" />
+   476→                  </TableCell>
+   477→                  <TableCell>
+   478→                    <Skeleton className="h-4 w-48 bg-[#2A2D3A]" />
+   479→                  </TableCell>
+   480→                  <TableCell>
+   481→                    <Skeleton className="h-6 w-20 bg-[#2A2D3A]" />
+   482→                  </TableCell>
+   483→                  <TableCell>
+   484→                    <Skeleton className="h-6 w-20 bg-[#2A2D3A]" />
+   485→                  </TableCell>
+   486→                  <TableCell>
+   487→                    <Skeleton className="h-4 w-24 bg-[#2A2D3A]" />
+   488→                  </TableCell>
+   489→                  <TableCell>
+   490→                    <Skeleton className="h-4 w-24 bg-[#2A2D3A]" />
+   491→                  </TableCell>
+   492→                  <TableCell className="text-right">
+   493→                    <Skeleton className="h-8 w-20 ml-auto bg-[#2A2D3A]" />
+   494→                  </TableCell>
+   495→                </TableRow>
+   496→              ))
+   497→            ) : tickets.length === 0 ? (
+   498→              <TableRow>
+   499→                <TableCell colSpan={8} className="text-center py-8 text-gray-400">
+   500→                  No tickets found
+   501→                </TableCell>
+   502→              </TableRow>
+   503→            ) : (
+   504→              tickets.map((ticket) => (
+   505→                <TableRow
+   506→                  key={ticket.id}
+   507→                  className="border-[#2A2D3A] hover:bg-[#242836] cursor-pointer"
+   508→                  onClick={() => handleViewTicket(ticket)}
+   509→                >
+   510→                  <TableCell className="text-gray-300 font-mono text-sm">
+   511→                    #{ticket.id.slice(-6)}
+   512→                  </TableCell>
+   513→                  <TableCell>
+   514→                    <div className="flex items-center gap-2">
+   515→                      <div className="w-8 h-8 rounded-full bg-[#2A2D3A] flex items-center justify-center">
+   516→                        <User className="h-4 w-4 text-gray-400" />
+   517→                      </div>
+   518→                      <div>
+   519→                        <div className="text-white font-medium">
+   520→                          {ticket.userName || 'Unknown'}
+   521→                        </div>
+   522→                        <div className="text-gray-400 text-xs">
+   523→                          {ticket.userEmail || ''}
+   524→                        </div>
+   525→                      </div>
+   526→                    </div>
+   527→                  </TableCell>
+   528→                  <TableCell className="text-white font-medium max-w-xs truncate">
+   529→                    {ticket.subject}
+   530→                  </TableCell>
+   531→                  <TableCell>{getStatusBadge(ticket.status)}</TableCell>
+   532→                  <TableCell>{getPriorityBadge(ticket.priority)}</TableCell>
+   533→                  <TableCell className="text-gray-300">
+   534→                    {ticket.category || '—'}
+   535→                  </TableCell>
+   536→                  <TableCell className="text-gray-400">
+   537→                    {formatDate(ticket.createdAt)}
+   538→                  </TableCell>
+   539→                  <TableCell className="text-right">
+   540→                    <div className="flex items-center justify-end gap-2">
+   541→                      {ticket.replyCount > 0 && (
+   542→                        <Badge variant="outline" className="border-[#2A2D3A] text-gray-400">
+   543→                          <MessageSquare className="h-3 w-3 mr-1" />
+   544→                          {ticket.replyCount}
+   545→                        </Badge>
+   546→                      )}
+   547→                      <Button
+   548→                        variant="ghost"
+   549→                        size="sm"
+   550→                        className="text-[#00D09C] hover:bg-[#00D09C]/10"
+   551→                      >
+   552→                        View
+   553→                      </Button>
+   554→                    </div>
+   555→                  </TableCell>
+   556→                </TableRow>
+   557→              ))
+   558→            )}
+   559→          </TableBody>
+   560→        </Table>
+   561→
+   562→        {/* Pagination */}
+   563→        {pagination.totalPages > 1 && (
+   564→          <div className="flex items-center justify-between px-4 py-3 border-t border-[#2A2D3A]">
+   565→            <div className="text-sm text-gray-400">
+   566→              Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+   567→              {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
+   568→              {pagination.total} tickets
+   569→            </div>
+   570→            <div className="flex items-center gap-2">
+   571→              <Button
+   572→                variant="outline"
+   573→                size="sm"
+   574→                onClick={() => setPagination((prev) => ({ ...prev, page: prev.page - 1 }))}
+   575→                disabled={pagination.page === 1}
+   576→                className="bg-[#1A1D29] border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   577→              >
+   578→                Previous
+   579→              </Button>
+   580→              <span className="text-sm text-gray-400 px-2">
+   581→                Page {pagination.page} of {pagination.totalPages}
+   582→              </span>
+   583→              <Button
+   584→                variant="outline"
+   585→                size="sm"
+   586→                onClick={() => setPagination((prev) => ({ ...prev, page: prev.page + 1 }))}
+   587→                disabled={pagination.page === pagination.totalPages}
+   588→                className="bg-[#1A1D29] border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   589→              >
+   590→                Next
+   591→              </Button>
+   592→            </div>
+   593→          </div>
+   594→        )}
+   595→      </Card>
+   596→
+   597→      {/* Ticket Detail Dialog */}
+   598→      <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
+   599→        <DialogContent className="max-w-4xl max-h-[90vh] bg-[#1A1D29] border-[#2A2D3A] text-white">
+   600→          <DialogHeader>
+   601→            <DialogTitle className="text-xl">Ticket Details</DialogTitle>
+   602→            <DialogDescription className="text-gray-400">
+   603→              Manage and respond to support ticket
+   604→            </DialogDescription>
+   605→          </DialogHeader>
+   606→
+   607→          {ticketLoading ? (
+   608→            <div className="space-y-4 py-4">
+   609→              <Skeleton className="h-8 w-full bg-[#2A2D3A]" />
+   610→              <Skeleton className="h-32 w-full bg-[#2A2D3A]" />
+   611→              <Skeleton className="h-20 w-full bg-[#2A2D3A]" />
+   612→            </div>
+   613→          ) : selectedTicket ? (
+   614→            <div className="space-y-4 py-2">
+   615→              {/* Ticket Info */}
+   616→              <Card className="p-4 bg-[#0F1117] border-[#2A2D3A]">
+   617→                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+   618→                  <div>
+   619→                    <label className="text-sm text-gray-400">Subject</label>
+   620→                    <p className="text-white font-medium mt-1">{selectedTicket.subject}</p>
+   621→                  </div>
+   622→                  <div>
+   623→                    <label className="text-sm text-gray-400">User</label>
+   624→                    <p className="text-white mt-1">{selectedTicket.userName || 'Unknown'}</p>
+   625→                    <p className="text-gray-400 text-sm">{selectedTicket.userEmail || ''}</p>
+   626→                  </div>
+   627→                  <div>
+   628→                    <label className="text-sm text-gray-400">Status</label>
+   629→                    <div className="mt-1">{getStatusBadge(selectedTicket.status)}</div>
+   630→                  </div>
+   631→                  <div>
+   632→                    <label className="text-sm text-gray-400">Priority</label>
+   633→                    <div className="mt-1">{getPriorityBadge(selectedTicket.priority)}</div>
+   634→                  </div>
+   635→                  <div>
+   636→                    <label className="text-sm text-gray-400">Category</label>
+   637→                    <p className="text-white mt-1">{selectedTicket.category || '—'}</p>
+   638→                  </div>
+   639→                  <div>
+   640→                    <label className="text-sm text-gray-400">Created</label>
+   641→                    <p className="text-white mt-1">{formatDateTime(selectedTicket.createdAt)}</p>
+   642→                  </div>
+   643→                </div>
+   644→                <div className="mt-4">
+   645→                  <label className="text-sm text-gray-400">Description</label>
+   646→                  <p className="text-gray-300 mt-1 bg-[#1A1D29] p-3 rounded border border-[#2A2D3A]">
+   647→                    {selectedTicket.description}
+   648→                  </p>
+   649→                </div>
+   650→              </Card>
+   651→
+   652→              {/* Update Controls */}
+   653→              <Card className="p-4 bg-[#0F1117] border-[#2A2D3A]">
+   654→                <h3 className="text-sm font-medium text-gray-400 mb-3">Update Ticket</h3>
+   655→                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+   656→                  <div>
+   657→                    <label className="text-xs text-gray-400 mb-1 block">Status</label>
+   658→                    <Select value={updateStatus} onValueChange={setUpdateStatus}>
+   659→                      <SelectTrigger className="bg-[#1A1D29] border-[#2A2D3A] text-white h-8">
+   660→                        <SelectValue />
+   661→                      </SelectTrigger>
+   662→                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   663→                        <SelectItem value="OPEN">Open</SelectItem>
+   664→                        <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+   665→                        <SelectItem value="RESOLVED">Resolved</SelectItem>
+   666→                        <SelectItem value="CLOSED">Closed</SelectItem>
+   667→                      </SelectContent>
+   668→                    </Select>
+   669→                  </div>
+   670→                  <div>
+   671→                    <label className="text-xs text-gray-400 mb-1 block">Priority</label>
+   672→                    <Select value={updatePriority} onValueChange={setUpdatePriority}>
+   673→                      <SelectTrigger className="bg-[#1A1D29] border-[#2A2D3A] text-white h-8">
+   674→                        <SelectValue />
+   675→                      </SelectTrigger>
+   676→                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   677→                        <SelectItem value="LOW">Low</SelectItem>
+   678→                        <SelectItem value="MEDIUM">Medium</SelectItem>
+   679→                        <SelectItem value="HIGH">High</SelectItem>
+   680→                        <SelectItem value="URGENT">Urgent</SelectItem>
+   681→                      </SelectContent>
+   682→                    </Select>
+   683→                  </div>
+   684→                  <div>
+   685→                    <label className="text-xs text-gray-400 mb-1 block">Category</label>
+   686→                    <Select value={updateCategory} onValueChange={setUpdateCategory}>
+   687→                      <SelectTrigger className="bg-[#1A1D29] border-[#2A2D3A] text-white h-8">
+   688→                        <SelectValue />
+   689→                      </SelectTrigger>
+   690→                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   691→                        <SelectItem value="">—</SelectItem>
+   692→                        <SelectItem value="ACCOUNT">Account</SelectItem>
+   693→                        <SelectItem value="BILLING">Billing</SelectItem>
+   694→                        <SelectItem value="TECHNICAL">Technical</SelectItem>
+   695→                        <SelectItem value="TRADING">Trading</SelectItem>
+   696→                        <SelectItem value="OTHER">Other</SelectItem>
+   697→                      </SelectContent>
+   698→                    </Select>
+   699→                  </div>
+   700→                  <div className="flex items-end">
+   701→                    <Button
+   702→                      onClick={handleUpdateTicket}
+   703→                      className="w-full bg-[#00D09C] hover:bg-[#00B889] text-black"
+   704→                      size="sm"
+   705→                    >
+   706→                      Update
+   707→                    </Button>
+   708→                  </div>
+   709→                </div>
+   710→              </Card>
+   711→
+   712→              {/* Conversation Thread */}
+   713→              <Card className="bg-[#0F1117] border-[#2A2D3A]">
+   714→                <div className="p-4 border-b border-[#2A2D3A]">
+   715→                  <h3 className="text-sm font-medium text-gray-400">Conversation</h3>
+   716→                </div>
+   717→                <ScrollArea className="h-80 p-4" ref={scrollAreaRef}>
+   718→                  <div className="space-y-4">
+   719→                    {/* Initial Ticket Message */}
+   720→                    <div className="flex gap-3">
+   721→                      <div className="w-8 h-8 rounded-full bg-[#2A2D3A] flex items-center justify-center flex-shrink-0">
+   722→                        <User className="h-4 w-4 text-gray-400" />
+   723→                      </div>
+   724→                      <div className="flex-1">
+   725→                        <div className="flex items-center gap-2 mb-1">
+   726→                          <span className="text-white font-medium text-sm">
+   727→                            {selectedTicket.userName || 'User'}
+   728→                          </span>
+   729→                          <span className="text-gray-500 text-xs">
+   730→                            {formatDate(selectedTicket.createdAt)}
+   731→                          </span>
+   732→                        </div>
+   733→                        <div className="bg-[#1A1D29] rounded-lg p-3 text-gray-300 text-sm">
+   734→                          {selectedTicket.description}
+   735→                        </div>
+   736→                      </div>
+   737→                    </div>
+   738→
+   739→                    {/* Replies */}
+   740→                    {selectedTicket.replies.map((reply) => (
+   741→                      <div
+   742→                        key={reply.id}
+   743→                        className={`flex gap-3 ${
+   744→                          reply.isAdmin ? 'flex-row-reverse' : ''
+   745→                        }`}
+   746→                      >
+   747→                        <div
+   748→                          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+   749→                            reply.isAdmin
+   750→                              ? 'bg-[#00D09C] text-black'
+   751→                              : 'bg-[#2A2D3A]'
+   752→                          }`}
+   753→                        >
+   754→                          {reply.isAdmin ? (
+   755→                            <MessageSquare className="h-4 w-4" />
+   756→                          ) : (
+   757→                            <User className="h-4 w-4 text-gray-400" />
+   758→                          )}
+   759→                        </div>
+   760→                        <div className={`flex-1 ${reply.isAdmin ? 'text-right' : ''}`}>
+   761→                          <div
+   762→                            className={`flex items-center gap-2 mb-1 ${
+   763→                              reply.isAdmin ? 'justify-end' : ''
+   764→                            }`}
+   765→                          >
+   766→                            <span className="text-white font-medium text-sm">
+   767→                              {reply.isAdmin ? 'Admin' : selectedTicket.userName || 'User'}
+   768→                            </span>
+   769→                            <span className="text-gray-500 text-xs">
+   770→                              {formatDate(reply.createdAt)}
+   771→                            </span>
+   772→                          </div>
+   773→                          <div
+   774→                            className={`rounded-lg p-3 text-sm ${
+   775→                              reply.isAdmin
+   776→                                ? 'bg-[#00D09C]/20 text-gray-200'
+   777→                                : 'bg-[#1A1D29] text-gray-300'
+   778→                            }`}
+   779→                          >
+   780→                            {reply.message}
+   781→                          </div>
+   782→                        </div>
+   783→                      </div>
+   784→                    ))}
+   785→
+   786→                    {selectedTicket.replies.length === 0 && (
+   787→                      <div className="text-center text-gray-500 text-sm py-4">
+   788→                        No replies yet. Be the first to respond!
+   789→                      </div>
+   790→                    )}
+   791→                  </div>
+   792→                </ScrollArea>
+   793→
+   794→                {/* Reply Input */}
+   795→                <div className="p-4 border-t border-[#2A2D3A]">
+   796→                  <div className="flex gap-3">
+   797→                    <Textarea
+   798→                      placeholder="Type your reply..."
+   799→                      value={replyText}
+   800→                      onChange={(e) => setReplyText(e.target.value)}
+   801→                      className="flex-1 bg-[#1A1D29] border-[#2A2D3A] text-white resize-none min-h-[60px]"
+   802→                      onKeyDown={(e) => {
+   803→                        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+   804→                          handleSendReply()
+   805→                        }
+   806→                      }}
+   807→                    />
+   808→                    <Button
+   809→                      onClick={handleSendReply}
+   810→                      disabled={!replyText.trim() || sendingReply}
+   811→                      className="bg-[#00D09C] hover:bg-[#00B889] text-black px-4"
+   812→                    >
+   813→                      <Send className="h-4 w-4" />
+   814→                    </Button>
+   815→                  </div>
+   816→                  <p className="text-xs text-gray-500 mt-2">
+   817→                    Press Ctrl+Enter to send
+   818→                  </p>
+   819→                </div>
+   820→              </Card>
+   821→            </div>
+   822→          ) : null}
+   823→        </DialogContent>
+   824→      </Dialog>
+   825→    </div>
+   826→  )
+   827→}

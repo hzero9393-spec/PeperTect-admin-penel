@@ -1,0 +1,1097 @@
+     1→'use client'
+     2→
+     3→import { useEffect, useState } from 'react'
+     4→import { Plus, Pencil, Trash2, RefreshCw, Search, Calendar, TrendingUp, TrendingDown, MoreHorizontal } from 'lucide-react'
+     5→import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+     6→import { Button } from '@/components/ui/button'
+     7→import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+     8→import { Badge } from '@/components/ui/badge'
+     9→import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+    10→import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+    11→import { Input } from '@/components/ui/input'
+    12→import { Label } from '@/components/ui/label'
+    13→import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+    14→import { Switch } from '@/components/ui/switch'
+    15→import { toast } from 'sonner'
+    16→
+    17→interface Index {
+    18→  id: string
+    19→  symbol: string
+    20→  name: string
+    21→  lotSize: number
+    22→  expiryDay: string
+    23→  tickSize: number
+    24→  currentPrice: number
+    25→  previousClose: number
+    26→  change: number
+    27→  changePercent: number
+    28→  isEnabled: boolean
+    29→  lastUpdated: string
+    30→}
+    31→
+    32→interface Stock {
+    33→  id: string
+    34→  symbol: string
+    35→  name: string
+    36→  sector: string
+    37→  exchange: string
+    38→  type: string
+    39→  lotSize: number
+    40→  tickSize: number
+    41→  currentPrice: number
+    42→  open: number
+    43→  high: number
+    44→  low: number
+    45→  previousClose: number
+    46→  change: number
+    47→  changePercent: number
+    48→  volume: number
+    49→  marketCap: number
+    50→  isEnabled: boolean
+    51→  lastUpdated: string
+    52→}
+    53→
+    54→interface FnoBanEntry {
+    55→  id: string
+    56→  stockSymbol: string
+    57→  stockName: string
+    58→  stockId: string
+    59→  banStartDate: string
+    60→  banEndDate: string
+    61→  reason: string
+    62→  isActive: boolean
+    63→  createdAt: string
+    64→  updatedAt: string
+    65→}
+    66→
+    67→interface MarketHoliday {
+    68→  id: string
+    69→  name: string
+    70→  date: string
+    71→  isMuhurat: boolean
+    72→  muhuratStart: string
+    73→  muhuratEnd: string
+    74→  createdAt: string
+    75→}
+    76→
+    77→interface MarketData {
+    78→  indices: Index[]
+    79→  stocks: Stock[]
+    80→  fnoBanEntries: FnoBanEntry[]
+    81→  marketHolidays: MarketHoliday[]
+    82→}
+    83→
+    84→export default function MarketPage() {
+    85→  const [loading, setLoading] = useState(true)
+    86→  const [data, setData] = useState<MarketData | null>(null)
+    87→  const [searchTerm, setSearchTerm] = useState('')
+    88→  const [activeTab, setActiveTab] = useState('indices')
+    89→
+    90→  // Dialog states
+    91→  const [dialogOpen, setDialogOpen] = useState(false)
+    92→  const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create')
+    93→  const [editingItem, setEditingItem] = useState<any>(null)
+    94→
+    95→  // Form states
+    96→  const [formData, setFormData] = useState<any>({})
+    97→
+    98→  useEffect(() => {
+    99→    fetchData()
+   100→  }, [])
+   101→
+   102→  const fetchData = async () => {
+   103→    setLoading(true)
+   104→    try {
+   105→      const response = await fetch('/api/admin/market')
+   106→      const result = await response.json()
+   107→      if (result.success) {
+   108→        setData(result.data)
+   109→        toast.success('Market data loaded successfully')
+   110→      } else {
+   111→        toast.error('Failed to load market data')
+   112→      }
+   113→    } catch (error) {
+   114→      toast.error('An error occurred while fetching data')
+   115→    } finally {
+   116→      setLoading(false)
+   117→    }
+   118→  }
+   119→
+   120→  const formatCurrency = (value: number) => {
+   121→    return new Intl.NumberFormat('en-IN', {
+   122→      style: 'currency',
+   123→      currency: 'INR',
+   124→      maximumFractionDigits: 2,
+   125→    }).format(value)
+   126→  }
+   127→
+   128→  const formatNumber = (value: number) => {
+   129→    return new Intl.NumberFormat('en-IN').format(value)
+   130→  }
+   131→
+   132→  const formatPercent = (value: number) => {
+   133→    const sign = value >= 0 ? '+' : ''
+   134→    return `${sign}${value.toFixed(2)}%`
+   135→  }
+   136→
+   137→  const formatDate = (dateString: string) => {
+   138→    return new Date(dateString).toLocaleDateString('en-IN', {
+   139→      day: '2-digit',
+   140→      month: 'short',
+   141→      year: 'numeric',
+   142→    })
+   143→  }
+   144→
+   145→  const handleEdit = (item: any, type: string) => {
+   146→    setEditingItem(item)
+   147→    setDialogMode('edit')
+   148→    setFormData({ ...item })
+   149→    setDialogOpen(true)
+   150→  }
+   151→
+   152→  const handleCreate = (type: string) => {
+   153→    setEditingItem(null)
+   154→    setDialogMode('create')
+   155→
+   156→    const defaultData: any = {}
+   157→    if (type === 'index') {
+   158→      defaultData.tickSize = 0.05
+   159→      defaultData.isEnabled = true
+   160→    } else if (type === 'stock') {
+   161→      defaultData.exchange = 'NSE'
+   162→      defaultData.tickSize = 0.05
+   163→      defaultData.isEnabled = true
+   164→    } else if (type === 'fnoBan') {
+   165→      defaultData.isActive = true
+   166→      defaultData.banStartDate = new Date().toISOString().split('T')[0]
+   167→    } else if (type === 'holiday') {
+   168→      defaultData.isMuhurat = false
+   169→    }
+   170→
+   171→    setFormData(defaultData)
+   172→    setDialogOpen(true)
+   173→  }
+   174→
+   175→  const handleSave = async () => {
+   176→    try {
+   177→      const type = activeTab === 'f&o-ban' ? 'fnoBan' : activeTab === 'holidays' ? 'holiday' : activeTab.slice(0, -1)
+   178→
+   179→      const response = await fetch('/api/admin/market', {
+   180→        method: 'POST',
+   181→        headers: { 'Content-Type': 'application/json' },
+   182→        body: JSON.stringify({
+   183→          action: dialogMode === 'create' ? 'create' : 'update',
+   184→          type,
+   185→          data: formData,
+   186→        }),
+   187→      })
+   188→
+   189→      const result = await response.json()
+   190→      if (result.success) {
+   191→        toast.success(result.message)
+   192→        setDialogOpen(false)
+   193→        fetchData()
+   194→      } else {
+   195→        toast.error(result.error || 'Failed to save')
+   196→      }
+   197→    } catch (error) {
+   198→      toast.error('An error occurred while saving')
+   199→    }
+   200→  }
+   201→
+   202→  const handleToggleStatus = async (id: string, type: string, isEnabled: boolean) => {
+   203→    try {
+   204→      const response = await fetch('/api/admin/market', {
+   205→        method: 'POST',
+   206→        headers: { 'Content-Type': 'application/json' },
+   207→        body: JSON.stringify({
+   208→          action: 'toggleStatus',
+   209→          data: { id, type, isEnabled },
+   210→        }),
+   211→      })
+   212→
+   213→      const result = await response.json()
+   214→      if (result.success) {
+   215→        toast.success('Status updated successfully')
+   216→        fetchData()
+   217→      } else {
+   218→        toast.error('Failed to update status')
+   219→      }
+   220→    } catch (error) {
+   221→      toast.error('An error occurred')
+   222→    }
+   223→  }
+   224→
+   225→  const handleMarkFnoBan = async (stock: Stock) => {
+   226→    try {
+   227→      const response = await fetch('/api/admin/market', {
+   228→        method: 'POST',
+   229→        headers: { 'Content-Type': 'application/json' },
+   230→        body: JSON.stringify({
+   231→          action: 'markFnoBan',
+   232→          data: {
+   233→            stockId: stock.id,
+   234→            stockSymbol: stock.symbol,
+   235→            stockName: stock.name,
+   236→            banStartDate: new Date().toISOString(),
+   237→            reason: 'Position limit breach',
+   238→          },
+   239→        }),
+   240→      })
+   241→
+   242→      const result = await response.json()
+   243→      if (result.success) {
+   244→        toast.success('Stock marked for F&O ban')
+   245→        fetchData()
+   246→      } else {
+   247→        toast.error('Failed to mark F&O ban')
+   248→      }
+   249→    } catch (error) {
+   250→      toast.error('An error occurred')
+   251→    }
+   252→  }
+   253→
+   254→  const handleRemoveFnoBan = async (id: string) => {
+   255→    try {
+   256→      const response = await fetch('/api/admin/market', {
+   257→        method: 'POST',
+   258→        headers: { 'Content-Type': 'application/json' },
+   259→        body: JSON.stringify({
+   260→          action: 'removeFnoBan',
+   261→          data: { id },
+   262→        }),
+   263→      })
+   264→
+   265→      const result = await response.json()
+   266→      if (result.success) {
+   267→        toast.success('F&O ban removed')
+   268→        fetchData()
+   269→      } else {
+   270→        toast.error('Failed to remove F&O ban')
+   271→      }
+   272→    } catch (error) {
+   273→      toast.error('An error occurred')
+   274→    }
+   275→  }
+   276→
+   277→  const handleDeleteHoliday = async (id: string) => {
+   278→    if (!confirm('Are you sure you want to delete this holiday?')) return
+   279→
+   280→    try {
+   281→      const response = await fetch('/api/admin/market', {
+   282→        method: 'POST',
+   283→        headers: { 'Content-Type': 'application/json' },
+   284→        body: JSON.stringify({
+   285→          action: 'deleteHoliday',
+   286→          data: { id },
+   287→        }),
+   288→      })
+   289→
+   290→      const result = await response.json()
+   291→      if (result.success) {
+   292→        toast.success('Holiday deleted successfully')
+   293→        fetchData()
+   294→      } else {
+   295→        toast.error('Failed to delete holiday')
+   296→      }
+   297→    } catch (error) {
+   298→      toast.error('An error occurred')
+   299→    }
+   300→  }
+   301→
+   302→  const filterData = (items: any[], searchField: string) => {
+   303→    if (!searchTerm) return items
+   304→    return items.filter((item) =>
+   305→      item[searchField]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+   306→      item.name?.toLowerCase().includes(searchTerm.toLowerCase())
+   307→    )
+   308→  }
+   309→
+   310→  const filteredIndices = filterData(data?.indices || [], 'symbol')
+   311→  const filteredStocks = filterData(data?.stocks || [], 'symbol')
+   312→  const filteredFnoBans = filterData(data?.fnoBanEntries || [], 'stockSymbol')
+   313→  const filteredHolidays = filterData(data?.marketHolidays || [], 'name')
+   314→
+   315→  if (loading) {
+   316→    return (
+   317→      <div className="space-y-6">
+   318→        <div className="flex items-center justify-between">
+   319→          <h1 className="text-3xl font-bold text-white">Market Data Management</h1>
+   320→        </div>
+   321→        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+   322→          {[...Array(4)].map((_, i) => (
+   323→            <Card key={i} className="border-[#2A2D3A] bg-[#1A1D29]">
+   324→              <CardContent className="p-6">
+   325→                <div className="h-32 animate-pulse bg-[#2A2D3A] rounded" />
+   326→              </CardContent>
+   327→            </Card>
+   328→          ))}
+   329→        </div>
+   330→      </div>
+   331→    )
+   332→  }
+   333→
+   334→  return (
+   335→    <div className="space-y-6">
+   336→      {/* Header */}
+   337→      <div className="flex items-center justify-between flex-wrap gap-4">
+   338→        <div>
+   339→          <h1 className="text-3xl font-bold text-white">Market Data Management</h1>
+   340→          <p className="text-gray-400 mt-1">Manage indices, stocks, F&O bans, and market holidays</p>
+   341→        </div>
+   342→        <Button
+   343→          onClick={fetchData}
+   344→          variant="outline"
+   345→          className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+   346→        >
+   347→          <RefreshCw className="h-4 w-4 mr-2" />
+   348→          Refresh
+   349→        </Button>
+   350→      </div>
+   351→
+   352→      {/* Tabs */}
+   353→      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+   354→        <TabsList className="bg-[#1A1D29] border border-[#2A2D3A]">
+   355→          <TabsTrigger value="indices" className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black">
+   356→            Indices
+   357→          </TabsTrigger>
+   358→          <TabsTrigger value="stocks" className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black">
+   359→            Stocks
+   360→          </TabsTrigger>
+   361→          <TabsTrigger value="f&o-ban" className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black">
+   362→            F&O Ban
+   363→          </TabsTrigger>
+   364→          <TabsTrigger value="holidays" className="data-[state=active]:bg-[#00D09C] data-[state=active]:text-black">
+   365→            Holidays
+   366→          </TabsTrigger>
+   367→        </TabsList>
+   368→
+   369→        {/* Indices Tab */}
+   370→        <TabsContent value="indices">
+   371→          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+   372→            <CardHeader>
+   373→              <div className="flex items-center justify-between">
+   374→                <CardTitle className="text-white">Indices</CardTitle>
+   375→                <div className="flex items-center gap-3">
+   376→                  <div className="relative">
+   377→                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+   378→                    <Input
+   379→                      placeholder="Search indices..."
+   380→                      value={searchTerm}
+   381→                      onChange={(e) => setSearchTerm(e.target.value)}
+   382→                      className="pl-10 bg-[#0F1117] border-[#2A2D3A] text-white w-64"
+   383→                    />
+   384→                  </div>
+   385→                  <Button
+   386→                    onClick={() => handleCreate('index')}
+   387→                    className="bg-[#00D09C] text-black hover:bg-[#00b88c]"
+   388→                  >
+   389→                    <Plus className="h-4 w-4 mr-2" />
+   390→                    Add Index
+   391→                  </Button>
+   392→                </div>
+   393→              </div>
+   394→            </CardHeader>
+   395→            <CardContent>
+   396→              <Table>
+   397→                <TableHeader>
+   398→                  <TableRow>
+   399→                    <TableHead className="text-gray-400">Symbol</TableHead>
+   400→                    <TableHead className="text-gray-400">Name</TableHead>
+   401→                    <TableHead className="text-gray-400">Lot Size</TableHead>
+   402→                    <TableHead className="text-gray-400">Expiry Day</TableHead>
+   403→                    <TableHead className="text-gray-400">Tick Size</TableHead>
+   404→                    <TableHead className="text-gray-400">Current Price</TableHead>
+   405→                    <TableHead className="text-gray-400">Change</TableHead>
+   406→                    <TableHead className="text-gray-400">Status</TableHead>
+   407→                    <TableHead className="text-gray-400">Actions</TableHead>
+   408→                  </TableRow>
+   409→                </TableHeader>
+   410→                <TableBody>
+   411→                  {filteredIndices.map((index) => (
+   412→                    <TableRow key={index.id}>
+   413→                      <TableCell className="text-white font-medium">{index.symbol}</TableCell>
+   414→                      <TableCell className="text-white">{index.name}</TableCell>
+   415→                      <TableCell className="text-gray-300">{index.lotSize}</TableCell>
+   416→                      <TableCell className="text-gray-300">{index.expiryDay}</TableCell>
+   417→                      <TableCell className="text-gray-300">{index.tickSize}</TableCell>
+   418→                      <TableCell className="text-white">{formatCurrency(index.currentPrice)}</TableCell>
+   419→                      <TableCell>
+   420→                        <div className="flex items-center gap-2">
+   421→                          {index.changePercent >= 0 ? (
+   422→                            <TrendingUp className="h-4 w-4 text-green-400" />
+   423→                          ) : (
+   424→                            <TrendingDown className="h-4 w-4 text-red-400" />
+   425→                          )}
+   426→                          <span className={index.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}>
+   427→                            {formatPercent(index.changePercent)}
+   428→                          </span>
+   429→                        </div>
+   430→                      </TableCell>
+   431→                      <TableCell>
+   432→                        <Badge
+   433→                          variant={index.isEnabled ? 'default' : 'secondary'}
+   434→                          className={index.isEnabled ? 'bg-[#00D09C] text-black' : 'bg-[#2A2D3A] text-gray-300'}
+   435→                        >
+   436→                          {index.isEnabled ? 'Enabled' : 'Disabled'}
+   437→                        </Badge>
+   438→                      </TableCell>
+   439→                      <TableCell>
+   440→                        <div className="flex items-center gap-2">
+   441→                          <Button
+   442→                            size="sm"
+   443→                            variant="ghost"
+   444→                            onClick={() => handleEdit(index, 'index')}
+   445→                            className="text-gray-400 hover:text-white"
+   446→                          >
+   447→                            <Pencil className="h-4 w-4" />
+   448→                          </Button>
+   449→                          <Switch
+   450→                            checked={index.isEnabled}
+   451→                            onCheckedChange={(checked) => handleToggleStatus(index.id, 'index', checked)}
+   452→                          />
+   453→                        </div>
+   454→                      </TableCell>
+   455→                    </TableRow>
+   456→                  ))}
+   457→                </TableBody>
+   458→              </Table>
+   459→            </CardContent>
+   460→          </Card>
+   461→        </TabsContent>
+   462→
+   463→        {/* Stocks Tab */}
+   464→        <TabsContent value="stocks">
+   465→          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+   466→            <CardHeader>
+   467→              <div className="flex items-center justify-between">
+   468→                <CardTitle className="text-white">Stocks</CardTitle>
+   469→                <div className="flex items-center gap-3">
+   470→                  <div className="relative">
+   471→                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+   472→                    <Input
+   473→                      placeholder="Search stocks..."
+   474→                      value={searchTerm}
+   475→                      onChange={(e) => setSearchTerm(e.target.value)}
+   476→                      className="pl-10 bg-[#0F1117] border-[#2A2D3A] text-white w-64"
+   477→                    />
+   478→                  </div>
+   479→                  <Button
+   480→                    onClick={() => handleCreate('stock')}
+   481→                    className="bg-[#00D09C] text-black hover:bg-[#00b88c]"
+   482→                  >
+   483→                    <Plus className="h-4 w-4 mr-2" />
+   484→                    Add Stock
+   485→                  </Button>
+   486→                </div>
+   487→              </div>
+   488→            </CardHeader>
+   489→            <CardContent>
+   490→              <Table>
+   491→                <TableHeader>
+   492→                  <TableRow>
+   493→                    <TableHead className="text-gray-400">Symbol</TableHead>
+   494→                    <TableHead className="text-gray-400">Name</TableHead>
+   495→                    <TableHead className="text-gray-400">Sector</TableHead>
+   496→                    <TableHead className="text-gray-400">Type</TableHead>
+   497→                    <TableHead className="text-gray-400">Current Price</TableHead>
+   498→                    <TableHead className="text-gray-400">Change %</TableHead>
+   499→                    <TableHead className="text-gray-400">Status</TableHead>
+   500→                    <TableHead className="text-gray-400">Actions</TableHead>
+   501→                  </TableRow>
+   502→                </TableHeader>
+   503→                <TableBody>
+   504→                  {filteredStocks.slice(0, 50).map((stock) => (
+   505→                    <TableRow key={stock.id}>
+   506→                      <TableCell className="text-white font-medium">{stock.symbol}</TableCell>
+   507→                      <TableCell className="text-white">{stock.name}</TableCell>
+   508→                      <TableCell className="text-gray-300">{stock.sector}</TableCell>
+   509→                      <TableCell>
+   510→                        <Badge variant="outline" className="border-[#2A2D3A] text-gray-300">
+   511→                          {stock.type}
+   512→                        </Badge>
+   513→                      </TableCell>
+   514→                      <TableCell className="text-white">{formatCurrency(stock.currentPrice)}</TableCell>
+   515→                      <TableCell>
+   516→                        <span className={stock.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}>
+   517→                          {formatPercent(stock.changePercent)}
+   518→                        </span>
+   519→                      </TableCell>
+   520→                      <TableCell>
+   521→                        <Badge
+   522→                          variant={stock.isEnabled ? 'default' : 'secondary'}
+   523→                          className={stock.isEnabled ? 'bg-[#00D09C] text-black' : 'bg-[#2A2D3A] text-gray-300'}
+   524→                        >
+   525→                          {stock.isEnabled ? 'Enabled' : 'Disabled'}
+   526→                        </Badge>
+   527→                      </TableCell>
+   528→                      <TableCell>
+   529→                        <div className="flex items-center gap-2">
+   530→                          <Button
+   531→                            size="sm"
+   532→                            variant="ghost"
+   533→                            onClick={() => handleEdit(stock, 'stock')}
+   534→                            className="text-gray-400 hover:text-white"
+   535→                          >
+   536→                            <Pencil className="h-4 w-4" />
+   537→                          </Button>
+   538→                          <Switch
+   539→                            checked={stock.isEnabled}
+   540→                            onCheckedChange={(checked) => handleToggleStatus(stock.id, 'stock', checked)}
+   541→                          />
+   542→                          <Button
+   543→                            size="sm"
+   544→                            variant="ghost"
+   545→                            onClick={() => handleMarkFnoBan(stock)}
+   546→                            className="text-red-400 hover:text-red-300"
+   547→                            title="Mark F&O Ban"
+   548→                          >
+   549→                            <TrendingDown className="h-4 w-4" />
+   550→                          </Button>
+   551→                        </div>
+   552→                      </TableCell>
+   553→                    </TableRow>
+   554→                  ))}
+   555→                </TableBody>
+   556→              </Table>
+   557→            </CardContent>
+   558→          </Card>
+   559→        </TabsContent>
+   560→
+   561→        {/* F&O Ban Tab */}
+   562→        <TabsContent value="f&o-ban">
+   563→          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+   564→            <CardHeader>
+   565→              <div className="flex items-center justify-between">
+   566→                <CardTitle className="text-white">F&O Ban Entries</CardTitle>
+   567→                <div className="flex items-center gap-3">
+   568→                  <div className="relative">
+   569→                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+   570→                    <Input
+   571→                      placeholder="Search entries..."
+   572→                      value={searchTerm}
+   573→                      onChange={(e) => setSearchTerm(e.target.value)}
+   574→                      className="pl-10 bg-[#0F1117] border-[#2A2D3A] text-white w-64"
+   575→                    />
+   576→                  </div>
+   577→                  <Button
+   578→                    onClick={() => handleCreate('fnoBan')}
+   579→                    className="bg-[#00D09C] text-black hover:bg-[#00b88c]"
+   580→                  >
+   581→                    <Plus className="h-4 w-4 mr-2" />
+   582→                    Add Entry
+   583→                  </Button>
+   584→                </div>
+   585→              </div>
+   586→            </CardHeader>
+   587→            <CardContent>
+   588→              <Table>
+   589→                <TableHeader>
+   590→                  <TableRow>
+   591→                    <TableHead className="text-gray-400">Symbol</TableHead>
+   592→                    <TableHead className="text-gray-400">Name</TableHead>
+   593→                    <TableHead className="text-gray-400">Ban Start</TableHead>
+   594→                    <TableHead className="text-gray-400">Ban End</TableHead>
+   595→                    <TableHead className="text-gray-400">Reason</TableHead>
+   596→                    <TableHead className="text-gray-400">Status</TableHead>
+   597→                    <TableHead className="text-gray-400">Actions</TableHead>
+   598→                  </TableRow>
+   599→                </TableHeader>
+   600→                <TableBody>
+   601→                  {filteredFnoBans.map((entry) => (
+   602→                    <TableRow key={entry.id}>
+   603→                      <TableCell className="text-white font-medium">{entry.stockSymbol}</TableCell>
+   604→                      <TableCell className="text-white">{entry.stockName}</TableCell>
+   605→                      <TableCell className="text-gray-300">{formatDate(entry.banStartDate)}</TableCell>
+   606→                      <TableCell className="text-gray-300">
+   607→                        {entry.banEndDate ? formatDate(entry.banEndDate) : 'Ongoing'}
+   608→                      </TableCell>
+   609→                      <TableCell className="text-gray-300">{entry.reason || '-'}</TableCell>
+   610→                      <TableCell>
+   611→                        <Badge
+   612→                          variant={entry.isActive ? 'default' : 'secondary'}
+   613→                          className={entry.isActive ? 'bg-red-500 text-white' : 'bg-[#2A2D3A] text-gray-300'}
+   614→                        >
+   615→                          {entry.isActive ? 'Active' : 'Inactive'}
+   616→                        </Badge>
+   617→                      </TableCell>
+   618→                      <TableCell>
+   619→                        <Button
+   620→                          size="sm"
+   621→                          variant="ghost"
+   622→                          onClick={() => handleRemoveFnoBan(entry.id)}
+   623→                          className="text-red-400 hover:text-red-300"
+   624→                        >
+   625→                          <Trash2 className="h-4 w-4" />
+   626→                        </Button>
+   627→                      </TableCell>
+   628→                    </TableRow>
+   629→                  ))}
+   630→                  {filteredFnoBans.length === 0 && (
+   631→                    <TableRow>
+   632→                      <TableCell colSpan={7} className="text-center text-gray-400 py-8">
+   633→                        No F&O ban entries found
+   634→                      </TableCell>
+   635→                    </TableRow>
+   636→                  )}
+   637→                </TableBody>
+   638→              </Table>
+   639→            </CardContent>
+   640→          </Card>
+   641→        </TabsContent>
+   642→
+   643→        {/* Holidays Tab */}
+   644→        <TabsContent value="holidays">
+   645→          <Card className="border-[#2A2D3A] bg-[#1A1D29]">
+   646→            <CardHeader>
+   647→              <div className="flex items-center justify-between">
+   648→                <CardTitle className="text-white">Market Holidays</CardTitle>
+   649→                <div className="flex items-center gap-3">
+   650→                  <div className="relative">
+   651→                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+   652→                    <Input
+   653→                      placeholder="Search holidays..."
+   654→                      value={searchTerm}
+   655→                      onChange={(e) => setSearchTerm(e.target.value)}
+   656→                      className="pl-10 bg-[#0F1117] border-[#2A2D3A] text-white w-64"
+   657→                    />
+   658→                  </div>
+   659→                  <Button
+   660→                    onClick={() => handleCreate('holiday')}
+   661→                    className="bg-[#00D09C] text-black hover:bg-[#00b88c]"
+   662→                  >
+   663→                    <Plus className="h-4 w-4 mr-2" />
+   664→                    Add Holiday
+   665→                  </Button>
+   666→                </div>
+   667→              </div>
+   668→            </CardHeader>
+   669→            <CardContent>
+   670→              <Table>
+   671→                <TableHeader>
+   672→                  <TableRow>
+   673→                    <TableHead className="text-gray-400">Name</TableHead>
+   674→                    <TableHead className="text-gray-400">Date</TableHead>
+   675→                    <TableHead className="text-gray-400">Type</TableHead>
+   676→                    <TableHead className="text-gray-400">Actions</TableHead>
+   677→                  </TableRow>
+   678→                </TableHeader>
+   679→                <TableBody>
+   680→                  {filteredHolidays.map((holiday) => (
+   681→                    <TableRow key={holiday.id}>
+   682→                      <TableCell className="text-white font-medium">{holiday.name}</TableCell>
+   683→                      <TableCell className="text-gray-300">{formatDate(holiday.date)}</TableCell>
+   684→                      <TableCell>
+   685→                        <Badge
+   686→                          variant={holiday.isMuhurat ? 'default' : 'secondary'}
+   687→                          className={holiday.isMuhurat ? 'bg-purple-500 text-white' : 'bg-[#2A2D3A] text-gray-300'}
+   688→                        >
+   689→                          {holiday.isMuhurat ? 'Muhurat' : 'Regular'}
+   690→                        </Badge>
+   691→                      </TableCell>
+   692→                      <TableCell>
+   693→                        <div className="flex items-center gap-2">
+   694→                          <Button
+   695→                            size="sm"
+   696→                            variant="ghost"
+   697→                            onClick={() => handleEdit(holiday, 'holiday')}
+   698→                            className="text-gray-400 hover:text-white"
+   699→                          >
+   700→                            <Pencil className="h-4 w-4" />
+   701→                          </Button>
+   702→                          <Button
+   703→                            size="sm"
+   704→                            variant="ghost"
+   705→                            onClick={() => handleDeleteHoliday(holiday.id)}
+   706→                            className="text-red-400 hover:text-red-300"
+   707→                          >
+   708→                            <Trash2 className="h-4 w-4" />
+   709→                          </Button>
+   710→                        </div>
+   711→                      </TableCell>
+   712→                    </TableRow>
+   713→                  ))}
+   714→                  {filteredHolidays.length === 0 && (
+   715→                    <TableRow>
+   716→                      <TableCell colSpan={4} className="text-center text-gray-400 py-8">
+   717→                        No holidays found
+   718→                      </TableCell>
+   719→                    </TableRow>
+   720→                  )}
+   721→                </TableBody>
+   722→              </Table>
+   723→            </CardContent>
+   724→          </Card>
+   725→        </TabsContent>
+   726→      </Tabs>
+   727→
+   728→      {/* Dialog for Add/Edit */}
+   729→      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+   730→        <DialogContent className="bg-[#1A1D29] border-[#2A2D3A] text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+   731→          <DialogHeader>
+   732→            <DialogTitle>
+   733→              {dialogMode === 'create' ? 'Add' : 'Edit'}{' '}
+   734→              {activeTab === 'f&o-ban' ? 'F&O Ban Entry' : activeTab === 'holidays' ? 'Holiday' : activeTab.slice(0, -1)}
+   735→            </DialogTitle>
+   736→            <DialogDescription className="text-gray-400">
+   737→              {dialogMode === 'create' ? 'Fill in the details to create a new entry' : 'Update the entry details'}
+   738→            </DialogDescription>
+   739→          </DialogHeader>
+   740→
+   741→          <div className="space-y-4 py-4">
+   742→            {activeTab === 'indices' && (
+   743→              <>
+   744→                <div className="grid grid-cols-2 gap-4">
+   745→                  <div className="space-y-2">
+   746→                    <Label>Symbol</Label>
+   747→                    <Input
+   748→                      value={formData.symbol || ''}
+   749→                      onChange={(e) => setFormData({ ...formData, symbol: e.target.value })}
+   750→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   751→                    />
+   752→                  </div>
+   753→                  <div className="space-y-2">
+   754→                    <Label>Name</Label>
+   755→                    <Input
+   756→                      value={formData.name || ''}
+   757→                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+   758→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   759→                    />
+   760→                  </div>
+   761→                  <div className="space-y-2">
+   762→                    <Label>Lot Size</Label>
+   763→                    <Input
+   764→                      type="number"
+   765→                      value={formData.lotSize || ''}
+   766→                      onChange={(e) => setFormData({ ...formData, lotSize: Number(e.target.value) })}
+   767→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   768→                    />
+   769→                  </div>
+   770→                  <div className="space-y-2">
+   771→                    <Label>Expiry Day</Label>
+   772→                    <Input
+   773→                      value={formData.expiryDay || ''}
+   774→                      onChange={(e) => setFormData({ ...formData, expiryDay: e.target.value })}
+   775→                      placeholder="e.g., Last Thursday"
+   776→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   777→                    />
+   778→                  </div>
+   779→                  <div className="space-y-2">
+   780→                    <Label>Tick Size</Label>
+   781→                    <Input
+   782→                      type="number"
+   783→                      step="0.01"
+   784→                      value={formData.tickSize || ''}
+   785→                      onChange={(e) => setFormData({ ...formData, tickSize: Number(e.target.value) })}
+   786→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   787→                    />
+   788→                  </div>
+   789→                  <div className="space-y-2">
+   790→                    <Label>Current Price</Label>
+   791→                    <Input
+   792→                      type="number"
+   793→                      step="0.01"
+   794→                      value={formData.currentPrice || ''}
+   795→                      onChange={(e) => setFormData({ ...formData, currentPrice: Number(e.target.value) })}
+   796→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   797→                    />
+   798→                  </div>
+   799→                  <div className="space-y-2">
+   800→                    <Label>Previous Close</Label>
+   801→                    <Input
+   802→                      type="number"
+   803→                      step="0.01"
+   804→                      value={formData.previousClose || ''}
+   805→                      onChange={(e) => setFormData({ ...formData, previousClose: Number(e.target.value) })}
+   806→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   807→                    />
+   808→                  </div>
+   809→                  <div className="space-y-2">
+   810→                    <Label>Status</Label>
+   811→                    <Select
+   812→                      value={formData.isEnabled !== false ? 'true' : 'false'}
+   813→                      onValueChange={(value) => setFormData({ ...formData, isEnabled: value === 'true' })}
+   814→                    >
+   815→                      <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A]">
+   816→                        <SelectValue />
+   817→                      </SelectTrigger>
+   818→                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   819→                        <SelectItem value="true">Enabled</SelectItem>
+   820→                        <SelectItem value="false">Disabled</SelectItem>
+   821→                      </SelectContent>
+   822→                    </Select>
+   823→                  </div>
+   824→                </div>
+   825→              </>
+   826→            )}
+   827→
+   828→            {activeTab === 'stocks' && (
+   829→              <>
+   830→                <div className="grid grid-cols-2 gap-4">
+   831→                  <div className="space-y-2">
+   832→                    <Label>Symbol</Label>
+   833→                    <Input
+   834→                      value={formData.symbol || ''}
+   835→                      onChange={(e) => setFormData({ ...formData, symbol: e.target.value })}
+   836→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   837→                    />
+   838→                  </div>
+   839→                  <div className="space-y-2">
+   840→                    <Label>Name</Label>
+   841→                    <Input
+   842→                      value={formData.name || ''}
+   843→                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+   844→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   845→                    />
+   846→                  </div>
+   847→                  <div className="space-y-2">
+   848→                    <Label>Sector</Label>
+   849→                    <Input
+   850→                      value={formData.sector || ''}
+   851→                      onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
+   852→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   853→                    />
+   854→                  </div>
+   855→                  <div className="space-y-2">
+   856→                    <Label>Exchange</Label>
+   857→                    <Select
+   858→                      value={formData.exchange || 'NSE'}
+   859→                      onValueChange={(value) => setFormData({ ...formData, exchange: value })}
+   860→                    >
+   861→                      <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A]">
+   862→                        <SelectValue />
+   863→                      </SelectTrigger>
+   864→                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   865→                        <SelectItem value="NSE">NSE</SelectItem>
+   866→                        <SelectItem value="BSE">BSE</SelectItem>
+   867→                      </SelectContent>
+   868→                    </Select>
+   869→                  </div>
+   870→                  <div className="space-y-2">
+   871→                    <Label>Type</Label>
+   872→                    <Select
+   873→                      value={formData.type || 'EQUITY'}
+   874→                      onValueChange={(value) => setFormData({ ...formData, type: value })}
+   875→                    >
+   876→                      <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A]">
+   877→                        <SelectValue />
+   878→                      </SelectTrigger>
+   879→                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   880→                        <SelectItem value="EQUITY">Equity</SelectItem>
+   881→                        <SelectItem value="ETF">ETF</SelectItem>
+   882→                      </SelectContent>
+   883→                    </Select>
+   884→                  </div>
+   885→                  <div className="space-y-2">
+   886→                    <Label>Lot Size</Label>
+   887→                    <Input
+   888→                      type="number"
+   889→                      value={formData.lotSize || ''}
+   890→                      onChange={(e) => setFormData({ ...formData, lotSize: Number(e.target.value) })}
+   891→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   892→                    />
+   893→                  </div>
+   894→                  <div className="space-y-2">
+   895→                    <Label>Tick Size</Label>
+   896→                    <Input
+   897→                      type="number"
+   898→                      step="0.01"
+   899→                      value={formData.tickSize || ''}
+   900→                      onChange={(e) => setFormData({ ...formData, tickSize: Number(e.target.value) })}
+   901→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   902→                    />
+   903→                  </div>
+   904→                  <div className="space-y-2">
+   905→                    <Label>Current Price</Label>
+   906→                    <Input
+   907→                      type="number"
+   908→                      step="0.01"
+   909→                      value={formData.currentPrice || ''}
+   910→                      onChange={(e) => setFormData({ ...formData, currentPrice: Number(e.target.value) })}
+   911→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   912→                    />
+   913→                  </div>
+   914→                  <div className="space-y-2">
+   915→                    <Label>Previous Close</Label>
+   916→                    <Input
+   917→                      type="number"
+   918→                      step="0.01"
+   919→                      value={formData.previousClose || ''}
+   920→                      onChange={(e) => setFormData({ ...formData, previousClose: Number(e.target.value) })}
+   921→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   922→                    />
+   923→                  </div>
+   924→                  <div className="space-y-2">
+   925→                    <Label>Status</Label>
+   926→                    <Select
+   927→                      value={formData.isEnabled !== false ? 'true' : 'false'}
+   928→                      onValueChange={(value) => setFormData({ ...formData, isEnabled: value === 'true' })}
+   929→                    >
+   930→                      <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A]">
+   931→                        <SelectValue />
+   932→                      </SelectTrigger>
+   933→                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   934→                        <SelectItem value="true">Enabled</SelectItem>
+   935→                        <SelectItem value="false">Disabled</SelectItem>
+   936→                      </SelectContent>
+   937→                    </Select>
+   938→                  </div>
+   939→                </div>
+   940→              </>
+   941→            )}
+   942→
+   943→            {activeTab === 'f&o-ban' && (
+   944→              <>
+   945→                <div className="grid grid-cols-2 gap-4">
+   946→                  <div className="space-y-2">
+   947→                    <Label>Stock Symbol</Label>
+   948→                    <Input
+   949→                      value={formData.stockSymbol || ''}
+   950→                      onChange={(e) => setFormData({ ...formData, stockSymbol: e.target.value.toUpperCase() })}
+   951→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   952→                    />
+   953→                  </div>
+   954→                  <div className="space-y-2">
+   955→                    <Label>Stock Name</Label>
+   956→                    <Input
+   957→                      value={formData.stockName || ''}
+   958→                      onChange={(e) => setFormData({ ...formData, stockName: e.target.value })}
+   959→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   960→                    />
+   961→                  </div>
+   962→                  <div className="space-y-2">
+   963→                    <Label>Stock ID</Label>
+   964→                    <Input
+   965→                      value={formData.stockId || ''}
+   966→                      onChange={(e) => setFormData({ ...formData, stockId: e.target.value })}
+   967→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   968→                    />
+   969→                  </div>
+   970→                  <div className="space-y-2">
+   971→                    <Label>Ban Start Date</Label>
+   972→                    <Input
+   973→                      type="date"
+   974→                      value={formData.banStartDate ? formData.banStartDate.split('T')[0] : ''}
+   975→                      onChange={(e) => setFormData({ ...formData, banStartDate: e.target.value })}
+   976→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   977→                    />
+   978→                  </div>
+   979→                  <div className="space-y-2">
+   980→                    <Label>Ban End Date</Label>
+   981→                    <Input
+   982→                      type="date"
+   983→                      value={formData.banEndDate ? formData.banEndDate.split('T')[0] : ''}
+   984→                      onChange={(e) => setFormData({ ...formData, banEndDate: e.target.value || null })}
+   985→                      className="bg-[#0F1117] border-[#2A2D3A]"
+   986→                    />
+   987→                  </div>
+   988→                  <div className="space-y-2">
+   989→                    <Label>Status</Label>
+   990→                    <Select
+   991→                      value={formData.isActive !== false ? 'true' : 'false'}
+   992→                      onValueChange={(value) => setFormData({ ...formData, isActive: value === 'true' })}
+   993→                    >
+   994→                      <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A]">
+   995→                        <SelectValue />
+   996→                      </SelectTrigger>
+   997→                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+   998→                        <SelectItem value="true">Active</SelectItem>
+   999→                        <SelectItem value="false">Inactive</SelectItem>
+  1000→                      </SelectContent>
+  1001→                    </Select>
+  1002→                  </div>
+  1003→                  <div className="space-y-2 col-span-2">
+  1004→                    <Label>Reason</Label>
+  1005→                    <Input
+  1006→                      value={formData.reason || ''}
+  1007→                      onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+  1008→                      placeholder="Reason for ban"
+  1009→                      className="bg-[#0F1117] border-[#2A2D3A]"
+  1010→                    />
+  1011→                  </div>
+  1012→                </div>
+  1013→              </>
+  1014→            )}
+  1015→
+  1016→            {activeTab === 'holidays' && (
+  1017→              <>
+  1018→                <div className="grid grid-cols-2 gap-4">
+  1019→                  <div className="space-y-2">
+  1020→                    <Label>Holiday Name</Label>
+  1021→                    <Input
+  1022→                      value={formData.name || ''}
+  1023→                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+  1024→                      className="bg-[#0F1117] border-[#2A2D3A]"
+  1025→                    />
+  1026→                  </div>
+  1027→                  <div className="space-y-2">
+  1028→                    <Label>Date</Label>
+  1029→                    <Input
+  1030→                      type="date"
+  1031→                      value={formData.date ? formData.date.split('T')[0] : ''}
+  1032→                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+  1033→                      className="bg-[#0F1117] border-[#2A2D3A]"
+  1034→                    />
+  1035→                  </div>
+  1036→                  <div className="space-y-2">
+  1037→                    <Label>Type</Label>
+  1038→                    <Select
+  1039→                      value={formData.isMuhurat ? 'true' : 'false'}
+  1040→                      onValueChange={(value) => setFormData({ ...formData, isMuhurat: value === 'true' })}
+  1041→                    >
+  1042→                      <SelectTrigger className="bg-[#0F1117] border-[#2A2D3A]">
+  1043→                        <SelectValue />
+  1044→                      </SelectTrigger>
+  1045→                      <SelectContent className="bg-[#1A1D29] border-[#2A2D3A]">
+  1046→                        <SelectItem value="false">Regular</SelectItem>
+  1047→                        <SelectItem value="true">Muhurat Trading</SelectItem>
+  1048→                      </SelectContent>
+  1049→                    </Select>
+  1050→                  </div>
+  1051→                  {formData.isMuhurat && (
+  1052→                    <>
+  1053→                      <div className="space-y-2">
+  1054→                        <Label>Muhurat Start Time</Label>
+  1055→                        <Input
+  1056→                          type="time"
+  1057→                          value={formData.muhuratStart || ''}
+  1058→                          onChange={(e) => setFormData({ ...formData, muhuratStart: e.target.value })}
+  1059→                          className="bg-[#0F1117] border-[#2A2D3A]"
+  1060→                        />
+  1061→                      </div>
+  1062→                      <div className="space-y-2">
+  1063→                        <Label>Muhurat End Time</Label>
+  1064→                        <Input
+  1065→                          type="time"
+  1066→                          value={formData.muhuratEnd || ''}
+  1067→                          onChange={(e) => setFormData({ ...formData, muhuratEnd: e.target.value })}
+  1068→                          className="bg-[#0F1117] border-[#2A2D3A]"
+  1069→                        />
+  1070→                      </div>
+  1071→                    </>
+  1072→                  )}
+  1073→                </div>
+  1074→              </>
+  1075→            )}
+  1076→          </div>
+  1077→
+  1078→          <DialogFooter>
+  1079→            <Button
+  1080→              variant="outline"
+  1081→              onClick={() => setDialogOpen(false)}
+  1082→              className="border-[#2A2D3A] text-white hover:bg-[#2A2D3A]"
+  1083→            >
+  1084→              Cancel
+  1085→            </Button>
+  1086→            <Button
+  1087→              onClick={handleSave}
+  1088→              className="bg-[#00D09C] text-black hover:bg-[#00b88c]"
+  1089→            >
+  1090→              {dialogMode === 'create' ? 'Create' : 'Update'}
+  1091→            </Button>
+  1092→          </DialogFooter>
+  1093→        </DialogContent>
+  1094→      </Dialog>
+  1095→    </div>
+  1096→  )
+  1097→}
