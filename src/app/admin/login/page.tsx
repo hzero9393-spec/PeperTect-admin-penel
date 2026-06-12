@@ -25,8 +25,8 @@ export default function AdminLoginPage() {
       const data = await response.json()
 
       if (data.success) {
-        alert('Login successful!')
-        router.push('/admin/dashboard')
+        // Use window.location for full page reload to ensure cookies are set
+        window.location.href = '/admin/dashboard'
       } else {
         alert(data.error || 'Login failed')
       }
