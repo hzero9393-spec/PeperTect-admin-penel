@@ -22,7 +22,7 @@ export default function ProtectedAdminLayout({
   return (
     <AdminProvider>
       <ProtectedAdminWrapper>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-[#f5f7fa]">
           <AdminSidebar />
           <div className="lg:pl-64">
             <AdminHeader admin={defaultAdmin} />

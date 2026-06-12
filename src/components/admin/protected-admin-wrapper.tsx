@@ -17,8 +17,8 @@ export function ProtectedAdminWrapper({ children }: { children: React.ReactNode 
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-900">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f7fa]">
+        <div className="text-[#1a1a1a]">Loading...</div>
       </div>
     )
   }

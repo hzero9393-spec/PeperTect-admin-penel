@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { TrendingUp } from 'lucide-react'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -40,72 +41,79 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb', padding: '1rem' }}>
-      <div style={{ width: '100%', maxWidth: '400px', backgroundColor: 'white', padding: '2rem', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ color: '#111827', fontSize: '24px', marginBottom: '0.5rem', fontWeight: 'bold' }}>Admin Login</h1>
-          <p style={{ color: '#6b7280', fontSize: '14px' }}>Pepertect Trading Platform</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#f5f7fa] p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <div className="flex size-12 items-center justify-center rounded-xl bg-[#00D09C]">
+            <TrendingUp className="size-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-[#1a1a1a]">Pepertect</h1>
+            <p className="text-xs text-[#6b7280]">Admin Panel</p>
+          </div>
         </div>
 
-        {error && (
-          <div style={{
-            padding: '0.75rem',
-            marginBottom: '1rem',
-            backgroundColor: '#fef2f2',
-            border: '1px solid #fecaca',
-            borderRadius: '4px',
-            color: '#dc2626',
-            textAlign: 'center',
-            fontSize: '14px'
-          }}>
-            {error}
+        {/* Login Card */}
+        <div className="bg-white border border-[#e5e7eb] rounded-2xl p-8 shadow-sm">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-[#1a1a1a] mb-2">Welcome Back</h2>
+            <p className="text-sm text-[#6b7280]">Sign in to access your admin dashboard</p>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={{ color: '#374151', display: 'block', marginBottom: '0.5rem', fontSize: '14px', fontWeight: '500' }}>Username</label>
-            <input
-              type="text"
-              placeholder="Enter your username"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+          {error && (
+            <div className="mb-6 p-4 bg-[#fde8e3] border border-[#eb5b3c]/20 rounded-lg">
+              <p className="text-sm text-[#d44a2d]">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-[#1a1a1a] mb-2">
+                Username
+              </label>
+              <input
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                value={formData.username}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                disabled={isLoading}
+                className="w-full px-4 py-3 bg-[#f0f2f5] border border-[#e5e7eb] rounded-xl text-[#1a1a1a] placeholder:text-[#6b7280] focus:border-[#00D09C] focus:ring-2 focus:ring-[#00D09C]/10 outline-none transition-all disabled:opacity-50"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-[#1a1a1a] mb-2">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                disabled={isLoading}
+                className="w-full px-4 py-3 bg-[#f0f2f5] border border-[#e5e7eb] rounded-xl text-[#1a1a1a] placeholder:text-[#6b7280] focus:border-[#00D09C] focus:ring-2 focus:ring-[#00D09C]/10 outline-none transition-all disabled:opacity-50"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
               disabled={isLoading}
-              style={{ width: '100%', padding: '0.75rem', backgroundColor: '#f9fafb', border: '1px solid #d1d5db', color: '#111827', borderRadius: '4px' }}
-              required
-            />
-          </div>
-          <div>
-            <label style={{ color: '#374151', display: 'block', marginBottom: '0.5rem', fontSize: '14px', fontWeight: '500' }}>Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              disabled={isLoading}
-              style={{ width: '100%', padding: '0.75rem', backgroundColor: '#f9fafb', border: '1px solid #d1d5db', color: '#111827', borderRadius: '4px' }}
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              backgroundColor: '#059669',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: '16px',
-              fontWeight: '500',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              opacity: isLoading ? 0.5 : 1
-            }}
-          >
-            {isLoading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
+              className="w-full py-3 bg-[#00D09C] text-white font-medium rounded-xl hover:bg-[#00b887] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isLoading ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <p className="text-center text-sm text-[#6b7280] mt-6">
+          Pepertect Trading Platform © 2024
+        </p>
       </div>
     </div>
   )

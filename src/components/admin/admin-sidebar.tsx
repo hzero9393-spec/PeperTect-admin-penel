@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
 
 const navItems = [
@@ -58,7 +59,7 @@ export function AdminSidebar() {
           variant="ghost"
           size="icon"
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+          className="bg-white text-gray-700 hover:bg-gray-100 border border-[#e5e7eb]"
         >
           {isMobileOpen ? <X /> : <Menu />}
         </Button>
@@ -75,61 +76,60 @@ export function AdminSidebar() {
       {/* Sidebar */}
       <aside
         className={`
-          fixed lg:sticky top-0 h-screen w-64 bg-white border-r border-gray-200
+          fixed lg:sticky top-0 h-screen w-64 bg-white border-r border-[#e5e7eb]
           flex flex-col z-50
           transition-transform duration-300 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-gray-200">
-          <Link href="/admin/dashboard" className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
-              <CandlestickChart className="h-6 w-6 text-emerald-600" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Pepertect</h1>
-              <p className="text-xs text-gray-500">Admin Panel</p>
-            </div>
-          </Link>
+        <div className="flex items-center gap-3 px-4 py-5 border-b border-[#e5e7eb]">
+          <div className="flex size-9 items-center justify-center rounded-lg bg-[#00D09C]">
+            <TrendingUp className="size-4 text-white" />
+          </div>
+          <div>
+            <h1 className="text-sm font-bold text-[#1a1a1a]">Pepertect</h1>
+            <p className="text-[10px] text-[#6b7280]">Admin Panel</p>
+          </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
+        <ScrollArea className="flex-1 px-3 py-3">
+          <div className="space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon
+              const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsMobileOpen(false)}
-                className={`
-                  flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors
-                  ${isActive
-                    ? 'bg-emerald-50 text-emerald-600'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }
-                `}
-              >
-                <Icon className="h-5 w-5" />
-                <span className="font-medium">{item.label}</span>
-              </Link>
-            )
-          })}
-        </nav>
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`
+                    flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-xs font-medium transition-colors
+                    ${isActive
+                      ? 'bg-[#00D09C]/10 text-[#00D09C]'
+                      : 'text-[#6b7280] hover:bg-[#f0f2f5] hover:text-[#1a1a1a]'
+                    }
+                  `}
+                >
+                  <Icon className="size-4" />
+                  {item.label}
+                </Link>
+              )
+            })}
+          </div>
+        </ScrollArea>
 
         {/* Logout */}
-        <div className="p-4 border-t border-gray-200">
-          <Button
-            variant="ghost"
+        <div className="px-3 py-3 border-t border-[#e5e7eb]">
+          <button
             onClick={handleLogout}
-            className="w-full justify-start text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-xs font-medium text-[#d44a2d] hover:bg-[#eb5b3c]/10 transition-colors"
           >
-            <LogOut className="h-5 w-5 mr-3" />
+            <LogOut className="size-4" />
             Logout
-          </Button>
+          </button>
         </div>
       </aside>
     </>

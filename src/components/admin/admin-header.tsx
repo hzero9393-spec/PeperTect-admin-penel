@@ -32,16 +32,16 @@ export function AdminHeader({ admin }: AdminHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
+    <header className="sticky top-0 z-30 bg-white border-b border-[#e5e7eb]">
       <div className="flex items-center justify-between px-6 py-4">
         {/* Search */}
         <div className="flex items-center space-x-4 flex-1 max-w-md">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6b7280]" />
             <Input
               type="search"
               placeholder="Search..."
-              className="pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-emerald-500"
+              className="pl-10 bg-[#f0f2f5] border-[#e5e7eb] text-[#1a1a1a] placeholder:text-[#6b7280] focus:border-[#00D09C] focus:ring-[#00D09C]/10"
             />
           </div>
         </div>
@@ -49,7 +49,7 @@ export function AdminHeader({ admin }: AdminHeaderProps) {
         {/* Right side */}
         <div className="flex items-center space-x-4">
           {/* Notifications */}
-          <Button variant="ghost" size="icon" className="text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+          <Button variant="ghost" size="icon" className="text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f0f2f5]">
             <Bell className="h-5 w-5" />
           </Button>
 
@@ -57,28 +57,28 @@ export function AdminHeader({ admin }: AdminHeaderProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center space-x-2">
-                <Avatar className="h-8 w-8 bg-emerald-100">
-                  <AvatarFallback className="text-emerald-600">
+                <Avatar className="h-8 w-8 bg-[#00D09C]/10">
+                  <AvatarFallback className="text-[#00D09C]">
                     {admin.name.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="hidden md:flex flex-col items-start">
-                  <span className="text-sm font-medium text-gray-900">{admin.name}</span>
-                  <span className="text-xs text-gray-500">{admin.role}</span>
+                  <span className="text-sm font-medium text-[#1a1a1a]">{admin.name}</span>
+                  <span className="text-xs text-[#6b7280]">{admin.role}</span>
                 </div>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white border-gray-200 text-gray-900">
+            <DropdownMenuContent align="end" className="bg-white border-[#e5e7eb] text-[#1a1a1a]">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-gray-200" />
+              <DropdownMenuSeparator className="bg-[#e5e7eb]" />
               <DropdownMenuItem asChild>
                 <a href="/admin/profile" className="flex items-center">
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </a>
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-gray-200" />
-              <DropdownMenuItem onClick={handleLogout} className="text-red-600 hover:text-red-700 hover:bg-red-50">
+              <DropdownMenuSeparator className="bg-[#e5e7eb]" />
+              <DropdownMenuItem onClick={handleLogout} className="text-[#d44a2d] hover:text-[#d44a2d] hover:bg-[#eb5b3c]/10">
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
