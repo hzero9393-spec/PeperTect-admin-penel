@@ -6,9 +6,20 @@ export const dynamic = 'force-dynamic'
 
 async function checkAdminAuth() {
   try {
-    const { cookies } = await import('next/headers')
-    const cookieStore = cookies()
-    const token = cookieStore.get('admin-token')?.value
+    const { headers } = await import('next/headers')
+    const headersList = headers()
+    const cookieHeader = headersList.get('cookie') || ''
+    
+    // Parse cookies manually from the header
+    const cookies: Record<string, string> = {}
+    cookieHeader.split(';').forEach(cookie => {
+      const [name, value] = cookie.trim().split('=')
+      if (name && value) {
+        cookies[name] = value
+      }
+    })
+    
+    const token = cookies['admin-token']
 
     if (!token) {
       return null
