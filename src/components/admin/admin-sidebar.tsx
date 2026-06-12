@@ -58,7 +58,7 @@ export function AdminSidebar() {
           variant="ghost"
           size="icon"
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="bg-[#1A1D29] text-white hover:bg-[#2A2D3A]"
+          className="bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
         >
           {isMobileOpen ? <X /> : <Menu />}
         </Button>
@@ -75,21 +75,21 @@ export function AdminSidebar() {
       {/* Sidebar */}
       <aside
         className={`
-          fixed lg:sticky top-0 h-screen w-64 bg-[#1A1D29] border-r border-[#2A2D3A]
+          fixed lg:sticky top-0 h-screen w-64 bg-white border-r border-gray-200
           flex flex-col z-50
           transition-transform duration-300 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-[#2A2D3A]">
+        <div className="p-6 border-b border-gray-200">
           <Link href="/admin/dashboard" className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-full bg-[#00D09C]/20 flex items-center justify-center">
-              <CandlestickChart className="h-6 w-6 text-[#00D09C]" />
+            <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+              <CandlestickChart className="h-6 w-6 text-emerald-600" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Pepertect</h1>
-              <p className="text-xs text-gray-400">Admin Panel</p>
+              <h1 className="text-xl font-bold text-gray-900">Pepertect</h1>
+              <p className="text-xs text-gray-500">Admin Panel</p>
             </div>
           </Link>
         </div>
@@ -108,8 +108,8 @@ export function AdminSidebar() {
                 className={`
                   flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors
                   ${isActive
-                    ? 'bg-[#00D09C]/20 text-[#00D09C]'
-                    : 'text-gray-400 hover:text-white hover:bg-[#2A2D3A]'
+                    ? 'bg-emerald-50 text-emerald-600'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }
                 `}
               >
@@ -121,11 +121,11 @@ export function AdminSidebar() {
         </nav>
 
         {/* Logout */}
-        <div className="p-4 border-t border-[#2A2D3A]">
+        <div className="p-4 border-t border-gray-200">
           <Button
             variant="ghost"
             onClick={handleLogout}
-            className="w-full justify-start text-gray-400 hover:text-white hover:bg-[#2A2D3A]"
+            className="w-full justify-start text-gray-600 hover:text-gray-900 hover:bg-gray-100"
           >
             <LogOut className="h-5 w-5 mr-3" />
             Logout

@@ -40,21 +40,21 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0F1117', padding: '1rem' }}>
-      <div style={{ width: '100%', maxWidth: '400px', backgroundColor: '#1A1D29', padding: '2rem', borderRadius: '8px', border: '1px solid #2A2D3A' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb', padding: '1rem' }}>
+      <div style={{ width: '100%', maxWidth: '400px', backgroundColor: 'white', padding: '2rem', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ color: 'white', fontSize: '24px', marginBottom: '0.5rem' }}>Admin Login</h1>
-          <p style={{ color: '#9CA3AF', fontSize: '14px' }}>Pepertect Trading Platform</p>
+          <h1 style={{ color: '#111827', fontSize: '24px', marginBottom: '0.5rem', fontWeight: 'bold' }}>Admin Login</h1>
+          <p style={{ color: '#6b7280', fontSize: '14px' }}>Pepertect Trading Platform</p>
         </div>
 
         {error && (
           <div style={{
             padding: '0.75rem',
             marginBottom: '1rem',
-            backgroundColor: '#dc262620',
-            border: '1px solid #dc2626',
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fecaca',
             borderRadius: '4px',
-            color: '#ef4444',
+            color: '#dc2626',
             textAlign: 'center',
             fontSize: '14px'
           }}>
@@ -64,26 +64,26 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ color: '#D1D5DB', display: 'block', marginBottom: '0.5rem', fontSize: '14px' }}>Username</label>
+            <label style={{ color: '#374151', display: 'block', marginBottom: '0.5rem', fontSize: '14px', fontWeight: '500' }}>Username</label>
             <input
               type="text"
               placeholder="Enter your username"
               value={formData.username}
               onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               disabled={isLoading}
-              style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0F1117', border: '1px solid #2A2D3A', color: 'white', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '0.75rem', backgroundColor: '#f9fafb', border: '1px solid #d1d5db', color: '#111827', borderRadius: '4px' }}
               required
             />
           </div>
           <div>
-            <label style={{ color: '#D1D5DB', display: 'block', marginBottom: '0.5rem', fontSize: '14px' }}>Password</label>
+            <label style={{ color: '#374151', display: 'block', marginBottom: '0.5rem', fontSize: '14px', fontWeight: '500' }}>Password</label>
             <input
               type="password"
               placeholder="Enter your password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               disabled={isLoading}
-              style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0F1117', border: '1px solid #2A2D3A', color: 'white', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '0.75rem', backgroundColor: '#f9fafb', border: '1px solid #d1d5db', color: '#111827', borderRadius: '4px' }}
               required
             />
           </div>
@@ -93,11 +93,12 @@ export default function AdminLoginPage() {
             style={{
               width: '100%',
               padding: '0.75rem',
-              backgroundColor: '#00D09C',
+              backgroundColor: '#059669',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
               fontSize: '16px',
+              fontWeight: '500',
               cursor: isLoading ? 'not-allowed' : 'pointer',
               opacity: isLoading ? 0.5 : 1
             }}
