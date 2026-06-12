@@ -3,6 +3,8 @@ import { cookies } from 'next/headers'
 import { getAdminFromToken } from '@/lib/admin-auth'
 import { db } from '@/lib/db'
 
+export const runtime = 'nodejs'
+
 // GET /api/admin/users - Fetch users with pagination, search, filters, and sorting
 export async function GET(req: NextRequest) {
   try {
